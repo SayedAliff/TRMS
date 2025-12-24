@@ -158,14 +158,14 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
                 Taxpayer
               </button>
               <button
-                onClick={() => setUserType('Official')}
+                onClick={() => setUserType('JuniorOfficer')}
                 className={`flex-1 py-3 px-4 rounded-lg transition-all duration-200 ${
-                  userType === 'Official'
+                  userType === 'JuniorOfficer' || userType === 'SeniorManager'
                     ? 'text-white shadow-lg transform scale-105'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
                 style={{
-                  background: userType === 'Official' ? 'linear-gradient(135deg, #7B68EE 0%, #6a5acd 100%)' : 'transparent',
+                  background: userType === 'JuniorOfficer' || userType === 'SeniorManager' ? 'linear-gradient(135deg, #7B68EE 0%, #6a5acd 100%)' : 'transparent',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 600
                 }}
