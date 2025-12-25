@@ -1,224 +1,140 @@
-import { useState } from 'react';
-import { Home, FileText, Shield, HelpCircle, LogOut, FileCheck, AlertTriangle, Ticket } from 'lucide-react';
-import { User } from '../App';
-import { ReviewReturns } from './ReviewReturns';
-import { AuditLogs } from './AuditLogs';
-import { SupportTickets } from './SupportTickets';
+import { MapPin, User as UserIcon, Award } from 'lucide-react';
 
-interface OfficerDashboardProps {
-  user: User;
-  onLogout: () => void;
+interface OfficerProfileProps {
+  onClose: () => void;
 }
 
-type View = 'dashboard' | 'review-returns' | 'audit-logs' | 'support';
-
-export function OfficerDashboard({ user, onLogout }: OfficerDashboardProps) {
-  const [activeView, setActiveView] = useState<View>('dashboard');
-  const [showRankEdit, setShowRankEdit] = useState(false);
-  const [currentRank, setCurrentRank] = useState('Inspector');
-
-  const stats = {
-    pendingReturns: 12,
-    openTickets: 5,
-    recentAudits: 3
+export function OfficerProfile({ onClose }: OfficerProfileProps) {
+  const officer = {
+    id: '1000',
+    firstName: 'Rahim',
+    lastName: 'Uddin',
+    branch: 'Gulshan, Dhaka',
+    currentRank: 'Inspector',
+    newRank: 'Senior Inspector',
+    lastUpdated: '13-DEC-2025'
   };
 
-  const recentActivity = [
-    { id: 1, text: 'Return #20001 submitted by TIN 5000', time: '2 hours ago' },
-    { id: 2, text: 'Audit #704 logged for Return #20004', time: '5 hours ago' },
-    { id: 3, text: 'Support Ticket #301 updated', time: '1 day ago' },
-    { id: 4, text: 'Return #20000 approved', time: '2 days ago' },
-  ];
-
   return (
-    <div className="flex h-screen" style={{ backgroundColor: '#f8f9fa' }}>
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-6 border-b border-gray-200">
-          <h1 className="text-lg" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#7B68EE' }}>
-            Officer Portal
-          </h1>
-        </div>
-
-        <nav className="flex-1 p-4">
-          <button
-            onClick={() => setActiveView('dashboard')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${
-              activeView === 'dashboard' ? 'text-white' : 'text-gray-700 hover:bg-gray-50'
-            }`}
-            style={{
-              backgroundColor: activeView === 'dashboard' ? '#7B68EE' : 'transparent',
-              fontFamily: 'Inter, sans-serif',
-              fontWeight: 500
-            }}
+    <div className="fixed inset-0 bg-black bg-opacity-40 z-40 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden">
+        {/* Header Banner */}
+        <div 
+          className="h-32 relative"
+          style={{ background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)' }}
+        >
+          <button 
+            onClick={onClose}
+            className="absolute top-4 right-4 w-8 h-8 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg flex items-center justify-center text-white transition-colors"
           >
-            <Home className="w-5 h-5" />
-            <span>Dashboard</span>
-          </button>
-
-          <button
-            onClick={() => setActiveView('review-returns')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${
-              activeView === 'review-returns' ? 'text-white' : 'text-gray-700 hover:bg-gray-50'
-            }`}
-            style={{
-              backgroundColor: activeView === 'review-returns' ? '#7B68EE' : 'transparent',
-              fontFamily: 'Inter, sans-serif',
-              fontWeight: 500
-            }}
-          >
-            <FileCheck className="w-5 h-5" />
-            <span>Review Returns</span>
-          </button>
-
-          <button
-            onClick={() => setActiveView('audit-logs')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${
-              activeView === 'audit-logs' ? 'text-white' : 'text-gray-700 hover:bg-gray-50'
-            }`}
-            style={{
-              backgroundColor: activeView === 'audit-logs' ? '#7B68EE' : 'transparent',
-              fontFamily: 'Inter, sans-serif',
-              fontWeight: 500
-            }}
-          >
-            <Shield className="w-5 h-5" />
-            <span>Audit Logs</span>
-          </button>
-
-          <button
-            onClick={() => setActiveView('support')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${
-              activeView === 'support' ? 'text-white' : 'text-gray-700 hover:bg-gray-50'
-            }`}
-            style={{
-              backgroundColor: activeView === 'support' ? '#7B68EE' : 'transparent',
-              fontFamily: 'Inter, sans-serif',
-              fontWeight: 500
-            }}
-          >
-            <HelpCircle className="w-5 h-5" />
-            <span>Support Tickets</span>
-          </button>
-        </nav>
-
-        <div className="p-4 border-t border-gray-200">
-          <button
-            onClick={onLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-all"
-            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
-          >
-            <LogOut className="w-5 h-5" />
-            <span>Logout</span>
+            ×
           </button>
         </div>
-      </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl mb-1" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                {user.name}
-              </h2>
-              <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Rank: Inspector
-              </p>
+        {/* Profile Photo */}
+        <div className="px-8 -mt-16 mb-6">
+          <div className="w-32 h-32 rounded-full border-4 border-white bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center text-white text-4xl shadow-xl">
+            {`${officer.firstName[0]}${officer.lastName[0]}`}
+          </div>
+        </div>
+
+        {/* Profile Info */}
+        <div className="px-8 pb-6 border-b border-gray-200">
+          <h2 className="text-3xl mb-2">{officer.firstName} {officer. lastName}</h2>
+          <div className="flex items-center gap-4 text-gray-600">
+            <div className="flex items-center gap-2">
+              <UserIcon className="w-4 h-4" />
+              <span className="text-sm">ID: {officer.id}</span>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>{user.name}</p>
-                <p className="text-xs text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>Officer ID: {user.id}</p>
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              <span className="text-sm">{officer.branch}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Rank Management Section */}
+        <div className="p-8">
+          <div className="flex items-center gap-2 mb-6">
+            <Award className="w-5 h-5 text-purple-600" />
+            <h3 className="text-lg">Rank Management</h3>
+          </div>
+
+          <div className="bg-purple-50 rounded-lg p-6 mb-6">
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">Current Rank</p>
+              <div className="flex items-center gap-3">
+                <span 
+                  className="text-xl text-gray-400 line-through"
+                >
+                  {officer.currentRank}
+                </span>
+                <span className="text-xs text-gray-500">→</span>
+                <div className="flex-1">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={officer.newRank}
+                      readOnly
+                      className="w-full px-4 py-3 border-2 border-purple-300 rounded-lg bg-white text-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      style={{ 
+                        fontFamily: 'Inter, sans-serif',
+                        fontWeight:  600,
+                        color: '#7C3AED'
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: '#0056b3' }}>
-                {user.name.split(' ').map(n => n[0]).join('')}
+            </div>
+
+            <div className="flex items-center justify-between pt-4 border-t border-purple-200">
+              <div>
+                <p className="text-xs text-gray-500">Last Updated</p>
+                <p className="text-sm font-medium text-gray-700">{officer.lastUpdated}</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  className="px-4 py-2 bg-white border border-purple-300 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors text-sm font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                >
+                  Save Changes
+                </button>
               </div>
             </div>
           </div>
-        </header>
 
-        {/* Content */}
-        <div className="p-8">
-          {activeView === 'dashboard' && (
-            <>
-              {/* Summary Widgets */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#fff3e0' }}>
-                      <FileText className="w-6 h-6" style={{ color: '#f57c00' }} />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        Pending Returns
-                      </p>
-                      <p className="text-3xl" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, color: '#f57c00' }}>
-                        {stats.pendingReturns}
-                      </p>
-                    </div>
-                  </div>
+          {/* Rank History */}
+          <div className="bg-gray-50 rounded-lg p-6">
+            <h4 className="text-sm font-semibold text-gray-700 mb-4">Rank History</h4>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Inspector</p>
+                  <p className="text-xs text-gray-500">01-JAN-2023 - Present</p>
                 </div>
-
-                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#e3f2fd' }}>
-                      <Ticket className="w-6 h-6" style={{ color: '#0056b3' }} />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        Open Tickets
-                      </p>
-                      <p className="text-3xl" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, color: '#0056b3' }}>
-                        {stats.openTickets}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#ffebee' }}>
-                      <AlertTriangle className="w-6 h-6" style={{ color: '#c62828' }} />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        Recent Audits (30 days)
-                      </p>
-                      <p className="text-3xl" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, color: '#c62828' }}>
-                        {stats.recentAudits}
-                      </p>
-                    </div>
-                  </div>
+                <span className="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full">Current</span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Assistant Inspector</p>
+                  <p className="text-xs text-gray-500">15-MAR-2021 - 31-DEC-2022</p>
                 </div>
               </div>
-
-              {/* Recent Activity */}
-              <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                <h3 className="text-lg mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  Recent Activity
-                </h3>
-                <div className="space-y-3">
-                  {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0">
-                      <div className="w-2 h-2 rounded-full mt-2" style={{ backgroundColor: '#0056b3' }}></div>
-                      <div className="flex-1">
-                        <p className="text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>{activity.text}</p>
-                        <p className="text-xs text-gray-500 mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>{activity.time}</p>
-                      </div>
-                    </div>
-                  ))}
+              <div className="flex items-center justify-between py-2">
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Junior Officer</p>
+                  <p className="text-xs text-gray-500">10-JUN-2019 - 14-MAR-2021</p>
                 </div>
               </div>
-            </>
-          )}
-
-          {activeView === 'review-returns' && <ReviewReturns />}
-          {activeView === 'audit-logs' && <AuditLogs />}
-          {activeView === 'support' && <SupportTickets userType="officer" />}
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
