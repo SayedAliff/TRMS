@@ -1,6 +1,18 @@
 {
-  "dependencies": {
-    "@radix-ui/react-accordion": "^1.2.12",
+  "name": "trms",
+  "private": true,
+  "version":  "1.0.0",
+  "type": "module",
+  "description": "Tax Revenue Management System",
+  "author": "Sayed Alif",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview":  "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "dependencies":  {
+    "@radix-ui/react-accordion":  "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-aspect-ratio": "^1.1.8",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -34,7 +46,7 @@
     "next-themes": "^0.4.6",
     "react": "^19.2.3",
     "react-day-picker": "^9.13.0",
-    "react-dom": "^19.2.3",
+    "react-dom":  "^19.2.3",
     "react-hook-form": "^7.69.0",
     "react-resizable-panels": "^4.0.15",
     "recharts": "^3.6.0",
@@ -46,10 +58,15 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.0",
     "autoprefixer": "^10.4.23",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3",
+    "typescript": "^5.6.3",
     "vite": "^7.3.0"
   }
 }
