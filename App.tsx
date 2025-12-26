@@ -13,8 +13,13 @@ export interface User {
   lastName: string;
   type: UserType;
   rank: string; // changed from 'rank?: string;' to 'rank: string;'
-  branch?: string;
+  branch: string; // made non-optional
   zoneName?: string;
+  houseNo: string;
+  street: string;
+  city: string;
+  zipCode: string;
+  password: string;
 }
 
 function App() {
