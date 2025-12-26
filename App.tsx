@@ -12,7 +12,7 @@ export interface User {
   firstName: string;
   lastName: string;
   type: UserType;
-  rank?: string;
+  rank: string; // changed from 'rank?: string;' to 'rank: string;'
   branch?: string;
   zoneName?: string;
 }
