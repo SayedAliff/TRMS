@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, HelpCircle, LogOut, UserCheck, Ticket, FileText, UserCog, UserPlus, Edit, Trash2, Phone, MapPin, DollarSign, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, HelpCircle, LogOut, UserCheck, Ticket, FileText, UserCog, UserPlus, Edit, Trash2, Phone, MapPin, DollarSign, ChevronLeft, ChevronRight, Bell } from 'lucide-react';
 import { User } from '../App';
 import { SupportTickets } from './SupportTickets';
 
@@ -18,10 +18,12 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   const [selectedTaxpayerEdit, setSelectedTaxpayerEdit] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const taxpayersPerPage = 5;
+  const [supportNotifications, setSupportNotifications] = useState(2);
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   
   const [newTaxpayer, setNewTaxpayer] = useState({
     firstName: '',
-    lastName: '',
+    lastName:  '',
     gender: 'Male',
     city: '',
     phoneNumber1: '',
@@ -29,31 +31,31 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   });
 
   const stats = {
-    totalTaxpayers: 5,
-    openTickets: 3,
+    totalTaxpayers:  5,
+    openTickets: supportNotifications,
     resolvedToday: 2
   };
 
   const recentActivity = [
     { id: 1, text: 'New ticket #303 from TIN 5003', time: '1 hour ago' },
-    { id: 2, text: 'Ticket #300 resolved for TIN 5000', time: '3 hours ago' },
-    { id: 3, text: 'New taxpayer registered:  TIN 5004', time: '1 day ago' },
+    { id: 2, text: 'New ticket #301 from TIN 5001', time: '2 hours ago' },
+    { id: 3, text: 'Taxpayer profile updated:  TIN 5002', time:  '5 hours ago' },
   ];
 
   const [taxpayers, setTaxpayers] = useState([
     { id: '5000', firstName: 'Abul', lastName: 'Kalam', gender: 'Male', city: 'Dhaka', phoneNumber1: '01711111111', zoneName: 'Dhaka North' },
     { id: '5001', firstName: 'Bokul', lastName: 'Mia', gender: 'Male', city: 'Dhaka', phoneNumber1: '01922222222', zoneName: 'Dhaka South' },
-    { id: '5002', firstName: 'Cina', lastName: 'Akter', gender: 'Female', city: 'Chittagong', phoneNumber1: '01733333333', zoneName:  'Chittagong Zone' },
+    { id: '5002', firstName: 'Cina', lastName: 'Akter', gender: 'Female', city: 'Chittagong', phoneNumber1: '01733333333', zoneName: 'Chittagong Zone' },
     { id: '5003', firstName: 'David', lastName: 'Roy', gender: 'Male', city: 'Sylhet', phoneNumber1: '01844444444', zoneName: 'Sylhet Zone' },
     { id: '5004', firstName: 'Eva', lastName: 'Rahman', gender: 'Female', city: 'Rajshahi', phoneNumber1: '01555555555', zoneName: 'Rajshahi Zone' },
   ]);
 
   const taxpayerTaxData = [
-    { tin: '5000', firstName: 'Abul', lastName: 'Kalam', gender: 'Male', city:  'Dhaka', phoneNumber1: '01711111111', zoneName: 'Dhaka North', zoneCode: '100', returnId: '200', assessmentYear: '2024-2025', totalIncome: '500000', taxableAmount: '50000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Salaried Individual', officerId: '1000', returnStatus: 'Completed' },
+    { tin: '5000', firstName: 'Abul', lastName: 'Kalam', gender: 'Male', city: 'Dhaka', phoneNumber1: '01711111111', zoneName:  'Dhaka North', zoneCode: '100', returnId: '200', assessmentYear: '2024-2025', totalIncome: '500000', taxableAmount: '50000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Salaried Individual', officerId: '1000', returnStatus: 'Completed' },
     { tin: '5001', firstName: 'Bokul', lastName: 'Mia', gender: 'Male', city: 'Dhaka', phoneNumber1: '01922222222', zoneName: 'Dhaka North', zoneCode: '100', returnId: '201', assessmentYear: '2024-2025', totalIncome: '1200000', taxableAmount: '120000', filingDate: '13-DEC-2025', taxCategory: 'Corporate', taxType: 'Limited Company', officerId: '1000', returnStatus: 'Completed' },
     { tin: '5002', firstName: 'Cina', lastName: 'Akter', gender: 'Female', city: 'Chittagong', phoneNumber1: '01733333333', zoneName: 'Chittagong', zoneCode: '101', returnId: '202', assessmentYear: '2024-2025', totalIncome: '350000', taxableAmount: '35000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Business Owner', officerId: '1001', returnStatus: 'Pending' },
     { tin: '5003', firstName: 'David', lastName: 'Roy', gender: 'Male', city: 'Sylhet', phoneNumber1: '01844444444', zoneName: 'Sylhet', zoneCode: '102', returnId: '203', assessmentYear: '2024-2025', totalIncome: '800000', taxableAmount: '80000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Professional', officerId: '1002', returnStatus: 'Completed' },
-    { tin: '5004', firstName: 'Eva', lastName: 'Rahman', gender: 'Female', city: 'Rajshahi', phoneNumber1: '01555555555', zoneName: 'Rajshahi', zoneCode: '103', returnId: '204', assessmentYear: '2024-2025', totalIncome: '450000', taxableAmount: '45000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Self Employed', officerId: '1000', returnStatus: 'Completed' }
+    { tin: '5004', firstName: 'Eva', lastName: 'Rahman', gender:  'Female', city: 'Rajshahi', phoneNumber1: '01555555555', zoneName: 'Rajshahi', zoneCode: '103', returnId: '204', assessmentYear: '2024-2025', totalIncome: '450000', taxableAmount: '45000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Self Employed', officerId: '1000', returnStatus: 'Completed' }
   ];
 
   const totalPages = Math.ceil(taxpayerTaxData.length / taxpayersPerPage);
@@ -73,6 +75,11 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
       setCurrentPage(currentPage + 1);
       setSelectedTaxpayer(null);
     }
+  };
+
+  const handleNotificationClick = () => {
+    setActiveView('support');
+    setShowNotificationPopup(false);
   };
 
   const handleAddTaxpayer = (e: React.FormEvent) => {
@@ -116,7 +123,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
           <h1 className="text-lg font-semibold text-purple-700">Junior Officer Portal</h1>
         </div>
         <nav className="flex-1 p-4">
-          <button onClick={() => setActiveView('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'dashboard' ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow' : 'text-gray-700 hover:bg-purple-50'}`}>
+          <button onClick={() => setActiveView('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'dashboard' ?  'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow' : 'text-gray-700 hover:bg-purple-50'}`}>
             <Home className="w-5 h-5" />
             <span>Dashboard</span>
           </button>
@@ -131,6 +138,9 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
           <button onClick={() => setActiveView('support')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'support' ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow' : 'text-gray-700 hover:bg-purple-50'}`}>
             <HelpCircle className="w-5 h-5" />
             <span>Support Tickets</span>
+            {supportNotifications > 0 && (
+              <span className="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{supportNotifications}</span>
+            )}
           </button>
         </nav>
         <div className="p-4 border-t border-gray-200">
@@ -149,6 +159,36 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
               <p className="text-sm text-gray-600">Rank: {user.rank} | Branch: {user.branch}</p>
             </div>
             <div className="flex items-center gap-4">
+              <div className="relative">
+                <button 
+                  onClick={() => supportNotifications > 0 && setShowNotificationPopup(! showNotificationPopup)}
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative"
+                >
+                  <Bell className="w-6 h-6 text-gray-600" />
+                  {supportNotifications > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {supportNotifications}
+                    </span>
+                  )}
+                </button>
+                
+                {showNotificationPopup && supportNotifications > 0 && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                    <div className="p-4 border-b border-gray-200">
+                      <h3 className="font-semibold">Notifications</h3>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors" onClick={handleNotificationClick}>
+                        <Ticket className="w-5 h-5 text-purple-600 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">{supportNotifications} new support tickets</p>
+                          <p className="text-xs text-gray-600 mt-1">Taxpayers need your assistance.  Click to view.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
               <div className="text-right">
                 <p className="text-sm font-medium">{user.firstName} {user.lastName}</p>
                 <p className="text-xs text-gray-500">Officer ID: {user.id}</p>
@@ -206,7 +246,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                 <h3 className="text-lg mb-4 font-semibold">Recent Activity</h3>
                 <div className="space-y-3">
                   {recentActivity.map((activity) => (
-                    <div key={activity. id} className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0">
+                    <div key={activity.id} className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0">
                       <div className="w-2 h-2 rounded-full mt-2 bg-purple-600"></div>
                       <div className="flex-1">
                         <p className="text-sm">{activity.text}</p>
@@ -295,7 +335,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                         </div>
                         <div>
                           <label className="block text-sm mb-2 font-medium">Phone Number *</label>
-                          <input type="tel" value={newTaxpayer.phoneNumber1} onChange={(e) => setNewTaxpayer({ ...newTaxpayer, phoneNumber1: e.target.value })} required className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-400 transition-colors" />
+                          <input type="tel" value={newTaxpayer.phoneNumber1} onChange={(e) => setNewTaxpayer({ ... newTaxpayer, phoneNumber1: e.target.value })} required className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-400 transition-colors" />
                         </div>
                         <div>
                           <label className="block text-sm mb-2 font-medium">Zone Name *</label>
@@ -303,7 +343,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                         </div>
                       </div>
                       <div className="flex gap-3 pt-4">
-                        <button type="submit" className="flex-1 py-3 rounded-lg bg-purple-600 text-white hover: opacity-90 transition-all font-semibold">Add Taxpayer</button>
+                        <button type="submit" className="flex-1 py-3 rounded-lg bg-purple-600 text-white hover:opacity-90 transition-all font-semibold">Add Taxpayer</button>
                         <button type="button" onClick={() => setShowAddTaxpayer(false)} className="flex-1 py-3 rounded-lg border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all font-semibold">Cancel</button>
                       </div>
                     </form>
@@ -321,7 +361,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm mb-2 font-medium">First Name *</label>
-                          <input type="text" value={newTaxpayer.firstName} onChange={(e) => setNewTaxpayer({ ... newTaxpayer, firstName:  e.target.value })} required className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-400 transition-colors" />
+                          <input type="text" value={newTaxpayer.firstName} onChange={(e) => setNewTaxpayer({ ...newTaxpayer, firstName: e.target. value })} required className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus: outline-none focus:border-purple-400 transition-colors" />
                         </div>
                         <div>
                           <label className="block text-sm mb-2 font-medium">Last Name *</label>
@@ -329,7 +369,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                         </div>
                         <div>
                           <label className="block text-sm mb-2 font-medium">Gender *</label>
-                          <select value={newTaxpayer.gender} onChange={(e) => setNewTaxpayer({ ...newTaxpayer, gender: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus: outline-none focus:border-purple-400 transition-colors">
+                          <select value={newTaxpayer.gender} onChange={(e) => setNewTaxpayer({ ...newTaxpayer, gender: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-400 transition-colors">
                             <option>Male</option>
                             <option>Female</option>
                             <option>Other</option>
@@ -337,15 +377,15 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                         </div>
                         <div>
                           <label className="block text-sm mb-2 font-medium">City *</label>
-                          <input type="text" value={newTaxpayer. city} onChange={(e) => setNewTaxpayer({ ...newTaxpayer, city: e.target.value })} required className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus: border-purple-400 transition-colors" />
+                          <input type="text" value={newTaxpayer.city} onChange={(e) => setNewTaxpayer({ ...newTaxpayer, city: e.target.value })} required className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-400 transition-colors" />
                         </div>
                         <div>
                           <label className="block text-sm mb-2 font-medium">Phone Number *</label>
-                          <input type="tel" value={newTaxpayer.phoneNumber1} onChange={(e) => setNewTaxpayer({ ...newTaxpayer, phoneNumber1: e.target. value })} required className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus: outline-none focus:border-purple-400 transition-colors" />
+                          <input type="tel" value={newTaxpayer.phoneNumber1} onChange={(e) => setNewTaxpayer({ ...newTaxpayer, phoneNumber1: e.target.value })} required className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-400 transition-colors" />
                         </div>
                         <div>
                           <label className="block text-sm mb-2 font-medium">Zone Name *</label>
-                          <input type="text" value={newTaxpayer.zoneName} onChange={(e) => setNewTaxpayer({ ...newTaxpayer, zoneName: e.target.value })} required className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus: border-purple-400 transition-colors" />
+                          <input type="text" value={newTaxpayer.zoneName} onChange={(e) => setNewTaxpayer({ ...newTaxpayer, zoneName: e.target.value })} required className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-400 transition-colors" />
                         </div>
                       </div>
                       <div className="flex gap-3 pt-4">
@@ -400,11 +440,11 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                           <td className="px-4 py-3 text-sm font-semibold">#{taxpayer.returnId}</td>
                           <td className="px-4 py-3 text-sm">{taxpayer.assessmentYear}</td>
                           <td className="px-4 py-3 text-sm font-semibold text-green-700">৳{Number(taxpayer.totalIncome).toLocaleString()}</td>
-                          <td className="px-4 py-3 text-sm font-semibold text-orange-600">৳{Number(taxpayer.taxableAmount).toLocaleString()}</td>
+                          <td className="px-4 py-3 text-sm font-semibold text-orange-600">৳{Number(taxpayer. taxableAmount).toLocaleString()}</td>
                           <td className="px-4 py-3 text-sm">{taxpayer.filingDate}</td>
                           <td className="px-4 py-3 text-sm">{taxpayer.taxCategory}</td>
                           <td className="px-4 py-3 text-sm">
-                            <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${taxpayer.returnStatus === 'Completed' ?  'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                            <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${taxpayer.returnStatus === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
                               {taxpayer.returnStatus}
                             </span>
                           </td>
@@ -464,7 +504,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                     </div>
                     <div>
                       <label className="text-sm text-gray-600 mb-1 block flex items-center gap-2"><MapPin className="w-4 h-4" />Tax Zone</label>
-                      <p className="text-lg font-medium">{taxpayerTaxData[selectedTaxpayer]. zoneName}</p>
+                      <p className="text-lg font-medium">{taxpayerTaxData[selectedTaxpayer].zoneName}</p>
                     </div>
                     <div>
                       <label className="text-sm text-gray-600 mb-1 block">Return ID</label>
@@ -500,9 +540,19 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
             </div>
           )}
 
-          {activeView === 'support' && <SupportTickets userType="officer" />}
+          {activeView === 'support' && (
+            <SupportTickets 
+              userType="officer" 
+              currentOfficerID={user.id}
+              currentOfficerName={`${user.firstName} ${user. lastName}`}
+              currentOfficerRank={user.rank}
+              highlightUnread={true}
+              onNotificationUpdate={setSupportNotifications}
+            />
+          )}
         </div>
-      </main>
+      </main>  
     </div>
+    
   );
 }
