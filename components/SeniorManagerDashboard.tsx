@@ -20,7 +20,7 @@ import {
 
 interface SeniorManagerDashboardProps {
   user: {
-    id: number;
+    id: string;
     firstName: string;
     lastName: string;
     rank: string;
@@ -43,7 +43,7 @@ type View =
   | 'Profile';
 
 type Officer = {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   rank: string;
@@ -56,11 +56,11 @@ type Officer = {
 };
 
 const initialOfficers: Officer[] = [
-  { id: 1000, firstName: 'Rahim', lastName: 'Uddin', rank: 'Inspector', branch: 'Gulshan', houseNo:"10", street:"Road 5", city:"Dhaka", zipCode:"1212", password: 'pass1' },
-  { id: 1001, firstName: 'Karim', lastName: 'Ahmed', rank: 'Commissioner', branch: 'Agrabad', houseNo:"22", street:"CDA Ave", city:"Chittagong", zipCode:"4000", password: 'pass2' },
-  { id: 1002, firstName: 'Siaam', lastName: 'Khan', rank: 'Officer', branch: 'Motijheel', houseNo:"5", street:"Bank Road", city:"Dhaka", zipCode:"1000", password: 'pass3' },
-  { id: 1003, firstName: 'Nadia', lastName: 'Islam', rank: 'Assistant', branch: 'Zindabazar', houseNo:"12", street:"VIP Rd", city:"Sylhet", zipCode:"3100", password: 'pass4' },
-  { id: 1004, firstName: 'Fahim', lastName: 'Hossain', rank: 'Inspector', branch: 'New Market', houseNo:"8", street:"College Rd", city:"Rajshahi", zipCode:"6000", password: 'pass5' }
+  { id: '1000', firstName: 'Rahim', lastName: 'Uddin', rank: 'Inspector', branch: 'Gulshan', houseNo:"10", street:"Road 5", city:"Dhaka", zipCode:"1212", password: 'pass1' },
+  { id: '1001', firstName: 'Karim', lastName: 'Ahmed', rank: 'Commissioner', branch: 'Agrabad', houseNo:"22", street:"CDA Ave", city:"Chittagong", zipCode:"4000", password: 'pass2' },
+  { id: '1002', firstName: 'Siaam', lastName: 'Khan', rank: 'Officer', branch: 'Motijheel', houseNo:"5", street:"Bank Road", city:"Dhaka", zipCode:"1000", password: 'pass3' },
+  { id: '1003', firstName: 'Nadia', lastName: 'Islam', rank: 'Assistant', branch: 'Zindabazar', houseNo:"12", street:"VIP Rd", city:"Sylhet", zipCode:"3100", password: 'pass4' },
+  { id: '1004', firstName: 'Fahim', lastName: 'Hossain', rank: 'Inspector', branch: 'New Market', houseNo:"8", street:"College Rd", city:"Rajshahi", zipCode:"6000", password: 'pass5' }
 ];
 
 const stats = {
@@ -170,7 +170,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
       ...officers,
       {
         ...addOfficerForm,
-        id: Math.max(...officers.map(of=>of.id))+1
+        id: (Math.max(...officers.map(of=>parseInt(of.id)))+1).toString()
       }
     ]);
     setShowAddOfficer(false);
