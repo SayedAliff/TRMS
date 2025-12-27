@@ -39,12 +39,10 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     lastName: user.lastName,
     rank: user.rank,
     branch: user.branch,
-    email: `${user.firstName. toLowerCase()}.${user.lastName.toLowerCase()}@nbr.gov. bd`,
-    phone: user.id === '1000' ? '01711223344' : user.id === '1001' ? '01822334455' : '01933445566',
-    joinDate: user.id === '1000' ? '01-JAN-2020' : user.id === '1001' ? '15-MAR-2021' : '10-JUN-2022'
+    phone: user.id === '1000' ? '01711223344' : user.id === '1001' ? '01822334455' : '01933445566'
   });
 
-  const [editedProfile, setEditedProfile] = useState({... officerProfile});
+  const [editedProfile, setEditedProfile] = useState({ ...officerProfile });
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -107,25 +105,22 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   const handleSaveProfile = () => {
     // Track changes
     const changes = [];
-    if (editedProfile. firstName !== officerProfile.firstName) {
+    if (editedProfile.firstName !== officerProfile.firstName) {
       changes.push(`First Name: ${officerProfile.firstName} → ${editedProfile.firstName}`);
     }
     if (editedProfile.lastName !== officerProfile.lastName) {
       changes.push(`Last Name: ${officerProfile.lastName} → ${editedProfile.lastName}`);
     }
-    if (editedProfile. branch !== officerProfile.branch) {
+    if (editedProfile.branch !== officerProfile.branch) {
       changes.push(`Branch: ${officerProfile.branch} → ${editedProfile.branch}`);
     }
-    if (editedProfile.email !== officerProfile.email) {
-      changes.push(`Email: ${officerProfile.email} → ${editedProfile.email}`);
-    }
-    if (editedProfile. phone !== officerProfile.phone) {
+    if (editedProfile.phone !== officerProfile.phone) {
       changes.push(`Phone: ${officerProfile.phone} → ${editedProfile.phone}`);
     }
 
     if (changes.length > 0) {
-      setOfficerProfile({...editedProfile});
-      alert(`Profile updated successfully!\n\nChanges:\n${changes. join('\n')}\n\n✅ Senior Manager has been notified of these changes.`);
+      setOfficerProfile({ ...editedProfile });
+      alert(`Profile updated successfully!\n\nChanges:\n${changes.join('\n')}\n\n✅ Senior Manager has been notified of these changes.`);
     } else {
       alert('No changes detected.');
     }
@@ -300,7 +295,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
               <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-semibold">My Profile</h3>
-                  <button onClick={() => { setEditedProfile({...officerProfile}); setShowEditProfile(true); }} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white hover: opacity-90 font-medium">
+                  <button onClick={() => { setEditedProfile({ ...officerProfile }); setShowEditProfile(true); }} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white hover: opacity-90 font-medium">
                     <Edit className="w-4 h-4" />Edit Details
                   </button>
                 </div>
@@ -309,9 +304,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                   <div><label className="text-sm text-gray-600 mb-1 block">Full Name</label><p className="text-lg font-semibold">{officerProfile.firstName} {officerProfile.lastName}</p></div>
                   <div><label className="text-sm text-gray-600 mb-1 block">Rank</label><p className="text-lg font-medium">{officerProfile.rank}</p></div>
                   <div><label className="text-sm text-gray-600 mb-1 block">Branch</label><p className="text-lg font-medium">{officerProfile.branch}</p></div>
-                  <div><label className="text-sm text-gray-600 mb-1 block">Email</label><p className="text-lg font-medium">{officerProfile.email}</p></div>
                   <div><label className="text-sm text-gray-600 mb-1 block">Phone</label><p className="text-lg font-medium">{officerProfile.phone}</p></div>
-                  <div><label className="text-sm text-gray-600 mb-1 block">Join Date</label><p className="text-lg font-medium">{officerProfile.joinDate}</p></div>
                 </div>
               </div>
 
@@ -429,11 +422,11 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                     <div><label className="text-sm text-gray-600 mb-1 block">Gender</label><p className="text-lg font-medium">{taxpayerTaxData[selectedTaxpayer]. gender}</p></div>
                     <div><label className="text-sm text-gray-600 mb-1 block">City</label><p className="text-lg font-medium">{taxpayerTaxData[selectedTaxpayer].city}</p></div>
                     <div><label className="text-sm text-gray-600 mb-1 block flex items-center gap-2"><Phone className="w-4 h-4" />Phone</label><p className="text-lg font-medium">{taxpayerTaxData[selectedTaxpayer].phoneNumber1}</p></div>
-                    <div><label className="text-sm text-gray-600 mb-1 block flex items-center gap-2"><MapPin className="w-4 h-4" />Zone</label><p className="text-lg font-medium">{taxpayerTaxData[selectedTaxpayer]. zoneName}</p></div>
+                    <div><label className="text-sm text-gray-600 mb-1 block flex items-center gap-2"><MapPin className="w-4 h-4" />Zone</label><p className="text-lg font-medium">{taxpayerTaxData[selectedTaxpayer].zoneName}</p></div>
                     <div><label className="text-sm text-gray-600 mb-1 block">Return ID</label><p className="text-lg font-semibold">#{taxpayerTaxData[selectedTaxpayer].returnId}</p></div>
                     <div><label className="text-sm text-gray-600 mb-1 block">Assessment Year</label><p className="text-lg font-medium">{taxpayerTaxData[selectedTaxpayer].assessmentYear}</p></div>
                     <div><label className="text-sm text-gray-600 mb-1 block flex items-center gap-2"><DollarSign className="w-4 h-4" />Total Income</label><p className="text-lg font-semibold text-green-700">৳{Number(taxpayerTaxData[selectedTaxpayer].totalIncome).toLocaleString()}</p></div>
-                    <div><label className="text-sm text-gray-600 mb-1 block flex items-center gap-2"><DollarSign className="w-4 h-4" />Taxable Amount</label><p className="text-lg font-semibold text-orange-600">৳{Number(taxpayerTaxData[selectedTaxpayer]. taxableAmount).toLocaleString()}</p></div>
+                    <div><label className="text-sm text-gray-600 mb-1 block flex items-center gap-2"><DollarSign className="w-4 h-4" />Taxable Amount</label><p className="text-lg font-semibold text-orange-600">৳{Number(taxpayerTaxData[selectedTaxpayer].taxableAmount).toLocaleString()}</p></div>
                     <div><label className="text-sm text-gray-600 mb-1 block">Tax Category</label><p className="text-lg font-medium">{taxpayerTaxData[selectedTaxpayer].taxCategory}</p></div>
                     <div><label className="text-sm text-gray-600 mb-1 block">Tax Type</label><p className="text-lg font-semibold text-purple-600">{taxpayerTaxData[selectedTaxpayer].taxType}</p></div>
                   </div>
@@ -458,11 +451,22 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm mb-2 font-medium">First Name *</label><input type="text" value={editedProfile.firstName} onChange={(e) => setEditedProfile({...editedProfile, firstName: e.target.value})} className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-purple-400" /></div>
-                <div><label className="block text-sm mb-2 font-medium">Last Name *</label><input type="text" value={editedProfile.lastName} onChange={(e) => setEditedProfile({...editedProfile, lastName: e.target. value})} className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-purple-400" /></div>
-                <div><label className="block text-sm mb-2 font-medium">Branch *</label><input type="text" value={editedProfile.branch} onChange={(e) => setEditedProfile({...editedProfile, branch: e.target.value})} className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-purple-400" /></div>
-                <div><label className="block text-sm mb-2 font-medium">Email *</label><input type="email" value={editedProfile.email} onChange={(e) => setEditedProfile({...editedProfile, email: e.target.value})} className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-purple-400" /></div>
-                <div><label className="block text-sm mb-2 font-medium">Phone *</label><input type="tel" value={editedProfile.phone} onChange={(e) => setEditedProfile({...editedProfile, phone: e.target.value})} className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-purple-400" /></div>
+                <div>
+                  <label className="block text-sm mb-2 font-medium">First Name *</label>
+                  <input type="text" value={editedProfile.firstName} onChange={(e) => setEditedProfile({ ...editedProfile, firstName: e.target.value })} className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-purple-400" />
+                </div>
+                <div>
+                  <label className="block text-sm mb-2 font-medium">Last Name *</label>
+                  <input type="text" value={editedProfile.lastName} onChange={(e) => setEditedProfile({ ...editedProfile, lastName: e.target.value })} className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-purple-400" />
+                </div>
+                <div>
+                  <label className="block text-sm mb-2 font-medium">Branch *</label>
+                  <input type="text" value={editedProfile.branch} onChange={(e) => setEditedProfile({ ...editedProfile, branch: e.target.value })} className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-purple-400" />
+                </div>
+                <div>
+                  <label className="block text-sm mb-2 font-medium">Phone *</label>
+                  <input type="tel" value={editedProfile.phone} onChange={(e) => setEditedProfile({ ...editedProfile, phone: e.target.value })} className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-purple-400" />
+                </div>
               </div>
               <div className="flex gap-3 pt-4">
                 <button onClick={handleSaveProfile} className="flex-1 py-3 rounded-lg bg-purple-600 text-white hover:opacity-90 font-semibold flex items-center justify-center gap-2">
