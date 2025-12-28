@@ -15,7 +15,7 @@ interface AuditLog {
   status?:  string;
 }
 
-export function AuditLogs() {
+export function AuditLogs({ highlightAuditId }: { highlightAuditId?: string }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('All Types');
   const [currentPage, setCurrentPage] = useState(1);
@@ -412,7 +412,12 @@ export function AuditLogs() {
             const statusColor = log.status ? getStatusColor(log.status) : null;
 
             return (
-              <div key={log.id} className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden hover:shadow-lg transition-all">
+              <div
+                key={log.id}
+                className={`bg-white rounded-lg shadow border overflow-hidden hover:shadow-lg transition-all
+                  ${highlightAuditId === log.id ? 'border-4 border-red-600 bg-red-50 animate-pulse' : 'border-gray-200'}`}
+                onAnimationEnd={() => {/* Optionally clear highlight after animation */}}
+              >
                 <div className="p-6">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: typeColor.bg }}>

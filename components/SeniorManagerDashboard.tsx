@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   Home, Users, Shield, HelpCircle, LogOut, UserPlus, Edit, Trash2,
-  TrendingUp, TrendingDown, UserCog, FileText, CheckCircle, XCircle, MapPin, User, Lock
+  TrendingUp, TrendingDown, UserCog, FileText, CheckCircle, XCircle, MapPin, User, Lock, Bell
 } from 'lucide-react';
 
 interface UserType {
@@ -33,7 +33,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
     { id: '1003', firstName: 'Nadia', lastName: 'Islam', rank: 'Assistant', branch: 'Zindabazar' },
     { id: '1004', firstName: 'Fahim', lastName: 'Hossain', rank: 'Inspector', branch: 'New Market' }
   ]);
-  const [newOfficer, setNewOfficer] = useState({ firstName: '', lastName: '', rank: 'Inspector', branch: '' });
+  const [newOfficer, setNewOfficer] = useState({ id: '', firstName: '', lastName: '', rank: 'Inspector', branch: '', houseNo: '', street: '', city: '', zipCode: '', password: '' });
   const [showAddOfficer, setShowAddOfficer] = useState(false);
 
   // Edit officer logic
@@ -88,17 +88,50 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
   const [showProfilePassModal, setShowProfilePassModal] = useState(false);
   const [profileNewPassword, setProfileNewPassword] = useState('');
 
+  // --- Notification Logic ---
+  // Simulate notifications from audit logs (password changes, ticket replies, etc.)
+  const [notifications, setNotifications] = useState([
+    // Example notifications (in real app, generate from audit logs)
+    { id: '4001', type: 'password_change', text: 'Rahim Uddin changed password', relatedType: 'officer_password_change', relatedId: '4001', unread: true },
+    { id: '1001', type: 'ticket_reply', text: 'Rahim Uddin replied to ticket #300 for Abul Kalam', relatedType: 'ticket_reply', relatedId: '1001', unread: true },
+    { id: '3001', type: 'profile_change', text: 'Rahim Uddin updated his officer profile', relatedType: 'officer_profile_change', relatedId: '3001', unread: true },
+    // ...add more as needed...
+  ]);
+  const [showNoticeModal, setShowNoticeModal] = useState(false);
+
+  // Highlight audit log entry when navigating from notification
+  const [highlightAuditId, setHighlightAuditId] = useState<string | null>(null);
+
+  // Handle notification click: go to audit logs and highlight entry
+  function handleNotificationClick(notif: any) {
+    setActiveView('audit-logs');
+    setShowNoticeModal(false);
+    setHighlightAuditId(notif.relatedId);
+    setNotifications(notifications.map(n => n.id === notif.id ? { ...n, unread: false } : n));
+  }
+
   // Officer actions
   const handleEditOfficer = (officer: any) => {
     setSelectedOfficer(officer);
-    setNewOfficer({ firstName: officer.firstName, lastName: officer.lastName, rank: officer.rank, branch: officer.branch });
+    setNewOfficer({
+      id: officer.id || '',
+      firstName: officer.firstName || '',
+      lastName: officer.lastName || '',
+      rank: officer.rank || 'Inspector',
+      branch: officer.branch || '',
+      houseNo: officer.houseNo || '',
+      street: officer.street || '',
+      city: officer.city || '',
+      zipCode: officer.zipCode || '',
+      password: officer.password || ''
+    });
     setShowEditOfficer(true);
   };
   const handleUpdateOfficer = () => {
     setJuniorOfficers(juniorOfficers.map(off => off.id === selectedOfficer.id ? { ...off, ...newOfficer } : off));
     setShowEditOfficer(false);
     setSelectedOfficer(null);
-    setNewOfficer({ firstName: '', lastName: '', rank: 'Inspector', branch: '' });
+    setNewOfficer({ id: '', firstName: '', lastName: '', rank: 'Inspector', branch: '', houseNo: '', street: '', city: '', zipCode: '', password: '' });
   };
   const rankOrder = ['Assistant', 'Officer', 'Inspector'];
   const handlePromote = (officer: any) => {
@@ -167,8 +200,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
         <div className="p-4 border-t border-gray-200">
           <button
             onClick={onLogout}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 font-semibold rounded-lg text-white transition-all hover:opacity-90 shadow-md"
-            style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 font-semibold rounded-lg text-white transition-all hover:bg-red-700 shadow-md bg-red-600"
           >
             <LogOut className="w-5 h-5" />
             <span>Logout</span>
@@ -184,9 +216,23 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
               <p className="text-sm text-gray-600">Rank: {profile.rank} | Branch: {profile.branch}</p>
             </div>
             <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm font-semibold">{profile.firstName} {profile.lastName}</p>
-                <p className="text-xs text-gray-500">Officer ID: {profile.id}</p>
+              {/* Notification button before avatar */}
+              <button
+                className="relative flex items-center justify-center w-8 h-8 rounded-full bg-red-50 hover:bg-red-100"
+                onClick={() => setShowNoticeModal(true)}
+                title="Notifications"
+              >
+                <Bell className="w-5 h-5 text-red-700" />
+                {notifications.filter(n => n.unread).length > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-5 px-1 bg-red-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                    {notifications.filter(n => n.unread).length}
+                  </span>
+                )}
+              </button>
+              {/* Officer info: name above, ID below */}
+              <div className="text-right flex flex-col items-end gap-0">
+                <p className="text-sm font-semibold">{profile.firstName} {profile.lastName}.</p>
+                <p className="text-xs text-gray-500 mt-1">Officer ID: {profile.id}</p>
               </div>
               <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: '#c62828' }}>
                 {profile.firstName[0]}{profile.lastName[0]}
@@ -215,7 +261,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
             />
           )}
           {activeView === 'tax-list' && <TaxListTable comprehensiveTaxData={comprehensiveTaxData} />}
-          {activeView === 'audit-logs' && <AuditLogsComponent />}
+          {activeView === 'audit-logs' && <AuditLogsComponent highlightAuditId={highlightAuditId} setHighlightAuditId={setHighlightAuditId} />}
           {/* --- Profile Section --- */}
           {activeView === 'profile' && (
             <div className="max-w-4xl mx-auto grid gap-6 mt-6 pb-4">
@@ -245,7 +291,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
                   </button>
                   <button
                     onClick={() => { setShowProfilePassModal(true); setProfileNewPassword(""); }}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-800 mt-2"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 mt-2"
                   >
                     <Lock className="w-4 h-4" /> Change Password
                   </button>
@@ -333,55 +379,185 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
             onSave={handleUpdateTaxpayer}
           />
         )}
+        {/* Notice Modal */}
+        {showNoticeModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
+            <div className="bg-white p-8 rounded-xl max-w-md w-full shadow-lg relative">
+              <button onClick={() => setShowNoticeModal(false)} className="absolute right-2 top-2 hover:bg-red-100 rounded-full p-2">
+                <XCircle className="w-5 h-5 text-red-700" />
+              </button>
+              <h3 className="text-lg font-bold mb-6 text-red-700 flex items-center gap-2">
+                <Bell className="w-5 h-5" /> Notifications
+              </h3>
+              <div className="space-y-4">
+                {notifications.length === 0 && <div className="text-gray-500">No notifications.</div>}
+                {notifications.map(notif => (
+                  <button
+                    key={notif.id}
+                    className={`w-full text-left px-4 py-3 rounded-lg border flex items-center gap-3 transition-all
+                      ${notif.unread ? 'bg-red-50 border-red-200 font-semibold text-red-700' : 'bg-white border-gray-200 text-gray-700'}`}
+                    onClick={() => handleNotificationClick(notif)}
+                  >
+                    <Bell className="w-4 h-4" />
+                    <span>{notif.text}</span>
+                    <span className="ml-auto text-xs text-gray-400">View</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
 }
 
-// OfficerAddModal component definition
+// OfficerManagement Table (red theme, all officer fields shown)
+function OfficerManagement({ juniorOfficers, setShowAddOfficer, handleEditOfficer, handlePromote, handleDemote, handleDeleteOfficer }: any) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-xl font-bold text-red-700">Manage Junior Officers</h3>
+        <button
+          onClick={() => setShowAddOfficer(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold bg-red-600 hover:bg-red-700"
+        >
+          <UserPlus className="w-4 h-4" />
+          Add Officer
+        </button>
+      </div>
+      <div className="bg-white rounded-lg shadow border border-red-200 overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-red-50 border-b border-red-200">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Officer ID</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">First Name</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Last Name</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Rank</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Branch</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">House No</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Street</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">City</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Zip Code</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Password</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {juniorOfficers.map((officer: any) => (
+              <tr key={officer.id} className="border-b border-red-100 hover:bg-red-50">
+                <td className="px-4 py-3 font-semibold text-red-800">{officer.id}</td>
+                <td className="px-4 py-3">{officer.firstName}</td>
+                <td className="px-4 py-3">{officer.lastName}</td>
+                <td className="px-4 py-3">{officer.rank}</td>
+                <td className="px-4 py-3">{officer.branch}</td>
+                <td className="px-4 py-3">{officer.houseNo || ''}</td>
+                <td className="px-4 py-3">{officer.street || ''}</td>
+                <td className="px-4 py-3">{officer.city || ''}</td>
+                <td className="px-4 py-3">{officer.zipCode || ''}</td>
+                <td className="px-4 py-3">{officer.password || ''}</td>
+                <td className="px-4 py-3 flex gap-2">
+                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Edit" onClick={() => handleEditOfficer(officer)}>
+                    <Edit className="w-4 h-4 text-red-700" />
+                  </button>
+                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Promote" onClick={() => handlePromote(officer)}>
+                    <TrendingUp className="w-4 h-4 text-red-700" />
+                  </button>
+                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Demote" onClick={() => handleDemote(officer)}>
+                    <TrendingDown className="w-4 h-4 text-red-700" />
+                  </button>
+                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Delete" onClick={() => handleDeleteOfficer(officer)}>
+                    <Trash2 className="w-4 h-4 text-red-700" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// OfficerAddModal component definition (all officer fields, red theme)
 function OfficerAddModal({ onClose, newOfficer, setNewOfficer, setJuniorOfficers, juniorOfficers, isEdit = false, onSave }: any) {
   function handleAddOfficer() {
-    if (!newOfficer.firstName || !newOfficer.lastName || !newOfficer.rank || !newOfficer.branch) {
+    if (
+      !newOfficer.id ||
+      !newOfficer.firstName ||
+      !newOfficer.lastName ||
+      !newOfficer.rank ||
+      !newOfficer.branch ||
+      !newOfficer.houseNo ||
+      !newOfficer.street ||
+      !newOfficer.city ||
+      !newOfficer.zipCode ||
+      !newOfficer.password
+    ) {
       alert('Please fill all fields');
       return;
     }
     setJuniorOfficers([
       ...juniorOfficers,
       {
-        id: (Math.floor(Math.random() * 10000)).toString(),
+        id: newOfficer.id,
         ...newOfficer
       }
     ]);
-    setNewOfficer({ firstName: '', lastName: '', rank: 'Inspector', branch: '' });
+    setNewOfficer({
+      id: '', firstName: '', lastName: '', rank: 'Inspector', branch: '', houseNo: '', street: '', city: '', zipCode: '', password: ''
+    });
     onClose();
   }
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-xl max-w-md w-full shadow-lg relative">
-        <button onClick={onClose} className="absolute right-2 top-2 hover:bg-gray-200 rounded-full p-2">
-          <XCircle className="w-5 h-5 text-gray-600" />
+      <div className="bg-white p-8 rounded-xl max-w-xl w-full shadow-lg relative">
+        <button onClick={onClose} className="absolute right-2 top-2 hover:bg-red-100 rounded-full p-2">
+          <XCircle className="w-5 h-5 text-red-700" />
         </button>
         <h3 className="text-lg font-bold mb-6 text-red-700">{isEdit ? "Edit Officer" : "Add New Officer"}</h3>
         <div className="grid grid-cols-2 gap-4">
+          {!isEdit && (
+            <div>
+              <label className="text-xs text-red-700">Officer ID</label>
+              <input className="p-2 border border-red-200 rounded w-full" value={newOfficer.id || ''} onChange={e => setNewOfficer({ ...newOfficer, id: e.target.value })} />
+            </div>
+          )}
           <div>
-            <label className="text-xs text-gray-600">First Name</label>
-            <input className="p-2 border rounded w-full" value={newOfficer.firstName} onChange={e => setNewOfficer({ ...newOfficer, firstName: e.target.value })} />
+            <label className="text-xs text-red-700">First Name</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newOfficer.firstName} onChange={e => setNewOfficer({ ...newOfficer, firstName: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-gray-600">Last Name</label>
-            <input className="p-2 border rounded w-full" value={newOfficer.lastName} onChange={e => setNewOfficer({ ...newOfficer, lastName: e.target.value })} />
+            <label className="text-xs text-red-700">Last Name</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newOfficer.lastName} onChange={e => setNewOfficer({ ...newOfficer, lastName: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-gray-600">Rank</label>
-            <select className="p-2 border rounded w-full" value={newOfficer.rank} onChange={e => setNewOfficer({ ...newOfficer, rank: e.target.value })}>
-              <option value="Inspector">Inspector</option>
-              <option value="Officer">Officer</option>
-              <option value="Assistant">Assistant</option>
-            </select>
+            <label className="text-xs text-red-700">Rank</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newOfficer.rank} onChange={e => setNewOfficer({ ...newOfficer, rank: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-gray-600">Branch</label>
-            <input className="p-2 border rounded w-full" value={newOfficer.branch} onChange={e => setNewOfficer({ ...newOfficer, branch: e.target.value })} />
+            <label className="text-xs text-red-700">Branch</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newOfficer.branch} onChange={e => setNewOfficer({ ...newOfficer, branch: e.target.value })} />
+          </div>
+          <div>
+            <label className="text-xs text-red-700">House No</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newOfficer.houseNo || ''} onChange={e => setNewOfficer({ ...newOfficer, houseNo: e.target.value })} />
+          </div>
+          <div>
+            <label className="text-xs text-red-700">Street</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newOfficer.street || ''} onChange={e => setNewOfficer({ ...newOfficer, street: e.target.value })} />
+          </div>
+          <div>
+            <label className="text-xs text-red-700">City</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newOfficer.city || ''} onChange={e => setNewOfficer({ ...newOfficer, city: e.target.value })} />
+          </div>
+          <div>
+            <label className="text-xs text-red-700">Zip Code</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newOfficer.zipCode || ''} onChange={e => setNewOfficer({ ...newOfficer, zipCode: e.target.value })} />
+          </div>
+          <div>
+            <label className="text-xs text-red-700">Password</label>
+            <input className="p-2 border border-red-200 rounded w-full" type="password" value={newOfficer.password || ''} onChange={e => setNewOfficer({ ...newOfficer, password: e.target.value })} />
           </div>
         </div>
         <button
@@ -395,37 +571,37 @@ function OfficerAddModal({ onClose, newOfficer, setNewOfficer, setJuniorOfficers
   );
 }
 
-// Tax List Table: Only show requested columns, all blue
+// Tax List Table: Only show requested columns, all red
 function TaxListTable({ comprehensiveTaxData }: { comprehensiveTaxData: Array<any> }) {
   return (
     <div>
       <div className="mb-6">
-        <h3 className="text-xl font-bold mb-1 text-blue-700">Tax List - All Taxpayers</h3>
+        <h3 className="text-xl font-bold mb-1 text-red-700">Tax List - All Taxpayers</h3>
         <p className="text-sm text-gray-600">Overview of taxpayers with payment confirmations.</p>
       </div>
-      <div className="bg-white rounded-lg shadow border border-blue-200 overflow-x-auto">
+      <div className="bg-white rounded-lg shadow border border-red-200 overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-blue-50 border-b-2 border-blue-200">
+          <thead className="bg-red-50 border-b-2 border-red-200">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">TIN</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Name</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Gender</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Return ID</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Assessment Year</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Category</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Taxable Amount</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">TIN</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Name</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Gender</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Return ID</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Assessment Year</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Category</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Taxable Amount</th>
             </tr>
           </thead>
           <tbody>
             {comprehensiveTaxData.map((record: any) => (
-              <tr key={record.tin} className="border-b border-blue-100 hover:bg-blue-50">
-                <td className="px-4 py-3 font-semibold text-blue-800">{record.tin}</td>
+              <tr key={record.tin} className="border-b border-red-100 hover:bg-red-50">
+                <td className="px-4 py-3 font-semibold text-red-800">{record.tin}</td>
                 <td className="px-4 py-3">{record.taxpayerName}</td>
                 <td className="px-4 py-3">{record.gender}</td>
                 <td className="px-4 py-3">#{record.returnId}</td>
                 <td className="px-4 py-3">{record.assessmentYear}</td>
                 <td className="px-4 py-3">{record.category || '-'}</td>
-                <td className="px-4 py-3 font-bold text-blue-700">৳{Number(record.taxableAmount).toLocaleString()}</td>
+                <td className="px-4 py-3 font-bold text-red-700">৳{Number(record.taxableAmount).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
@@ -440,40 +616,41 @@ function TaxpayerManagement({ taxpayers, setShowAddTaxpayer, handleEditTaxpayer,
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold">Manage Taxpayers</h3>
+        <h3 className="text-xl font-bold text-red-700">Manage Taxpayers</h3>
         <button
           onClick={() => setShowAddTaxpayer(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold bg-blue-600 hover:bg-blue-700"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold bg-red-600 hover:bg-red-700"
         >
           <UserPlus className="w-4 h-4" />
           Add Taxpayer
         </button>
       </div>
-      <div className="bg-white rounded-lg shadow border border-blue-200 overflow-x-auto">
+      <div className="bg-white rounded-lg shadow border border-red-200 overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-blue-50 border-b border-blue-200">
+          <thead className="bg-red-50 border-b border-red-200">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">TIN</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">First Name</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Last Name</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Date of Birth</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Gender</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">House No</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Street</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">City</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Zip Code</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Username</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Phone 1</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Phone 2</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Phone 3</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Zone Code</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-blue-700">Actions</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">TIN</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">First Name</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Last Name</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Date of Birth</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Gender</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">House No</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Street</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">City</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Zip Code</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Username</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Phone 1</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Phone 2</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Phone 3</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Zone Code</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Password</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Actions</th>
             </tr>
           </thead>
           <tbody>
             {taxpayers.map((taxpayer: any) => (
-              <tr key={taxpayer.id} className="border-b border-blue-100 hover:bg-blue-50">
-                <td className="px-4 py-3 font-semibold text-blue-800">{taxpayer.id}</td>
+              <tr key={taxpayer.id} className="border-b border-red-100 hover:bg-red-50">
+                <td className="px-4 py-3 font-semibold text-red-800">{taxpayer.id}</td>
                 <td className="px-4 py-3">{taxpayer.firstName}</td>
                 <td className="px-4 py-3">{taxpayer.lastName}</td>
                 <td className="px-4 py-3">{taxpayer.dateOfBirth || ''}</td>
@@ -487,12 +664,13 @@ function TaxpayerManagement({ taxpayers, setShowAddTaxpayer, handleEditTaxpayer,
                 <td className="px-4 py-3">{taxpayer.phoneNumber2 || ''}</td>
                 <td className="px-4 py-3">{taxpayer.phoneNumber3 || ''}</td>
                 <td className="px-4 py-3">{taxpayer.zoneCode || ''}</td>
+                <td className="px-4 py-3">{taxpayer.password || ''}</td>
                 <td className="px-4 py-3 flex gap-2">
-                  <button className="p-2 hover:bg-blue-100 rounded-lg border border-blue-200" title="Edit" onClick={() => handleEditTaxpayer(taxpayer)}>
-                    <Edit className="w-4 h-4 text-blue-700" />
+                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Edit" onClick={() => handleEditTaxpayer(taxpayer)}>
+                    <Edit className="w-4 h-4 text-red-700" />
                   </button>
-                  <button className="p-2 hover:bg-blue-100 rounded-lg border border-blue-200" title="Delete" onClick={() => handleDeleteTaxpayer(taxpayer)}>
-                    <Trash2 className="w-4 h-4 text-blue-700" />
+                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Delete" onClick={() => handleDeleteTaxpayer(taxpayer)}>
+                    <Trash2 className="w-4 h-4 text-red-700" />
                   </button>
                 </td>
               </tr>
@@ -504,10 +682,23 @@ function TaxpayerManagement({ taxpayers, setShowAddTaxpayer, handleEditTaxpayer,
   );
 }
 
-// TaxpayerAddModal/Edit Modal (all blue, edit all requested fields, no password)
+// TaxpayerAddModal/Edit Modal (all red, edit all requested fields, including password)
 function TaxpayerAddModal({ onClose, newTaxpayer, setNewTaxpayer, setTaxpayers, taxpayers, isEdit = false, onSave }: any) {
   function handleAddTaxpayer() {
-    if (!newTaxpayer.firstName || !newTaxpayer.lastName || !newTaxpayer.gender || !newTaxpayer.city || !newTaxpayer.phoneNumber1 || !newTaxpayer.zoneCode) {
+    if (
+      !newTaxpayer.firstName ||
+      !newTaxpayer.lastName ||
+      !newTaxpayer.dateOfBirth ||
+      !newTaxpayer.gender ||
+      !newTaxpayer.houseNo ||
+      !newTaxpayer.street ||
+      !newTaxpayer.city ||
+      !newTaxpayer.zipCode ||
+      !newTaxpayer.username ||
+      !newTaxpayer.phoneNumber1 ||
+      !newTaxpayer.zoneCode ||
+      !newTaxpayer.password
+    ) {
       alert('Please fill all fields');
       return;
     }
@@ -519,77 +710,81 @@ function TaxpayerAddModal({ onClose, newTaxpayer, setNewTaxpayer, setTaxpayers, 
       }
     ]);
     setNewTaxpayer({
-      firstName: '', lastName: '', dateOfBirth: '', gender: 'Male', houseNo: '', street: '', city: '', zipCode: '', username: '', phoneNumber1: '', phoneNumber2: '', phoneNumber3: '', zoneCode: ''
+      firstName: '', lastName: '', dateOfBirth: '', gender: 'Male', houseNo: '', street: '', city: '', zipCode: '', username: '', phoneNumber1: '', phoneNumber2: '', phoneNumber3: '', zoneCode: '', password: ''
     });
     onClose();
   }
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-xl max-w-2xl w-full shadow-lg relative">
-        <button onClick={onClose} className="absolute right-2 top-2 hover:bg-blue-100 rounded-full p-2">
-          <XCircle className="w-5 h-5 text-blue-700" />
+        <button onClick={onClose} className="absolute right-2 top-2 hover:bg-red-100 rounded-full p-2">
+          <XCircle className="w-5 h-5 text-red-700" />
         </button>
-        <h3 className="text-lg font-bold mb-6 text-blue-700">{isEdit ? "Edit Taxpayer" : "Add New Taxpayer"}</h3>
+        <h3 className="text-lg font-bold mb-6 text-red-700">{isEdit ? "Edit Taxpayer" : "Add New Taxpayer"}</h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-xs text-blue-700">First Name</label>
-            <input className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.firstName} onChange={e => setNewTaxpayer({ ...newTaxpayer, firstName: e.target.value })} />
+            <label className="text-xs text-red-700">First Name</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.firstName} onChange={e => setNewTaxpayer({ ...newTaxpayer, firstName: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-blue-700">Last Name</label>
-            <input className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.lastName} onChange={e => setNewTaxpayer({ ...newTaxpayer, lastName: e.target.value })} />
+            <label className="text-xs text-red-700">Last Name</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.lastName} onChange={e => setNewTaxpayer({ ...newTaxpayer, lastName: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-blue-700">Date of Birth</label>
-            <input className="p-2 border border-blue-200 rounded w-full" type="date" value={newTaxpayer.dateOfBirth || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, dateOfBirth: e.target.value })} />
+            <label className="text-xs text-red-700">Date of Birth</label>
+            <input className="p-2 border border-red-200 rounded w-full" type="date" value={newTaxpayer.dateOfBirth || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, dateOfBirth: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-blue-700">Gender</label>
-            <select className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.gender} onChange={e => setNewTaxpayer({ ...newTaxpayer, gender: e.target.value })}>
+            <label className="text-xs text-red-700">Gender</label>
+            <select className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.gender} onChange={e => setNewTaxpayer({ ...newTaxpayer, gender: e.target.value })}>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
           </div>
           <div>
-            <label className="text-xs text-blue-700">House No</label>
-            <input className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.houseNo || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, houseNo: e.target.value })} />
+            <label className="text-xs text-red-700">House No</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.houseNo || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, houseNo: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-blue-700">Street</label>
-            <input className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.street || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, street: e.target.value })} />
+            <label className="text-xs text-red-700">Street</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.street || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, street: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-blue-700">City</label>
-            <input className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.city} onChange={e => setNewTaxpayer({ ...newTaxpayer, city: e.target.value })} />
+            <label className="text-xs text-red-700">City</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.city} onChange={e => setNewTaxpayer({ ...newTaxpayer, city: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-blue-700">Zip Code</label>
-            <input className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.zipCode || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, zipCode: e.target.value })} />
+            <label className="text-xs text-red-700">Zip Code</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.zipCode || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, zipCode: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-blue-700">Username</label>
-            <input className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.username || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, username: e.target.value })} />
+            <label className="text-xs text-red-700">Username</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.username || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, username: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-blue-700">Phone Number 1</label>
-            <input className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.phoneNumber1} onChange={e => setNewTaxpayer({ ...newTaxpayer, phoneNumber1: e.target.value })} />
+            <label className="text-xs text-red-700">Phone Number 1</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.phoneNumber1} onChange={e => setNewTaxpayer({ ...newTaxpayer, phoneNumber1: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-blue-700">Phone Number 2</label>
-            <input className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.phoneNumber2 || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, phoneNumber2: e.target.value })} />
+            <label className="text-xs text-red-700">Phone Number 2</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.phoneNumber2 || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, phoneNumber2: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-blue-700">Phone Number 3</label>
-            <input className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.phoneNumber3 || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, phoneNumber3: e.target.value })} />
+            <label className="text-xs text-red-700">Phone Number 3</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.phoneNumber3 || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, phoneNumber3: e.target.value })} />
           </div>
           <div>
-            <label className="text-xs text-blue-700">Zone Code</label>
-            <input className="p-2 border border-blue-200 rounded w-full" value={newTaxpayer.zoneCode || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, zoneCode: e.target.value })} />
+            <label className="text-xs text-red-700">Zone Code</label>
+            <input className="p-2 border border-red-200 rounded w-full" value={newTaxpayer.zoneCode || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, zoneCode: e.target.value })} />
+          </div>
+          <div>
+            <label className="text-xs text-red-700">Password</label>
+            <input className="p-2 border border-red-200 rounded w-full" type="password" value={newTaxpayer.password || ''} onChange={e => setNewTaxpayer({ ...newTaxpayer, password: e.target.value })} />
           </div>
         </div>
         <button
-          className="mt-6 w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+          className="mt-6 w-full py-2 bg-red-700 hover:bg-red-800 text-white rounded"
           onClick={isEdit ? onSave : handleAddTaxpayer}
         >
           {isEdit ? "Save Changes" : "Add Taxpayer"}
@@ -599,60 +794,34 @@ function TaxpayerAddModal({ onClose, newTaxpayer, setNewTaxpayer, setTaxpayers, 
   );
 }
 
-// OfficerManagement Table
-function OfficerManagement({ juniorOfficers, setShowAddOfficer, handleEditOfficer, handlePromote, handleDemote, handleDeleteOfficer }: any) {
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold">Manage Junior Officers</h3>
-        <button
-          onClick={() => setShowAddOfficer(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold"
-          style={{ backgroundColor: '#c62828' }}
-        >
-          <UserPlus className="w-4 h-4" />
-          Add Officer
-        </button>
-      </div>
-      <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Officer ID</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Name</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Rank</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Branch</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {juniorOfficers.map((officer: any) => (
-              <tr key={officer.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="px-6 py-4">#{officer.id}</td>
-                <td className="px-6 py-4 font-medium">{officer.firstName} {officer.lastName}</td>
-                <td className="px-6 py-4">{officer.rank}</td>
-                <td className="px-6 py-4">{officer.branch}</td>
-                <td className="px-6 py-4 flex gap-2">
-                  <button className="p-2 hover:bg-blue-50 rounded-lg" title="Edit" onClick={() => handleEditOfficer(officer)}><Edit className="w-4 h-4" style={{ color: '#2F80ED' }} /></button>
-                  <button className="p-2 hover:bg-green-50 rounded-lg" title="Promote" onClick={() => handlePromote(officer)}><TrendingUp className="w-4 h-4" style={{ color: '#2e7d32' }} /></button>
-                  <button className="p-2 hover:bg-orange-50 rounded-lg" title="Demote" onClick={() => handleDemote(officer)}><TrendingDown className="w-4 h-4" style={{ color: '#f57c00' }} /></button>
-                  <button className="p-2 hover:bg-red-50 rounded-lg" title="Delete" onClick={() => handleDeleteOfficer(officer)}><Trash2 className="w-4 h-4" style={{ color: '#c62828' }} /></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
 // Simple AuditLogsComponent placeholder
-function AuditLogsComponent() {
+function AuditLogsComponent({ highlightAuditId, setHighlightAuditId }: { highlightAuditId?: string | null, setHighlightAuditId?: (id: string | null) => void }) {
+  // Dummy logs for demo
+  const logs = [
+    { id: '1', description: 'Rahim Uddin changed password', timestamp: '2024-01-10 10:00' },
+    { id: '2', description: 'Siaam Khan replied to ticket #300', timestamp: '2024-01-11 14:30' },
+    { id: '3', description: 'Nadia Islam updated her profile', timestamp: '2024-01-12 09:15' },
+    // ...more logs
+  ];
+
   return (
     <div className="bg-white rounded-xl shadow border p-8">
-      <h3 className="text-xl font-bold mb-4 text-yellow-700">Audit Logs</h3>
-      <p className="text-gray-600">No audit logs available.</p>
+      <h3 className="text-xl font-bold mb-4 text-red-700">Audit Logs</h3>
+      <p className="text-red-600">No audit logs available.</p>
+      {/* Example: highlight logic */}
+      {/* Replace with your real audit log list rendering */}
+      <div className="mt-6 space-y-2">
+        {logs.map(log => (
+          <div
+            key={log.id}
+            className={`p-4 rounded border ${highlightAuditId === log.id ? 'border-4 border-red-600 bg-red-50' : 'border-gray-200 bg-white'}`}
+            onAnimationEnd={() => setHighlightAuditId && setHighlightAuditId(null)}
+          >
+            <div className="font-bold text-red-700">{log.description}</div>
+            <div className="text-xs text-gray-500">{log.timestamp}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -660,7 +829,7 @@ function AuditLogsComponent() {
 // Simple DashboardCards component for displaying stats
 function DashboardCards({ stats }: { stats: { totalOfficers: number; totalTaxpayers: number; pendingAudits: number; totalRevenue: string } }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div className="bg-white rounded-xl shadow border p-6 flex flex-col items-center">
         <Users className="w-8 h-8 text-red-700 mb-2" />
         <div className="text-2xl font-bold">{stats.totalOfficers}</div>
@@ -670,11 +839,6 @@ function DashboardCards({ stats }: { stats: { totalOfficers: number; totalTaxpay
         <UserCog className="w-8 h-8 text-blue-700 mb-2" />
         <div className="text-2xl font-bold">{stats.totalTaxpayers}</div>
         <div className="text-gray-600 text-sm">Total Taxpayers</div>
-      </div>
-      <div className="bg-white rounded-xl shadow border p-6 flex flex-col items-center">
-        <Shield className="w-8 h-8 text-yellow-600 mb-2" />
-        <div className="text-2xl font-bold">{stats.pendingAudits}</div>
-        <div className="text-gray-600 text-sm">Pending Audits</div>
       </div>
       <div className="bg-white rounded-xl shadow border p-6 flex flex-col items-center">
         <TrendingUp className="w-8 h-8 text-green-700 mb-2" />
@@ -691,7 +855,7 @@ function SidebarBtn({ active, icon, onClick, label }: { active: boolean, icon: a
     <button
       onClick={onClick}
       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all
-                  ${active ? 'text-white shadow-md' : 'text-gray-700 hover:bg-red-50'}`}
+                  ${active ? 'text-white shadow-md' : 'text-red-700 hover:bg-red-50'}`}
       style={{ background: active ? 'linear-gradient(135deg, #c62828 0%, #b71c1c 100%)' : 'transparent' }}
     >
       {icon}
