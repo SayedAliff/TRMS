@@ -48,9 +48,17 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
 
   const stats = {
     totalReturns: 3,
-    pendingPayments: 1,
     openTickets: supportNotifications
   };
+
+  // Calculate total paid amount (simulate from payment history or returns)
+  // For demo, let's assume 3 returns with fixed paid amounts:
+  const paidReturns = [
+    { amount: 50000 },
+    { amount: 120000 },
+    { amount: 35000 }
+  ];
+  const totalPaid = paidReturns.reduce((sum, r) => sum + r.amount, 0);
 
   const handleNotificationClick = () => {
     setActiveView('support');
@@ -104,6 +112,12 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
     setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
 
+  // Payment handler: simulate direct payment and notify officer
+  const handleDirectPayment = () => {
+    alert('Payment successful!\n\nYour payment information has been sent to the tax officer for confirmation.');
+    // Here you could trigger a notification or update state as needed
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
@@ -111,32 +125,32 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
           <h1 className="text-lg font-semibold text-blue-700">Taxpayer Portal</h1>
         </div>
         <nav className="flex-1 p-4">
-          <button onClick={() => setActiveView('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'dashboard' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-gray-700 hover:bg-blue-50'}`}>
+          <button onClick={() => setActiveView('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'dashboard' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
             <Home className="w-5 h-5" />
             <span>Dashboard</span>
           </button>
-          <button onClick={() => setActiveView('file-return')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'file-return' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-gray-700 hover:bg-blue-50'}`}>
+          <button onClick={() => setActiveView('file-return')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'file-return' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
             <FileText className="w-5 h-5" />
             <span>File Tax Return</span>
           </button>
-          <button onClick={() => setActiveView('payment-history')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'payment-history' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-gray-700 hover:bg-blue-50'}`}>
+          <button onClick={() => setActiveView('payment-history')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'payment-history' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
             <FileText className="w-5 h-5" />
             <span>Payment History</span>
           </button>
-          <button onClick={() => setActiveView('support')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'support' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-gray-700 hover:bg-blue-50'}`}>
+          <button onClick={() => setActiveView('support')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'support' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
             <HelpCircle className="w-5 h-5" />
             <span>Support</span>
             {supportNotifications > 0 && (
-              <span className="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{supportNotifications}</span>
+              <span className="ml-auto bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">{supportNotifications}</span>
             )}
           </button>
-          <button onClick={() => setActiveView('profile')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'profile' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-gray-700 hover:bg-blue-50'}`}>
+          <button onClick={() => setActiveView('profile')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'profile' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
             <UserIcon className="w-5 h-5" />
             <span>Profile</span>
           </button>
         </nav>
         <div className="p-4 border-t border-gray-200">
-          <button onClick={onLogout} className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-purple-800 text-white shadow hover:opacity-90 transition-all">
+          <button onClick={onLogout} className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow hover:opacity-90 transition-all">
             <LogOut className="w-5 h-5" />
             <span>Logout</span>
           </button>
@@ -191,7 +205,7 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
         <div className="p-8">
           {activeView === 'dashboard' && (
             <>
-              <div className="grid grid-cols-1 md: grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
@@ -200,17 +214,6 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Total Returns Filed</p>
                       <p className="text-3xl font-bold text-blue-600">{stats.totalReturns}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
-                      <FileText className="w-6 h-6 text-orange-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">Pending Payments</p>
-                      <p className="text-3xl font-bold text-orange-600">{stats. pendingPayments}</p>
                     </div>
                   </div>
                 </div>
@@ -225,7 +228,19 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
                     </div>
                   </div>
                 </div>
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-blue-600 flex items-center justify-center">
+                      <FileText className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">Total Paid</p>
+                      <p className="text-3xl font-bold text-blue-700">৳{totalPaid.toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
+              {/* ...remove Pay Tax Now button... */}
             </>
           )}
 
@@ -247,7 +262,7 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
                   <h3 className="text-xl font-semibold">My Profile</h3>
                   <button
                     onClick={() => setShowEditProfile(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:opacity-90 transition-all font-medium"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all font-medium"
                   >
                     <Edit className="w-4 h-4" />
                     Edit Details
@@ -294,7 +309,7 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
                   <h3 className="text-xl font-semibold">Security</h3>
                   <button
                     onClick={() => setShowChangePassword(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white hover: opacity-90 transition-all font-medium"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all font-medium"
                   >
                     <Lock className="w-4 h-4" />
                     Change Password
@@ -365,11 +380,11 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
                 </div>
               </div>
               <div className="flex gap-3 pt-4">
-                <button onClick={handleSaveProfile} className="flex-1 py-3 rounded-lg bg-blue-600 text-white hover:opacity-90 transition-all font-semibold flex items-center justify-center gap-2">
+                <button onClick={handleSaveProfile} className="flex-1 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all font-semibold flex items-center justify-center gap-2">
                   <Save className="w-4 h-4" />
                   Save Changes
                 </button>
-                <button onClick={() => setShowEditProfile(false)} className="flex-1 py-3 rounded-lg border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all font-semibold">
+                <button onClick={() => setShowEditProfile(false)} className="flex-1 py-3 rounded-lg border-2 border-blue-600 text-blue-700 hover:bg-blue-50 transition-all font-semibold">
                   Cancel
                 </button>
               </div>
@@ -407,11 +422,11 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
                 </div>
               )}
               <div className="flex gap-3 pt-4">
-                <button onClick={handleChangePassword} disabled={!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword} className="flex-1 py-3 rounded-lg bg-purple-600 text-white hover: opacity-90 transition-all disabled:opacity-50 font-semibold flex items-center justify-center gap-2">
+                <button onClick={handleChangePassword} disabled={!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword} className="flex-1 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all disabled:opacity-50 font-semibold flex items-center justify-center gap-2">
                   <Lock className="w-4 h-4" />
                   Change Password
                 </button>
-                <button onClick={() => setShowChangePassword(false)} className="px-6 py-3 rounded-lg border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all font-semibold">
+                <button onClick={() => setShowChangePassword(false)} className="px-6 py-3 rounded-lg border-2 border-blue-600 text-blue-700 hover:bg-blue-50 transition-all font-semibold">
                   Cancel
                 </button>
               </div>
