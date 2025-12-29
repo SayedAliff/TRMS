@@ -110,6 +110,14 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
     setNotifications(notifications.map(n => n.id === notif.id ? { ...n, unread: false } : n));
   }
 
+  // Mark all notifications as read when opening the modal
+  function handleOpenNoticeModal() {
+    setShowNoticeModal(true);
+    if (notifications.some(n => n.unread)) {
+      setNotifications(notifications.map(n => ({ ...n, unread: false })));
+    }
+  }
+
   // Officer actions
   const handleEditOfficer = (officer: any) => {
     setSelectedOfficer(officer);
@@ -219,7 +227,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
               {/* Notification button before avatar */}
               <button
                 className="relative flex items-center justify-center w-8 h-8 rounded-full bg-red-50 hover:bg-red-100"
-                onClick={() => setShowNoticeModal(true)}
+                onClick={handleOpenNoticeModal}
                 title="Notifications"
               >
                 <Bell className="w-5 h-5 text-red-700" />
@@ -590,6 +598,8 @@ function TaxListTable({ comprehensiveTaxData }: { comprehensiveTaxData: Array<an
               <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Assessment Year</th>
               <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Category</th>
               <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Taxable Amount</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Payment Status</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Confirmed By</th>
             </tr>
           </thead>
           <tbody>
@@ -602,6 +612,8 @@ function TaxListTable({ comprehensiveTaxData }: { comprehensiveTaxData: Array<an
                 <td className="px-4 py-3">{record.assessmentYear}</td>
                 <td className="px-4 py-3">{record.category || '-'}</td>
                 <td className="px-4 py-3 font-bold text-red-700">৳{Number(record.taxableAmount).toLocaleString()}</td>
+                <td className="px-4 py-3">{record.paymentStatus}</td>
+                <td className="px-4 py-3">{record.paymentStatus === 'Paid' ? `${record.paymentConfirmedByName} (ID: ${record.paymentConfirmedBy})` : '-'}</td>
               </tr>
             ))}
           </tbody>
@@ -796,32 +808,42 @@ function TaxpayerAddModal({ onClose, newTaxpayer, setNewTaxpayer, setTaxpayers, 
 
 // Simple AuditLogsComponent placeholder
 function AuditLogsComponent({ highlightAuditId, setHighlightAuditId }: { highlightAuditId?: string | null, setHighlightAuditId?: (id: string | null) => void }) {
-  // Dummy logs for demo
+  // Example logs (should be replaced with real audit logs from props or state)
   const logs = [
-    { id: '1', description: 'Rahim Uddin changed password', timestamp: '2024-01-10 10:00' },
-    { id: '2', description: 'Siaam Khan replied to ticket #300', timestamp: '2024-01-11 14:30' },
-    { id: '3', description: 'Nadia Islam updated her profile', timestamp: '2024-01-12 09:15' },
-    // ...more logs
+    { id: '4001', description: 'Rahim Uddin changed password', timestamp: '2024-01-10 10:00' },
+    { id: '1001', description: 'Rahim Uddin replied to ticket #300 for Abul Kalam', timestamp: '2024-01-11 14:30' },
+    { id: '3001', description: 'Rahim Uddin updated his officer profile', timestamp: '2024-01-12 09:15' },
+    // ...add more as needed...
   ];
 
   return (
     <div className="bg-white rounded-xl shadow border p-8">
       <h3 className="text-xl font-bold mb-4 text-red-700">Audit Logs</h3>
-      <p className="text-red-600">No audit logs available.</p>
-      {/* Example: highlight logic */}
-      {/* Replace with your real audit log list rendering */}
-      <div className="mt-6 space-y-2">
-        {logs.map(log => (
-          <div
-            key={log.id}
-            className={`p-4 rounded border ${highlightAuditId === log.id ? 'border-4 border-red-600 bg-red-50' : 'border-gray-200 bg-white'}`}
-            onAnimationEnd={() => setHighlightAuditId && setHighlightAuditId(null)}
-          >
-            <div className="font-bold text-red-700">{log.description}</div>
-            <div className="text-xs text-gray-500">{log.timestamp}</div>
-          </div>
-        ))}
-      </div>
+      {logs.length === 0 ? (
+        <p className="text-red-600">No audit logs available.</p>
+      ) : (
+        <div className="mt-6 space-y-2">
+          {logs.map(log => {
+            const isHighlighted = highlightAuditId === log.id;
+            return (
+              <div
+                key={log.id}
+                className={`p-4 rounded border transition-all duration-300 ${isHighlighted ? 'border-4 border-red-600 bg-red-50 animate-pulse' : 'border-gray-200 bg-white'}`}
+              >
+                <div className="font-bold text-red-700">{log.description}</div>
+                <div className="text-xs text-gray-500">{log.timestamp}</div>
+                {isHighlighted && (
+                  <div
+                    onAnimationEnd={() => setHighlightAuditId && setHighlightAuditId(null)}
+                    className="animate-pulse"
+                    style={{ height: 0, width: 0, overflow: 'hidden' }}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

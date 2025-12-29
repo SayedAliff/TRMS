@@ -9,6 +9,8 @@ export function PaymentHistory() {
     { id: '90004', year: '2021-2022', amount: '2,000', taxType: 'Property Tax', method: 'Nagad', date: '15-FEB-2024', status: 'Failed' },
   ];
 
+  const [latestStatus, setLatestStatus] = useState('Pending');
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Completed':
@@ -58,7 +60,7 @@ export function PaymentHistory() {
             </tr>
           </thead>
           <tbody>
-            {paymentHistory.map((payment) => {
+            {paymentHistory.map((payment, idx) => {
               const statusColor = getStatusColor(payment.status);
               return (
                 <tr key={payment.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
@@ -72,13 +74,13 @@ export function PaymentHistory() {
                     <span
                       className="inline-block px-3 py-1 rounded-full text-sm"
                       style={{
-                        backgroundColor: statusColor.bg,
-                        color: statusColor.text,
+                        backgroundColor: idx === 0 ? getStatusColor(latestStatus).bg : statusColor.bg,
+                        color: idx === 0 ? getStatusColor(latestStatus).text : statusColor.text,
                         fontFamily: 'Inter, sans-serif',
                         fontWeight: 500
                       }}
                     >
-                      {payment.status}
+                      {idx === 0 ? latestStatus : payment.status}
                     </span>
                   </td>
                 </tr>

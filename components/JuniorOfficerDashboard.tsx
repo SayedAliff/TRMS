@@ -86,18 +86,42 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     { id: '5004', firstName: 'Eva', lastName: 'Rahman', gender:   'Female', city: 'Rajshahi', phoneNumber1: '01555555555', zoneName: 'Rajshahi Zone' },
   ]);
 
-  const taxpayerTaxData = [
+  const [taxpayerTaxData, setTaxpayerTaxData] = useState([
     { tin: '5000', firstName: 'Abul', lastName: 'Kalam', gender: 'Male', city:   'Dhaka', phoneNumber1: '01711111111', zoneName: 'Dhaka North', zoneCode: '100', returnId: '200', assessmentYear: '2024-2025', totalIncome: '500000', taxableAmount: '50000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Salaried Individual', officerId: '1000', returnStatus: 'Completed' },
     { tin: '5001', firstName: 'Bokul', lastName: 'Mia', gender: 'Male', city:  'Dhaka', phoneNumber1: '01922222222', zoneName: 'Dhaka North', zoneCode: '100', returnId: '201', assessmentYear: '2024-2025', totalIncome: '1200000', taxableAmount: '120000', filingDate: '13-DEC-2025', taxCategory: 'Corporate', taxType: 'Limited Company', officerId: '1000', returnStatus: 'Completed' },
-    { tin: '5002', firstName: 'Cina', lastName: 'Akter', gender: 'Female', city: 'Chittagong', phoneNumber1: '01733333333', zoneName: 'Chittagong', zoneCode: '101', returnId: '202', assessmentYear: '2024-2025', totalIncome: '350000', taxableAmount: '35000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Business Owner', officerId: '1001', returnStatus: 'Pending' },
+    { tin: '5002', firstName: 'Cina', lastName: 'Akter', gender: 'Female', city: 'Chittagong', phoneNumber1: '01733333333', zoneName: 'Chittagong', zoneCode: '101', returnId: '202', assessmentYear: '2024-2025', totalIncome: '350000', taxableAmount: '35000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Business Owner', officerId: '1001', returnStatus: 'Pending', paymentStatus: 'Pending', paymentConfirmedBy: null, paymentConfirmedByName: null },
     { tin: '5003', firstName: 'David', lastName: 'Roy', gender: 'Male', city: 'Sylhet', phoneNumber1: '01844444444', zoneName: 'Sylhet', zoneCode: '102', returnId: '203', assessmentYear: '2024-2025', totalIncome: '800000', taxableAmount: '80000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Professional', officerId: '1002', returnStatus: 'Completed' },
     { tin: '5004', firstName: 'Eva', lastName: 'Rahman', gender:   'Female', city: 'Rajshahi', phoneNumber1: '01555555555', zoneName: 'Rajshahi', zoneCode: '103', returnId: '204', assessmentYear: '2024-2025', totalIncome: '450000', taxableAmount: '45000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Self Employed', officerId: '1000', returnStatus: 'Completed' }
-  ];
+  ]);
 
   const totalPages = Math.ceil(taxpayerTaxData.length / taxpayersPerPage);
   const startIndex = (currentPage - 1) * taxpayersPerPage;
   const endIndex = startIndex + taxpayersPerPage;
   const currentTaxpayers = taxpayerTaxData.slice(startIndex, endIndex);
+
+  // Handler to submit a tax return for review (set status to Pending)
+  function handleSubmitForReview(tin: string) {
+    setTaxpayerTaxData(prev => prev.map(t =>
+      t.tin === tin ? { ...t, returnStatus: 'Pending' } : t
+    ));
+  }
+
+  // Handler for confirming payment
+  function handleConfirmPayment(tin: string) {
+    setTaxpayerTaxData(prev =>
+      prev.map(t =>
+        t.tin === tin
+          ? {
+              ...t,
+              paymentStatus: 'Paid',
+              paymentConfirmedBy: officerProfile.id,
+              paymentConfirmedByName: officerProfile.firstName + ' ' + officerProfile.lastName
+            }
+          : t
+      )
+    );
+    alert('Payment confirmed! Taxpayer will see status as Paid.');
+  }
 
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -526,6 +550,9 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Taxable Amount</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Filing Date</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Category</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Status</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Payment Status</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -541,9 +568,75 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                           <td className="px-4 py-3 text-sm font-semibold text-orange-600">৳{Number(t.taxableAmount).toLocaleString()}</td>
                           <td className="px-4 py-3 text-sm">{t.filingDate}</td>
                           <td className="px-4 py-3 text-sm">{t.taxCategory}</td>
+                          <td className="px-4 py-3 text-sm font-semibold">
+                            {t.returnStatus}
+                          </td>
+                          <td className="px-4 py-3 text-sm">{t.paymentStatus || 'Pending'}</td>
+                          <td className="px-4 py-3 text-sm">
+                            {t.paymentStatus === 'Pending' && (
+                              <div className="flex gap-2">
+                                <button
+                                  className="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700 text-xs font-bold"
+                                  onClick={e => {
+                                    e.preventDefault();
+                                    setTaxpayerTaxData(prev =>
+                                      prev.map(row =>
+                                        row.tin === t.tin
+                                          ? {
+                                              ...row,
+                                              paymentStatus: 'Paid'
+                                              // Optionally: add audit log here for backend/state
+                                            }
+                                          : row
+                                      )
+                                    );
+                                    alert('Payment accepted! Taxpayer will see status as Paid.');
+                                  }}
+                                >
+                                  Accept
+                                </button>
+                                <button
+                                  className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-xs font-bold"
+                                  onClick={e => {
+                                    e.preventDefault();
+                                    setTaxpayerTaxData(prev =>
+                                      prev.map(row =>
+                                        row.tin === t.tin
+                                          ? {
+                                              ...row,
+                                              paymentStatus: 'Rejected'
+                                              // Optionally: add audit log here for backend/state
+                                            }
+                                          : row
+                                      )
+                                    );
+                                    alert('Payment rejected! Taxpayer will see status as Rejected.');
+                                  }}
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
+                    <div className="px-6 py-4 border-t flex items-center justify-between bg-gray-50 mt-4">
+                  <div className="text-sm text-gray-600">Showing {startIndex + 1} to {Math.min(endIndex, taxpayerTaxData.length)} of {taxpayerTaxData.length} entries</div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={handlePrevious} disabled={currentPage === 1} className={`px-4 py-2 rounded-lg border flex items-center gap-2 font-medium ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' :  'hover:bg-gray-100'}`}>
+                      <ChevronLeft className="w-4 h-4" />Previous
+                    </button>
+                    <div className="flex gap-2">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                        <button key={p} onClick={() => { setCurrentPage(p); setSelectedTaxpayer(null); }} className={`w-10 h-10 rounded-lg font-semibold ${currentPage === p ? 'bg-purple-600 text-white shadow' : 'text-gray-700 hover:bg-gray-100 border'}`}>{p}</button>
+                      ))}
+                    </div>
+                    <button onClick={handleNext} disabled={currentPage === totalPages} className={`px-4 py-2 rounded-lg border flex items-center gap-2 font-medium ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}`}>
+                      Next<ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
                   </table>
                 </div>
                 <div className="px-6 py-4 border-t flex items-center justify-between bg-gray-50 mt-4">

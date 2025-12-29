@@ -4,6 +4,7 @@ import { CreditCard, Smartphone, Building2, Bell } from 'lucide-react';
 export function PaymentPage() {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [showTriggerToast, setShowTriggerToast] = useState(true);
+  const [paymentStatus, setPaymentStatus] = useState('Pending');
 
   const paymentHistory = [
     { id: '90000', year: '2024-2025', amount: '5,000', taxType: 'Income Tax - Individual', method: 'Bkash', date: '13-DEC-2025', status: 'Completed' },
@@ -24,6 +25,11 @@ export function PaymentPage() {
       default:
         return { bg: '#fff3e0', text: '#f57c00' };
     }
+  };
+
+  const handlePayNow = () => {
+    setPaymentStatus('Pending');
+    alert('Payment submitted! Status: Pending. Awaiting officer confirmation.');
   };
 
   return (
@@ -207,6 +213,7 @@ export function PaymentPage() {
               fontFamily: 'Inter, sans-serif',
               fontWeight: 600
             }}
+            onClick={handlePayNow}
           >
             Pay Now - 40,000 BDT
           </button>
@@ -249,7 +256,7 @@ export function PaymentPage() {
               </tr>
             </thead>
             <tbody>
-              {paymentHistory.map((payment) => {
+              {paymentHistory.map((payment, idx) => {
                 const statusColor = getStatusColor(payment.status);
                 return (
                   <tr key={payment.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
@@ -263,13 +270,13 @@ export function PaymentPage() {
                       <span
                         className="inline-block px-3 py-1 rounded-full text-sm"
                         style={{
-                          backgroundColor: statusColor.bg,
-                          color: statusColor.text,
+                          backgroundColor: idx === 0 ? getStatusColor(paymentStatus).bg : statusColor.bg,
+                          color: idx === 0 ? getStatusColor(paymentStatus).text : statusColor.text,
                           fontFamily: 'Inter, sans-serif',
                           fontWeight: 500
                         }}
                       >
-                        {payment.status}
+                        {idx === 0 ? paymentStatus : payment.status}
                       </span>
                     </td>
                   </tr>

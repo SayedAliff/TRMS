@@ -3,7 +3,7 @@ import { Search, Shield, ChevronLeft, ChevronRight, MessageSquare, User, Edit, C
 
 interface AuditLog {
   id: string;
-  type: 'ticket_reply' | 'profile_change' | 'tax_audit' | 'officer_profile_change' | 'officer_password_change';
+  type: 'ticket_reply' | 'profile_change' | 'tax_audit' | 'officer_profile_change' | 'officer_password_change' | 'payment_confirmation';
   timestamp: string;
   description: string;
   performedBy: string;
@@ -191,7 +191,21 @@ export function AuditLogs({ highlightAuditId }: { highlightAuditId?: string }) {
       relatedToName: 'Bokul Mia',
       status: 'Under Review',
       details: { returnId: '20001', reason:  'Income Mismatch' }
-    }
+    },
+    
+    // Add payment confirmation logs
+    { 
+      id: '9001', 
+      type: 'payment_confirmation', 
+      timestamp: '13-DEC-2025 11:00 AM', 
+      description: 'Payment confirmed for TIN 5002', 
+      performedBy: '1001', 
+      performedByName: 'Karim Ahmed', 
+      performedByRank: 'Commissioner',
+      relatedTo: '5002',
+      relatedToName: 'Cina Akter',
+      details: { returnId: '202', paymentStatus: 'Paid', amount: '35000' }
+    },
   ];
 
   // Filter logs
@@ -238,6 +252,8 @@ export function AuditLogs({ highlightAuditId }: { highlightAuditId?: string }) {
         return { bg: '#FFEBEE', text: '#C62828', icon: Shield };
       case 'tax_audit': 
         return { bg: '#FFEBEE', text: '#c62828', icon: Shield };
+      case 'payment_confirmation':
+        return { bg: '#E8F5E9', text: '#2e7d32', icon: TrendingUp };
       default:
         return { bg: '#F5F5F5', text: '#616161', icon: Clock };
     }
@@ -266,6 +282,7 @@ export function AuditLogs({ highlightAuditId }: { highlightAuditId?: string }) {
       case 'officer_profile_change':  return 'Officer Profile Update';
       case 'officer_password_change': return 'Officer Password Change';
       case 'tax_audit': return 'Tax Audit';
+      case 'payment_confirmation': return 'Payment Confirmation';
       default: return 'Unknown';
     }
   };
@@ -537,6 +554,23 @@ export function AuditLogs({ highlightAuditId }: { highlightAuditId?: string }) {
                               <div className="flex items-start gap-2">
                                 <span className="text-sm text-gray-600 min-w-[100px]">Reason:</span>
                                 <span className="text-sm font-medium text-gray-900">{log.details.reason}</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {log.type === 'payment_confirmation' && (
+                            <div className="space-y-2">
+                              <div className="flex items-start gap-2">
+                                <span className="text-sm text-gray-600 min-w-[100px]">Return ID:</span>
+                                <span className="text-sm font-semibold text-green-600">#{log.details.returnId}</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <span className="text-sm text-gray-600 min-w-[100px]">Status:</span>
+                                <span className="text-sm font-medium text-gray-900">{log.details.paymentStatus}</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <span className="text-sm text-gray-600 min-w-[100px]">Amount:</span>
+                                <span className="text-sm font-medium text-gray-900">{log.details.amount} BDT</span>
                               </div>
                             </div>
                           )}
