@@ -104,9 +104,13 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
 
   // Handle notification click: go to audit logs and highlight entry
   function handleNotificationClick(notif: any) {
+    setShowNoticeModal(false); // Close modal immediately
     setActiveView('audit-logs');
-    setShowNoticeModal(false);
-    setHighlightAuditId(notif.relatedId);
+    // Reset highlightAuditId to null before setting new value to retrigger animation
+    setHighlightAuditId(null);
+    setTimeout(() => {
+      setHighlightAuditId(notif.relatedId);
+    }, 0);
     setNotifications(notifications.map(n => n.id === notif.id ? { ...n, unread: false } : n));
   }
 
@@ -173,6 +177,23 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
   const handleDeleteTaxpayer = (taxpayer: any) => {
     if (window.confirm("Delete taxpayer?")) setTaxpayers(taxpayers.filter(tax => tax.id !== taxpayer.id));
   };
+
+  // Helper: Officer summary stats for Tax List
+  const officerStats = juniorOfficers.map(officer => {
+    // Taxpayers assigned to this officer
+    const taxpayersAssigned = comprehensiveTaxData.filter(t => t.paymentConfirmedBy === officer.id).length;
+    // Payments confirmed by this officer
+    const paymentsConfirmed = comprehensiveTaxData.filter(t => t.paymentStatus === 'Paid' && t.paymentConfirmedBy === officer.id).length;
+    // Tickets resolved (simulate or set to 0 if not available)
+    // For demo, random or fixed value
+    const ticketsResolved = officer.id === '1000' ? 2 : officer.id === '1002' ? 3 : officer.id === '1003' ? 1 : 1;
+    return {
+      ...officer,
+      taxpayersAssigned,
+      paymentsConfirmed,
+      ticketsResolved
+    };
+  });
 
   const stats = { totalOfficers: juniorOfficers.length, totalTaxpayers: taxpayers.length, pendingAudits: 3, totalRevenue: '41,000' };
 
@@ -268,7 +289,41 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
               handleDeleteTaxpayer={handleDeleteTaxpayer}
             />
           )}
-          {activeView === 'tax-list' && <TaxListTable comprehensiveTaxData={comprehensiveTaxData} />}
+          {activeView === 'tax-list' && (
+            <div>
+              {/* Tax List Section Header */}
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold mb-1 text-gradient bg-gradient-to-r from-red-700 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+                  Tax List - All Taxpayers
+                </h3>
+                <p className="text-base text-gray-700 font-medium">
+                  Overview of taxpayers with payment confirmations.
+                </p>
+              </div>
+              {/* Officer Summary Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                {officerStats.map(officer => (
+                  <div key={officer.id} className="bg-gradient-to-br from-blue-50 via-white to-pink-50 rounded-xl shadow border border-gray-200 p-4 flex flex-col items-start">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
+                        style={{ backgroundColor: "#6c63ff" }}>
+                        {officer.firstName[0]}{officer.lastName[0]}
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-900">{officer.firstName} {officer.lastName}</div>
+                        <div className="text-xs text-gray-500">ID: {officer.id}</div>
+                      </div>
+                    </div>
+                    <div className="text-xs text-gray-700 mb-1">Taxpayers: <span className="font-bold text-blue-700">{officer.taxpayersAssigned}</span></div>
+                    <div className="text-xs text-gray-700 mb-1">Payments Confirmed: <span className="font-bold text-green-700">{officer.paymentsConfirmed}</span></div>
+                    <div className="text-xs text-gray-700">Tickets Resolved: <span className="font-bold text-orange-600">{officer.ticketsResolved}</span></div>
+                  </div>
+                ))}
+              </div>
+              {/* Tax List Table */}
+              <TaxListTable comprehensiveTaxData={comprehensiveTaxData} />
+            </div>
+          )}
           {activeView === 'audit-logs' && <AuditLogsComponent highlightAuditId={highlightAuditId} setHighlightAuditId={setHighlightAuditId} />}
           {/* --- Profile Section --- */}
           {activeView === 'profile' && (
@@ -425,36 +480,45 @@ function OfficerManagement({ juniorOfficers, setShowAddOfficer, handleEditOffice
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-red-700">Manage Junior Officers</h3>
+        <h3 className="text-xl font-bold text-orange-500">Manage Junior Officers</h3>
         <button
           onClick={() => setShowAddOfficer(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold bg-red-600 hover:bg-red-700"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-500 via-yellow-400 to-red-500 hover:from-orange-600 hover:to-red-600"
         >
           <UserPlus className="w-4 h-4" />
           Add Officer
         </button>
       </div>
-      <div className="bg-white rounded-lg shadow border border-red-200 overflow-x-auto">
+      <div className="bg-white rounded-lg shadow border border-orange-300 overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-red-50 border-b border-red-200">
+          <thead className="bg-gradient-to-r from-orange-500 via-yellow-400 to-red-500 border-b-2 border-orange-300">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Officer ID</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">First Name</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Last Name</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Rank</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Branch</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">House No</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Street</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">City</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Zip Code</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Password</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Actions</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Officer ID</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">First Name</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Last Name</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Rank</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Branch</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">House No</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Street</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">City</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Zip Code</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Password</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {juniorOfficers.map((officer: any) => (
-              <tr key={officer.id} className="border-b border-red-100 hover:bg-red-50">
-                <td className="px-4 py-3 font-semibold text-red-800">{officer.id}</td>
+            {juniorOfficers.map((officer: any, idx: number) => (
+              <tr
+                key={officer.id}
+                className={
+                  "transition-colors " +
+                  (idx % 2 === 0
+                    ? "bg-gradient-to-r from-yellow-50 via-orange-50 to-red-50"
+                    : "bg-gradient-to-r from-red-50 via-white to-yellow-50") +
+                  " hover:bg-orange-100"
+                }
+              >
+                <td className="px-4 py-3 font-semibold text-orange-700">{officer.id}</td>
                 <td className="px-4 py-3">{officer.firstName}</td>
                 <td className="px-4 py-3">{officer.lastName}</td>
                 <td className="px-4 py-3">{officer.rank}</td>
@@ -465,17 +529,17 @@ function OfficerManagement({ juniorOfficers, setShowAddOfficer, handleEditOffice
                 <td className="px-4 py-3">{officer.zipCode || ''}</td>
                 <td className="px-4 py-3">{officer.password || ''}</td>
                 <td className="px-4 py-3 flex gap-2">
-                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Edit" onClick={() => handleEditOfficer(officer)}>
-                    <Edit className="w-4 h-4 text-red-700" />
+                  <button className="p-2 hover:bg-orange-100 rounded-lg border border-orange-300" title="Edit" onClick={() => handleEditOfficer(officer)}>
+                    <Edit className="w-4 h-4 text-orange-500" />
                   </button>
-                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Promote" onClick={() => handlePromote(officer)}>
-                    <TrendingUp className="w-4 h-4 text-red-700" />
+                  <button className="p-2 hover:bg-orange-100 rounded-lg border border-orange-300" title="Promote" onClick={() => handlePromote(officer)}>
+                    <TrendingUp className="w-4 h-4 text-orange-500" />
                   </button>
-                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Demote" onClick={() => handleDemote(officer)}>
-                    <TrendingDown className="w-4 h-4 text-red-700" />
+                  <button className="p-2 hover:bg-orange-100 rounded-lg border border-orange-300" title="Demote" onClick={() => handleDemote(officer)}>
+                    <TrendingDown className="w-4 h-4 text-orange-500" />
                   </button>
-                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Delete" onClick={() => handleDeleteOfficer(officer)}>
-                    <Trash2 className="w-4 h-4 text-red-700" />
+                  <button className="p-2 hover:bg-orange-100 rounded-lg border border-orange-300" title="Delete" onClick={() => handleDeleteOfficer(officer)}>
+                    <Trash2 className="w-4 h-4 text-orange-500" />
                   </button>
                 </td>
               </tr>
@@ -583,37 +647,55 @@ function OfficerAddModal({ onClose, newOfficer, setNewOfficer, setJuniorOfficers
 function TaxListTable({ comprehensiveTaxData }: { comprehensiveTaxData: Array<any> }) {
   return (
     <div>
-      <div className="mb-6">
-        <h3 className="text-xl font-bold mb-1 text-red-700">Tax List - All Taxpayers</h3>
-        <p className="text-sm text-gray-600">Overview of taxpayers with payment confirmations.</p>
-      </div>
       <div className="bg-white rounded-lg shadow border border-red-200 overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-red-50 border-b-2 border-red-200">
+          <thead className="bg-gradient-to-r from-red-600 via-pink-500 to-orange-400 border-b-2 border-red-200">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">TIN</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Name</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Gender</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Return ID</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Assessment Year</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Category</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Taxable Amount</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Payment Status</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Confirmed By</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">TIN</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Name</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Gender</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Return ID</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Assessment Year</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Category</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Taxable Amount</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Payment Status</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Confirmed By</th>
             </tr>
           </thead>
           <tbody>
-            {comprehensiveTaxData.map((record: any) => (
-              <tr key={record.tin} className="border-b border-red-100 hover:bg-red-50">
+            {comprehensiveTaxData.map((record: any, idx: number) => (
+              <tr
+                key={record.tin}
+                className={
+                  "transition-colors " +
+                  (idx % 2 === 0
+                    ? "bg-gradient-to-r from-white via-red-50 to-orange-50"
+                    : "bg-gradient-to-r from-orange-50 via-white to-red-50") +
+                  " hover:bg-yellow-50"
+                }
+              >
                 <td className="px-4 py-3 font-semibold text-red-800">{record.tin}</td>
                 <td className="px-4 py-3">{record.taxpayerName}</td>
                 <td className="px-4 py-3">{record.gender}</td>
                 <td className="px-4 py-3">#{record.returnId}</td>
                 <td className="px-4 py-3">{record.assessmentYear}</td>
-                <td className="px-4 py-3">{record.category || '-'}</td>
+                <td className="px-4 py-3 text-pink-600 font-semibold">{record.category || '-'}</td>
                 <td className="px-4 py-3 font-bold text-red-700">৳{Number(record.taxableAmount).toLocaleString()}</td>
-                <td className="px-4 py-3">{record.paymentStatus}</td>
-                <td className="px-4 py-3">{record.paymentStatus === 'Paid' ? `${record.paymentConfirmedByName} (ID: ${record.paymentConfirmedBy})` : '-'}</td>
+                <td className="px-4 py-3">
+                  <span className={
+                    record.paymentStatus === 'Paid'
+                      ? "inline-block px-2 py-1 rounded bg-green-100 text-green-700 font-semibold text-xs"
+                      : "inline-block px-2 py-1 rounded bg-yellow-100 text-yellow-700 font-semibold text-xs"
+                  }>
+                    {record.paymentStatus}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  {record.paymentStatus === 'Paid'
+                    ? <span className="text-blue-700 font-medium">{record.paymentConfirmedByName} <span className="text-xs text-gray-500">(ID: {record.paymentConfirmedBy})</span></span>
+                    : <span className="text-gray-400">-</span>
+                  }
+                </td>
               </tr>
             ))}
           </tbody>
@@ -829,16 +911,12 @@ function AuditLogsComponent({ highlightAuditId, setHighlightAuditId }: { highlig
               <div
                 key={log.id}
                 className={`p-4 rounded border transition-all duration-300 ${isHighlighted ? 'border-4 border-red-600 bg-red-50 animate-pulse' : 'border-gray-200 bg-white'}`}
+                onAnimationEnd={() => {
+                  if (isHighlighted && setHighlightAuditId) setHighlightAuditId(null);
+                }}
               >
                 <div className="font-bold text-red-700">{log.description}</div>
                 <div className="text-xs text-gray-500">{log.timestamp}</div>
-                {isHighlighted && (
-                  <div
-                    onAnimationEnd={() => setHighlightAuditId && setHighlightAuditId(null)}
-                    className="animate-pulse"
-                    style={{ height: 0, width: 0, overflow: 'hidden' }}
-                  />
-                )}
               </div>
             );
           })}

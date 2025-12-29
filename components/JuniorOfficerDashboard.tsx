@@ -8,10 +8,10 @@ interface JuniorOfficerDashboardProps {
   onLogout: () => void;
 }
 
-type View = 'dashboard' | 'taxpayers' | 'tax-list' | 'support' | 'profile';
+type View = 'taxpayers' | 'tax-list' | 'support' | 'profile';
 
 export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboardProps) {
-  const [activeView, setActiveView] = useState<View>('dashboard');
+  const [activeView, setActiveView] = useState<View>('taxpayers');
   const [selectedTaxpayer, setSelectedTaxpayer] = useState<number | null>(null);
   const [showAddTaxpayer, setShowAddTaxpayer] = useState(false);
   const [showEditTaxpayer, setShowEditTaxpayer] = useState(false);
@@ -86,12 +86,35 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     { id: '5004', firstName: 'Eva', lastName: 'Rahman', gender:   'Female', city: 'Rajshahi', phoneNumber1: '01555555555', zoneName: 'Rajshahi Zone' },
   ]);
 
-  const [taxpayerTaxData, setTaxpayerTaxData] = useState([
-    { tin: '5000', firstName: 'Abul', lastName: 'Kalam', gender: 'Male', city:   'Dhaka', phoneNumber1: '01711111111', zoneName: 'Dhaka North', zoneCode: '100', returnId: '200', assessmentYear: '2024-2025', totalIncome: '500000', taxableAmount: '50000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Salaried Individual', officerId: '1000', returnStatus: 'Completed' },
-    { tin: '5001', firstName: 'Bokul', lastName: 'Mia', gender: 'Male', city:  'Dhaka', phoneNumber1: '01922222222', zoneName: 'Dhaka North', zoneCode: '100', returnId: '201', assessmentYear: '2024-2025', totalIncome: '1200000', taxableAmount: '120000', filingDate: '13-DEC-2025', taxCategory: 'Corporate', taxType: 'Limited Company', officerId: '1000', returnStatus: 'Completed' },
+  type TaxpayerTaxData = {
+    tin: string;
+    firstName: string;
+    lastName: string;
+    gender: string;
+    city: string;
+    phoneNumber1: string;
+    zoneName: string;
+    zoneCode: string;
+    returnId: string;
+    assessmentYear: string;
+    totalIncome: string;
+    taxableAmount: string;
+    filingDate: string;
+    taxCategory: string;
+    taxType: string;
+    officerId: string;
+    returnStatus: string;
+    paymentStatus: string | null;
+    paymentConfirmedBy: string | null;
+    paymentConfirmedByName: string | null;
+  };
+
+  const [taxpayerTaxData, setTaxpayerTaxData] = useState<TaxpayerTaxData[]>([
+    { tin: '5000', firstName: 'Abul', lastName: 'Kalam', gender: 'Male', city: 'Dhaka', phoneNumber1: '01711111111', zoneName: 'Dhaka North', zoneCode: '100', returnId: '200', assessmentYear: '2024-2025', totalIncome: '500000', taxableAmount: '50000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Salaried Individual', officerId: '1000', returnStatus: 'Paid', paymentStatus: null, paymentConfirmedBy: null, paymentConfirmedByName: null },
+    { tin: '5001', firstName: 'Bokul', lastName: 'Mia', gender: 'Male', city: 'Dhaka', phoneNumber1: '01922222222', zoneName: 'Dhaka North', zoneCode: '100', returnId: '201', assessmentYear: '2024-2025', totalIncome: '1200000', taxableAmount: '120000', filingDate: '13-DEC-2025', taxCategory: 'Corporate', taxType: 'Limited Company', officerId: '1000', returnStatus: 'Paid', paymentStatus: null, paymentConfirmedBy: null, paymentConfirmedByName: null },
     { tin: '5002', firstName: 'Cina', lastName: 'Akter', gender: 'Female', city: 'Chittagong', phoneNumber1: '01733333333', zoneName: 'Chittagong', zoneCode: '101', returnId: '202', assessmentYear: '2024-2025', totalIncome: '350000', taxableAmount: '35000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Business Owner', officerId: '1001', returnStatus: 'Pending', paymentStatus: 'Pending', paymentConfirmedBy: null, paymentConfirmedByName: null },
-    { tin: '5003', firstName: 'David', lastName: 'Roy', gender: 'Male', city: 'Sylhet', phoneNumber1: '01844444444', zoneName: 'Sylhet', zoneCode: '102', returnId: '203', assessmentYear: '2024-2025', totalIncome: '800000', taxableAmount: '80000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Professional', officerId: '1002', returnStatus: 'Completed' },
-    { tin: '5004', firstName: 'Eva', lastName: 'Rahman', gender:   'Female', city: 'Rajshahi', phoneNumber1: '01555555555', zoneName: 'Rajshahi', zoneCode: '103', returnId: '204', assessmentYear: '2024-2025', totalIncome: '450000', taxableAmount: '45000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Self Employed', officerId: '1000', returnStatus: 'Completed' }
+    { tin: '5003', firstName: 'David', lastName: 'Roy', gender: 'Male', city: 'Sylhet', phoneNumber1: '01844444444', zoneName: 'Sylhet', zoneCode: '102', returnId: '203', assessmentYear: '2024-2025', totalIncome: '800000', taxableAmount: '80000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Professional', officerId: '1002', returnStatus: 'Paid', paymentStatus: null, paymentConfirmedBy: null, paymentConfirmedByName: null },
+    { tin: '5004', firstName: 'Eva', lastName: 'Rahman', gender: 'Female', city: 'Rajshahi', phoneNumber1: '01555555555', zoneName: 'Rajshahi', zoneCode: '103', returnId: '204', assessmentYear: '2024-2025', totalIncome: '450000', taxableAmount: '45000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Self Employed', officerId: '1000', returnStatus: 'Paid', paymentStatus: null, paymentConfirmedBy: null, paymentConfirmedByName: null }
   ]);
 
   const totalPages = Math.ceil(taxpayerTaxData.length / taxpayersPerPage);
@@ -168,9 +191,6 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     }
   ]);
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
-
-  // Notification count for unread tickets
-  const officerUnreadCount = tickets.filter(t => t.unreadForOfficer).length;
 
   // Notification click handler: open Support view and select the first unread ticket
   const handleNotificationClick = () => {
@@ -320,12 +340,10 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
       {/* ...existing code... */}
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
         <div className="p-6 border-b border-gray-200">
-          <h1 className="text-lg font-semibold text-purple-700">Junior Officer Portal</h1>
+          {/* <h1 className="text-lg font-semibold text-purple-700">Junior Officer Portal</h1> */}
         </div>
         <nav className="flex-1 p-4">
-          <button onClick={() => setActiveView('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'dashboard' ?   'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow' : 'text-purple-700 hover:bg-purple-100 border border-purple-200'}`}>
-            <Home className="w-5 h-5" /><span>Dashboard</span>
-          </button>
+          {/* Dashboard button removed as per request */}
           <button onClick={() => setActiveView('taxpayers')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'taxpayers' ?  'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow' : 'text-purple-700 hover:bg-purple-100 border border-purple-200'}`}>
             <UserCog className="w-5 h-5" /><span>Manage Taxpayers</span>
           </button>
@@ -337,8 +355,11 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'support' ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow' : 'text-purple-700 hover:bg-purple-100 border border-purple-200'}`}
           >
             <HelpCircle className="w-5 h-5" /><span>Support Tickets</span>
-            {officerUnreadCount > 0 && (
-              <span className="ml-auto bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">{officerUnreadCount}</span>
+            {/* Move officerUnreadCount calculation here so it updates immediately */}
+            {tickets.filter(t => t.unreadForOfficer).length > 0 && (
+              <span className="ml-auto bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                {tickets.filter(t => t.unreadForOfficer).length}
+              </span>
             )}
           </button>
           <button onClick={() => setActiveView('profile')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'profile' ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow' : 'text-purple-700 hover:bg-purple-100 border border-purple-200'}`}>
@@ -361,18 +382,25 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
             </div>
             <div className="flex items-center gap-4">
               <div className="relative">
-                <button onClick={() => officerUnreadCount > 0 && setShowNotificationPopup(! showNotificationPopup)} className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
+                <button
+                  onClick={() => tickets.filter(t => t.unreadForOfficer).length > 0 && setShowNotificationPopup(!showNotificationPopup)}
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative"
+                >
                   <Bell className="w-6 h-6 text-gray-600" />
-                  {officerUnreadCount > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">{officerUnreadCount}</span>}
+                  {tickets.filter(t => t.unreadForOfficer).length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {tickets.filter(t => t.unreadForOfficer).length}
+                    </span>
+                  )}
                 </button>
-                {showNotificationPopup && officerUnreadCount > 0 && (
+                {showNotificationPopup && tickets.filter(t => t.unreadForOfficer).length > 0 && (
                   <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                     <div className="p-4 border-b border-gray-200"><h3 className="font-semibold">Notifications</h3></div>
                     <div className="p-4">
                       <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200 cursor-pointer hover:bg-purple-100" onClick={handleNotificationClick}>
                         <Ticket className="w-5 h-5 text-purple-600 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">{officerUnreadCount} new support tickets</p>
+                          <p className="text-sm font-medium text-gray-900">{tickets.filter(t => t.unreadForOfficer).length} new support tickets</p>
                           <p className="text-xs text-gray-600 mt-1">Taxpayers need assistance.  Click to view.</p>
                         </div>
                       </div>
@@ -392,48 +420,8 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
         </header>
 
         <div className="p-8">
-          {activeView === 'dashboard' && (
-            <>
-              <div className="mb-6 p-4 rounded-lg bg-purple-50 border border-purple-200">
-                <p className="text-sm font-semibold text-purple-700">Role: junior_officer_role</p>
-                <p className="text-xs text-gray-600 mt-1">Permissions: SELECT, INSERT on Taxpayer | SELECT on Tax_Return, Payment</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center"><UserCheck className="w-6 h-6 text-blue-600" /></div>
-                    <div><p className="text-sm text-gray-500 mb-1">Total Taxpayers</p><p className="text-3xl font-bold text-blue-600">{stats.totalTaxpayers}</p></div>
-                  </div>
-                </div>
-                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center"><Ticket className="w-6 h-6 text-orange-600" /></div>
-                    <div><p className="text-sm text-gray-500 mb-1">Open Tickets</p><p className="text-3xl font-bold text-orange-600">{stats. openTickets}</p></div>
-                  </div>
-                </div>
-                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center"><Ticket className="w-6 h-6 text-green-600" /></div>
-                    <div><p className="text-sm text-gray-500 mb-1">Resolved Today</p><p className="text-3xl font-bold text-green-600">{stats.resolvedToday}</p></div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-                <h3 className="text-lg mb-4 font-semibold">Recent Activity</h3>
-                <div className="space-y-3">
-                  {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0">
-                      <div className="w-2 h-2 rounded-full mt-2 bg-purple-600"></div>
-                      <div className="flex-1">
-                        <p className="text-sm">{activity.text}</p>
-                        <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
+          {/* Dashboard view removed as per request */}
+          {/* Role and permissions text removed as per request */}
 
           {activeView === 'profile' && (
             <div className="space-y-6">
@@ -551,13 +539,15 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Filing Date</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Category</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Status</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Payment Status</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       {currentTaxpayers.map((t, i) => (
-                        <tr key={t.tin}>
+                        <tr
+                          key={t.tin}
+                          className={i % 2 === 0 ? "bg-purple-50" : "bg-white"}
+                        >
                           <td className="px-4 py-3 text-sm font-semibold text-purple-600">{t.tin}</td>
                           <td className="px-4 py-3 text-sm font-medium">{t.firstName} {t.lastName}</td>
                           <td className="px-4 py-3 text-sm">{t.gender}</td>
@@ -569,11 +559,16 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                           <td className="px-4 py-3 text-sm">{t.filingDate}</td>
                           <td className="px-4 py-3 text-sm">{t.taxCategory}</td>
                           <td className="px-4 py-3 text-sm font-semibold">
-                            {t.returnStatus}
+                            {t.returnStatus === 'Pending'
+                              ? 'Pending'
+                              : t.returnStatus === 'Paid'
+                              ? 'Paid'
+                              : t.returnStatus === 'Rejected'
+                              ? 'Rejected'
+                              : ''}
                           </td>
-                          <td className="px-4 py-3 text-sm">{t.paymentStatus || 'Pending'}</td>
                           <td className="px-4 py-3 text-sm">
-                            {t.paymentStatus === 'Pending' && (
+                            {t.returnStatus === 'Pending' ? (
                               <div className="flex gap-2">
                                 <button
                                   className="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700 text-xs font-bold"
@@ -582,15 +577,11 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                                     setTaxpayerTaxData(prev =>
                                       prev.map(row =>
                                         row.tin === t.tin
-                                          ? {
-                                              ...row,
-                                              paymentStatus: 'Paid'
-                                              // Optionally: add audit log here for backend/state
-                                            }
+                                          ? { ...row, returnStatus: 'Paid' }
                                           : row
                                       )
                                     );
-                                    alert('Payment accepted! Taxpayer will see status as Paid.');
+                                    alert('Payment accepted! Status changed to Paid.');
                                   }}
                                 >
                                   Accept
@@ -602,45 +593,30 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                                     setTaxpayerTaxData(prev =>
                                       prev.map(row =>
                                         row.tin === t.tin
-                                          ? {
-                                              ...row,
-                                              paymentStatus: 'Rejected'
-                                              // Optionally: add audit log here for backend/state
-                                            }
+                                          ? { ...row, returnStatus: 'Rejected' }
                                           : row
                                       )
                                     );
-                                    alert('Payment rejected! Taxpayer will see status as Rejected.');
+                                    alert('Payment rejected! Status changed to Rejected.');
                                   }}
                                 >
                                   Reject
                                 </button>
                               </div>
+                            ) : (
+                              <span className="text-gray-400">-</span>
                             )}
                           </td>
                         </tr>
                       ))}
                     </tbody>
-                    <div className="px-6 py-4 border-t flex items-center justify-between bg-gray-50 mt-4">
-                  <div className="text-sm text-gray-600">Showing {startIndex + 1} to {Math.min(endIndex, taxpayerTaxData.length)} of {taxpayerTaxData.length} entries</div>
-                  <div className="flex items-center gap-2">
-                    <button onClick={handlePrevious} disabled={currentPage === 1} className={`px-4 py-2 rounded-lg border flex items-center gap-2 font-medium ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' :  'hover:bg-gray-100'}`}>
-                      <ChevronLeft className="w-4 h-4" />Previous
-                    </button>
-                    <div className="flex gap-2">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                        <button key={p} onClick={() => { setCurrentPage(p); setSelectedTaxpayer(null); }} className={`w-10 h-10 rounded-lg font-semibold ${currentPage === p ? 'bg-purple-600 text-white shadow' : 'text-gray-700 hover:bg-gray-100 border'}`}>{p}</button>
-                      ))}
-                    </div>
-                    <button onClick={handleNext} disabled={currentPage === totalPages} className={`px-4 py-2 rounded-lg border flex items-center gap-2 font-medium ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}`}>
-                      Next<ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
                   </table>
                 </div>
+                {/* Pagination and summary block - only once, outside table */}
                 <div className="px-6 py-4 border-t flex items-center justify-between bg-gray-50 mt-4">
-                  <div className="text-sm text-gray-600">Showing {startIndex + 1} to {Math.min(endIndex, taxpayerTaxData.length)} of {taxpayerTaxData.length} entries</div>
+                  <div className="text-sm text-gray-600">
+                    Showing {startIndex + 1} to {Math.min(endIndex, taxpayerTaxData.length)} of {taxpayerTaxData.length} entries
+                  </div>
                   <div className="flex items-center gap-2">
                     <button onClick={handlePrevious} disabled={currentPage === 1} className={`px-4 py-2 rounded-lg border flex items-center gap-2 font-medium ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' :  'hover:bg-gray-100'}`}>
                       <ChevronLeft className="w-4 h-4" />Previous

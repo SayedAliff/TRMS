@@ -46,19 +46,20 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
     ... editedProfile
   };
 
-  const stats = {
-    totalReturns: 3,
-    openTickets: supportNotifications
-  };
-
-  // Calculate total paid amount (simulate from payment history or returns)
-  // For demo, let's assume 3 returns with fixed paid amounts:
+  // Simulate payment history data (replace with real data if available)
   const paidReturns = [
     { amount: 50000 },
     { amount: 120000 },
     { amount: 35000 }
   ];
+  // Calculate total returns filed from payment history
+  const totalReturns = paidReturns.length;
   const totalPaid = paidReturns.reduce((sum, r) => sum + r.amount, 0);
+
+  const stats = {
+    totalReturns, // now dynamically counted from payment history
+    openTickets: supportNotifications
+  };
 
   const handleNotificationClick = () => {
     setActiveView('support');
@@ -117,6 +118,13 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
     alert('Payment successful!\n\nYour payment information has been sent to the tax officer for confirmation.');
     // Here you could trigger a notification or update state as needed
   };
+
+  // Simulate support tickets data (replace with real data if available)
+  const supportTicketsData = [
+    { id: 1, subject: "Refund Query", status: "Open", lastReply: "2024-06-10", officer: "Mr. Rahim" },
+    { id: 2, subject: "TIN Correction", status: "Closed", lastReply: "2024-06-08", officer: "Ms. Sultana" },
+    { id: 3, subject: "Payment Issue", status: "Open", lastReply: "2024-06-05", officer: "Mr. Karim" },
+  ];
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -240,7 +248,7 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
                   </div>
                 </div>
               </div>
-              {/* ...remove Pay Tax Now button... */}
+              {/* Removed Recent Activity Section */}
             </>
           )}
 
