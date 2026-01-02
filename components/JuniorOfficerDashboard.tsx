@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, HelpCircle, LogOut, UserCheck, Ticket, FileText, UserCog, UserPlus, Edit, Trash2, Phone, MapPin, DollarSign, ChevronLeft, ChevronRight, Bell, User as UserIcon, Lock, Save, X } from 'lucide-react';
+import { Home, HelpCircle, LogOut, UserCheck, Ticket, FileText, UserCog, UserPlus, Edit, Trash2, Phone, MapPin, ChevronLeft, ChevronRight, Bell, User as UserIcon, Lock, Save, X, DollarSign } from 'lucide-react';
 import { User } from '../App';
 import { SupportTickets } from './SupportTickets';
 
@@ -8,18 +8,16 @@ interface JuniorOfficerDashboardProps {
   onLogout: () => void;
 }
 
-type View = 'taxpayers' | 'tax-list' | 'support' | 'profile';
+type TicketStatus = 'Open' | 'In Progress' | 'Resolved' | 'Closed';
 
 export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboardProps) {
-  const [activeView, setActiveView] = useState<View>('taxpayers');
+  const [activeView, setActiveView] = useState<'dashboard' | 'taxpayers' | 'tax-list' | 'support' | 'profile'>('dashboard');
   const [selectedTaxpayer, setSelectedTaxpayer] = useState<number | null>(null);
   const [showAddTaxpayer, setShowAddTaxpayer] = useState(false);
   const [showEditTaxpayer, setShowEditTaxpayer] = useState(false);
   const [selectedTaxpayerEdit, setSelectedTaxpayerEdit] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const taxpayersPerPage = 5;
-  // Remove supportNotifications state, use officerUnreadCount instead
-  // const [supportNotifications, setSupportNotifications] = useState(2);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -160,70 +158,33 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     }
   };
 
-  // Support tickets state (simulate tickets between taxpayers and officer)
-  const [tickets, setTickets] = useState([
-    {
-      id: 1,
-      taxpayerTIN: '5001',
-      taxpayerName: 'Bokul Mia',
-      subject: 'Payment not reflected',
-      message: 'I paid tax but it is not showing in my account.',
-      status: 'Open',
-      replies: [
-        { sender: 'taxpayer', message: 'I paid tax but it is not showing in my account.', time: '2024-06-01 10:00' }
-      ],
-      unreadForOfficer: true,
-      unreadForTaxpayer: false
-    },
-    {
-      id: 2,
-      taxpayerTIN: '5002',
-      taxpayerName: 'Cina Akter',
-      subject: 'How to file return?',
-      message: 'Please guide me on how to file a return.',
-      status: 'Open',
-      replies: [
-        { sender: 'taxpayer', message: 'Please guide me on how to file a return.', time: '2024-06-01 11:00' },
-        { sender: 'officer', message: 'Please go to File Return section and follow the steps.', time: '2024-06-01 12:00' }
-      ],
-      unreadForOfficer: false,
-      unreadForTaxpayer: true
-    }
+  // Support tickets state - simplified to match DB schema
+  const [tickets, setTickets] = useState<Array<{
+    ticketId: string;
+    issueDescription: string;
+    submissionDate: string;
+    resolutionStatus: TicketStatus;
+    taxpayerTIN: string;
+    taxpayerName: string;
+  }>>([
+    { ticketId: '301', issueDescription: 'Payment not reflected in my account', submissionDate: '2024-06-01', resolutionStatus: 'Open', taxpayerTIN: '5001', taxpayerName: 'Bokul Mia' },
+    { ticketId: '302', issueDescription: 'How to file return?', submissionDate: '2024-06-02', resolutionStatus: 'In Progress', taxpayerTIN: '5002', taxpayerName: 'Cina Akter' },
   ]);
-  const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
 
-  // Notification click handler: open Support view and select the first unread ticket
+  // Count open tickets for notification
+  const openTicketCount = tickets.filter(t => t.resolutionStatus === 'Open').length;
+
+  // Handler for changing ticket status
+  const handleTicketStatusChange = (ticketId: string, newStatus: 'Open' | 'In Progress' | 'Resolved' | 'Closed') => {
+    setTickets(prev =>
+      prev.map(t => t.ticketId === ticketId ? { ...t, resolutionStatus: newStatus } : t)
+    );
+  };
+
+  // Notification click handler
   const handleNotificationClick = () => {
     setActiveView('support');
-    const firstUnread = tickets.find(t => t.unreadForOfficer);
-    if (firstUnread) setSelectedTicketId(firstUnread.id);
     setShowNotificationPopup(false);
-  };
-
-  // Officer reply handler
-  const handleOfficerReply = (ticketId: number, replyMsg: string) => {
-    setTickets(tickets =>
-      tickets.map(t =>
-        t.id === ticketId
-          ? {
-              ...t,
-              replies: [...t.replies, { sender: 'officer', message: replyMsg, time: new Date().toLocaleString() }],
-              unreadForTaxpayer: true,
-              unreadForOfficer: false
-            }
-          : t
-      )
-    );
-  };
-
-  // Mark ticket as read for officer when opened
-  const handleSelectTicket = (id: number) => {
-    setTickets(tickets =>
-      tickets.map(t =>
-        t.id === id ? { ...t, unreadForOfficer: false } : t
-      )
-    );
-    setSelectedTicketId(id);
   };
 
   const handleSaveProfile = () => {
@@ -337,13 +298,14 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* ...existing code... */}
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
         <div className="p-6 border-b border-gray-200">
-          {/* <h1 className="text-lg font-semibold text-purple-700">Junior Officer Portal</h1> */}
+          <h1 className="text-lg font-semibold text-purple-700">Junior Officer Portal</h1>
         </div>
         <nav className="flex-1 p-4">
-          {/* Dashboard button removed as per request */}
+          <button onClick={() => setActiveView('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'dashboard' ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow' : 'text-purple-700 hover:bg-purple-100 border border-purple-200'}`}>
+            <Home className="w-5 h-5" /><span>Dashboard</span>
+          </button>
           <button onClick={() => setActiveView('taxpayers')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'taxpayers' ?  'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow' : 'text-purple-700 hover:bg-purple-100 border border-purple-200'}`}>
             <UserCog className="w-5 h-5" /><span>Manage Taxpayers</span>
           </button>
@@ -355,10 +317,9 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'support' ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow' : 'text-purple-700 hover:bg-purple-100 border border-purple-200'}`}
           >
             <HelpCircle className="w-5 h-5" /><span>Support Tickets</span>
-            {/* Move officerUnreadCount calculation here so it updates immediately */}
-            {tickets.filter(t => t.unreadForOfficer).length > 0 && (
+            {openTicketCount > 0 && (
               <span className="ml-auto bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                {tickets.filter(t => t.unreadForOfficer).length}
+                {openTicketCount}
               </span>
             )}
           </button>
@@ -383,25 +344,25 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
             <div className="flex items-center gap-4">
               <div className="relative">
                 <button
-                  onClick={() => tickets.filter(t => t.unreadForOfficer).length > 0 && setShowNotificationPopup(!showNotificationPopup)}
+                  onClick={() => openTicketCount > 0 && setShowNotificationPopup(!showNotificationPopup)}
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative"
                 >
                   <Bell className="w-6 h-6 text-gray-600" />
-                  {tickets.filter(t => t.unreadForOfficer).length > 0 && (
+                  {openTicketCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {tickets.filter(t => t.unreadForOfficer).length}
+                      {openTicketCount}
                     </span>
                   )}
                 </button>
-                {showNotificationPopup && tickets.filter(t => t.unreadForOfficer).length > 0 && (
+                {showNotificationPopup && openTicketCount > 0 && (
                   <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                     <div className="p-4 border-b border-gray-200"><h3 className="font-semibold">Notifications</h3></div>
                     <div className="p-4">
                       <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200 cursor-pointer hover:bg-purple-100" onClick={handleNotificationClick}>
                         <Ticket className="w-5 h-5 text-purple-600 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">{tickets.filter(t => t.unreadForOfficer).length} new support tickets</p>
-                          <p className="text-xs text-gray-600 mt-1">Taxpayers need assistance.  Click to view.</p>
+                          <p className="text-sm font-medium text-gray-900">{openTicketCount} open support ticket(s)</p>
+                          <p className="text-xs text-gray-600 mt-1">Click to view and update status.</p>
                         </div>
                       </div>
                     </div>
@@ -420,8 +381,32 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
         </header>
 
         <div className="p-8">
-          {/* Dashboard view removed as per request */}
-          {/* Role and permissions text removed as per request */}
+          {/* Dashboard view */}
+          {activeView === 'dashboard' && (
+            <div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-purple-700 mb-4">Welcome, {officerProfile.firstName}!</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-white rounded-lg shadow border p-6 flex flex-col items-center">
+                    <UserCheck className="w-8 h-8 text-purple-600 mb-2" />
+                    <div className="text-3xl font-bold text-purple-700">{taxpayers.length}</div>
+                    <div className="text-gray-600 mt-1">Total Taxpayers</div>
+                  </div>
+                  <div className="bg-white rounded-lg shadow border p-6 flex flex-col items-center">
+                    <Ticket className="w-8 h-8 text-orange-600 mb-2" />
+                    <div className="text-3xl font-bold text-orange-600">{openTicketCount}</div>
+                    <div className="text-gray-600 mt-1">Open Support Tickets</div>
+                  </div>
+                  <div className="bg-white rounded-lg shadow border p-6 flex flex-col items-center">
+                    <span className="w-8 h-8 flex items-center justify-center text-green-600 text-3xl mb-2 font-bold">৳</span>
+                    <div className="text-3xl font-bold text-green-700">{taxpayerTaxData.filter(t => t.returnStatus === 'Paid').length}</div>
+                    <div className="text-gray-600 mt-1">Returns Paid</div>
+                  </div>
+                </div>
+              </div>
+              {/* Removed Recent Activity block */}
+            </div>
+          )}
 
           {activeView === 'profile' && (
             <div className="space-y-6">
@@ -461,7 +446,6 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
             </div>
           )}
 
-          {/* Tax List and other views - keep existing code */}
           {activeView === 'taxpayers' && (
             <div>
               <div className="flex items-center justify-between mb-6">
@@ -635,14 +619,12 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
             </div>
           )}
 
-          {/* Add this block to show support tickets */}
+          {/* Simplified support view */}
           {activeView === 'support' && (
             <SupportTickets
-              // @ts-expect-error: Prop types are not matching, update SupportTicketsProps to fix properly
+              userType="officer"
               tickets={tickets}
-              selectedTicketId={selectedTicketId}
-              onSelectTicket={handleSelectTicket}
-              onOfficerReply={handleOfficerReply}
+              onStatusChange={handleTicketStatusChange}
             />
           )}
 
@@ -810,32 +792,5 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
         </div>
       )} */}
     </div>
-  );
-}
-
-// Officer reply input box
-function OfficerReplyBox({ onReply }: { onReply: (msg: string) => void }) {
-  const [msg, setMsg] = useState('');
-  return (
-    <form
-      onSubmit={e => {
-        e.preventDefault();
-        if (msg.trim()) {
-          onReply(msg.trim());
-          setMsg('');
-        }
-      }}
-      className="flex gap-2 mt-4"
-    >
-      <input
-        className="flex-1 px-4 py-2 border-2 border-purple-200 rounded-lg focus:outline-none focus:border-purple-400"
-        placeholder="Type your reply..."
-        value={msg}
-        onChange={e => setMsg(e.target.value)}
-      />
-      <button type="submit" className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 font-semibold">
-        Reply
-      </button>
-    </form>
   );
 }

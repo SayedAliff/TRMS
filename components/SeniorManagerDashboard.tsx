@@ -22,7 +22,7 @@ interface SeniorManagerDashboardProps {
   onLogout: () => void;
 }
 
-type View = 'dashboard' | 'officers' | 'taxpayers' | 'tax-list' | 'audit-logs' | 'profile';
+type View = 'dashboard' | 'officers' | 'taxpayers' | 'tax-list' | 'profile' | 'audit-logs';
 
 export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboardProps) {
   const [activeView, setActiveView] = useState<View>('dashboard');
@@ -98,8 +98,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
     // ...add more as needed...
   ]);
   const [showNoticeModal, setShowNoticeModal] = useState(false);
-
-  // Highlight audit log entry when navigating from notification
+  // Add highlightAuditId state (missing in your file)
   const [highlightAuditId, setHighlightAuditId] = useState<string | null>(null);
 
   // Handle notification click: go to audit logs and highlight entry
@@ -107,7 +106,6 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
     setShowNoticeModal(false); // Close modal immediately
     setActiveView('audit-logs');
     // Reset highlightAuditId to null before setting new value to retrigger animation
-    setHighlightAuditId(null);
     setTimeout(() => {
       setHighlightAuditId(notif.relatedId);
     }, 0);
@@ -223,7 +221,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
           <SidebarBtn active={activeView === 'officers'} icon={<Users />} onClick={() => setActiveView('officers')} label="Manage Officers" />
           <SidebarBtn active={activeView === 'taxpayers'} icon={<UserCog />} onClick={() => setActiveView('taxpayers')} label="Manage Taxpayers" />
           <SidebarBtn active={activeView === 'tax-list'} icon={<FileText />} onClick={() => setActiveView('tax-list')} label="Tax List" />
-          <SidebarBtn active={activeView === 'audit-logs'} icon={<Shield />} onClick={() => setActiveView('audit-logs')} label="Audit Logs" />
+          {/* Audit Logs removed */}
           <SidebarBtn active={activeView === 'profile'} icon={<User />} onClick={() => setActiveView('profile')} label="Profile" />
         </nav>
         <div className="p-4 border-t border-gray-200">
@@ -245,19 +243,10 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
               <p className="text-sm text-gray-600">Rank: {profile.rank} | Branch: {profile.branch}</p>
             </div>
             <div className="flex items-center gap-4">
-              {/* Notification button before avatar */}
-              <button
-                className="relative flex items-center justify-center w-8 h-8 rounded-full bg-red-50 hover:bg-red-100"
-                onClick={handleOpenNoticeModal}
-                title="Notifications"
-              >
+              {/* Notification button as icon only, no modal, no count */}
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-red-50">
                 <Bell className="w-5 h-5 text-red-700" />
-                {notifications.filter(n => n.unread).length > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-5 px-1 bg-red-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                    {notifications.filter(n => n.unread).length}
-                  </span>
-                )}
-              </button>
+              </div>
               {/* Officer info: name above, ID below */}
               <div className="text-right flex flex-col items-end gap-0">
                 <p className="text-sm font-semibold">{profile.firstName} {profile.lastName}.</p>
@@ -324,8 +313,6 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
               <TaxListTable comprehensiveTaxData={comprehensiveTaxData} />
             </div>
           )}
-          {activeView === 'audit-logs' && <AuditLogsComponent highlightAuditId={highlightAuditId} setHighlightAuditId={setHighlightAuditId} />}
-          {/* --- Profile Section --- */}
           {activeView === 'profile' && (
             <div className="max-w-4xl mx-auto grid gap-6 mt-6 pb-4">
               <div className="bg-white rounded-xl shadow border p-8 flex flex-col md:flex-row md:justify-between">
@@ -480,18 +467,20 @@ function OfficerManagement({ juniorOfficers, setShowAddOfficer, handleEditOffice
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-orange-500">Manage Junior Officers</h3>
+        <h3 className="text-xl font-bold text-transparent bg-gradient-to-r from-red-700 via-pink-600 to-orange-500 bg-clip-text">
+          Manage Junior Officers
+        </h3>
         <button
           onClick={() => setShowAddOfficer(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-500 via-yellow-400 to-red-500 hover:from-orange-600 hover:to-red-600"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold bg-gradient-to-r from-red-600 via-pink-500 to-orange-400 hover:from-red-700 hover:to-orange-500 shadow"
         >
           <UserPlus className="w-4 h-4" />
           Add Officer
         </button>
       </div>
-      <div className="bg-white rounded-lg shadow border border-orange-300 overflow-x-auto">
+      <div className="bg-gradient-to-br from-red-50 via-white to-orange-50 rounded-xl shadow border border-red-200 overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gradient-to-r from-orange-500 via-yellow-400 to-red-500 border-b-2 border-orange-300">
+          <thead className="bg-gradient-to-r from-red-600 via-pink-500 to-orange-400 border-b-2 border-red-200">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-bold text-white">Officer ID</th>
               <th className="px-4 py-3 text-left text-xs font-bold text-white">First Name</th>
@@ -513,12 +502,12 @@ function OfficerManagement({ juniorOfficers, setShowAddOfficer, handleEditOffice
                 className={
                   "transition-colors " +
                   (idx % 2 === 0
-                    ? "bg-gradient-to-r from-yellow-50 via-orange-50 to-red-50"
-                    : "bg-gradient-to-r from-red-50 via-white to-yellow-50") +
-                  " hover:bg-orange-100"
+                    ? "bg-gradient-to-r from-white via-red-50 to-orange-50"
+                    : "bg-gradient-to-r from-orange-50 via-white to-red-50") +
+                  " hover:bg-gradient-to-r hover:from-pink-100 hover:via-orange-100 hover:to-red-100"
                 }
               >
-                <td className="px-4 py-3 font-semibold text-orange-700">{officer.id}</td>
+                <td className="px-4 py-3 font-semibold text-red-800">{officer.id}</td>
                 <td className="px-4 py-3">{officer.firstName}</td>
                 <td className="px-4 py-3">{officer.lastName}</td>
                 <td className="px-4 py-3">{officer.rank}</td>
@@ -529,17 +518,17 @@ function OfficerManagement({ juniorOfficers, setShowAddOfficer, handleEditOffice
                 <td className="px-4 py-3">{officer.zipCode || ''}</td>
                 <td className="px-4 py-3">{officer.password || ''}</td>
                 <td className="px-4 py-3 flex gap-2">
-                  <button className="p-2 hover:bg-orange-100 rounded-lg border border-orange-300" title="Edit" onClick={() => handleEditOfficer(officer)}>
-                    <Edit className="w-4 h-4 text-orange-500" />
+                  <button className="p-2 rounded-lg border border-red-300 bg-gradient-to-br from-red-100 to-orange-100 hover:from-pink-200 hover:to-orange-200" title="Edit" onClick={() => handleEditOfficer(officer)}>
+                    <Edit className="w-4 h-4 text-red-600" />
                   </button>
-                  <button className="p-2 hover:bg-orange-100 rounded-lg border border-orange-300" title="Promote" onClick={() => handlePromote(officer)}>
-                    <TrendingUp className="w-4 h-4 text-orange-500" />
+                  <button className="p-2 rounded-lg border border-red-300 bg-gradient-to-br from-red-100 to-orange-100 hover:from-pink-200 hover:to-orange-200" title="Promote" onClick={() => handlePromote(officer)}>
+                    <TrendingUp className="w-4 h-4 text-orange-600" />
                   </button>
-                  <button className="p-2 hover:bg-orange-100 rounded-lg border border-orange-300" title="Demote" onClick={() => handleDemote(officer)}>
-                    <TrendingDown className="w-4 h-4 text-orange-500" />
+                  <button className="p-2 rounded-lg border border-red-300 bg-gradient-to-br from-red-100 to-orange-100 hover:from-pink-200 hover:to-orange-200" title="Demote" onClick={() => handleDemote(officer)}>
+                    <TrendingDown className="w-4 h-4 text-orange-600" />
                   </button>
-                  <button className="p-2 hover:bg-orange-100 rounded-lg border border-orange-300" title="Delete" onClick={() => handleDeleteOfficer(officer)}>
-                    <Trash2 className="w-4 h-4 text-orange-500" />
+                  <button className="p-2 rounded-lg border border-red-300 bg-gradient-to-br from-red-100 to-orange-100 hover:from-pink-200 hover:to-orange-200" title="Delete" onClick={() => handleDeleteOfficer(officer)}>
+                    <Trash2 className="w-4 h-4 text-red-600" />
                   </button>
                 </td>
               </tr>
@@ -705,45 +694,56 @@ function TaxListTable({ comprehensiveTaxData }: { comprehensiveTaxData: Array<an
   );
 }
 
-// TaxpayerManagement Table (all blue, wide columns, show all requested fields)
+// TaxpayerManagement Table (all red, wide columns, show all requested fields)
 function TaxpayerManagement({ taxpayers, setShowAddTaxpayer, handleEditTaxpayer, handleDeleteTaxpayer }: any) {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-red-700">Manage Taxpayers</h3>
+        <h3 className="text-xl font-bold text-transparent bg-gradient-to-r from-red-700 via-pink-600 to-orange-500 bg-clip-text">
+          Manage Taxpayers
+        </h3>
         <button
           onClick={() => setShowAddTaxpayer(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold bg-red-600 hover:bg-red-700"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold bg-gradient-to-r from-red-600 via-pink-500 to-orange-400 hover:from-red-700 hover:to-orange-500 shadow"
         >
           <UserPlus className="w-4 h-4" />
           Add Taxpayer
         </button>
       </div>
-      <div className="bg-white rounded-lg shadow border border-red-200 overflow-x-auto">
+      <div className="bg-gradient-to-br from-red-50 via-white to-orange-50 rounded-xl shadow border border-red-200 overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-red-50 border-b border-red-200">
+          <thead className="bg-gradient-to-r from-red-600 via-pink-500 to-orange-400 border-b border-red-200">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">TIN</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">First Name</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Last Name</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Date of Birth</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Gender</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">House No</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Street</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">City</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Zip Code</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Username</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Phone 1</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Phone 2</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Phone 3</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Zone Code</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Password</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-red-700">Actions</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">TIN</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">First Name</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Last Name</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Date of Birth</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Gender</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">House No</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Street</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">City</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Zip Code</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Username</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Phone 1</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Phone 2</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Phone 3</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Zone Code</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Password</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-white">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {taxpayers.map((taxpayer: any) => (
-              <tr key={taxpayer.id} className="border-b border-red-100 hover:bg-red-50">
+            {taxpayers.map((taxpayer: any, idx: number) => (
+              <tr
+                key={taxpayer.id}
+                className={
+                  "transition-colors " +
+                  (idx % 2 === 0
+                    ? "bg-gradient-to-r from-white via-red-50 to-orange-50"
+                    : "bg-gradient-to-r from-orange-50 via-white to-red-50") +
+                  " hover:bg-gradient-to-r hover:from-pink-100 hover:via-orange-100 hover:to-red-100"
+                }
+              >
                 <td className="px-4 py-3 font-semibold text-red-800">{taxpayer.id}</td>
                 <td className="px-4 py-3">{taxpayer.firstName}</td>
                 <td className="px-4 py-3">{taxpayer.lastName}</td>
@@ -760,11 +760,11 @@ function TaxpayerManagement({ taxpayers, setShowAddTaxpayer, handleEditTaxpayer,
                 <td className="px-4 py-3">{taxpayer.zoneCode || ''}</td>
                 <td className="px-4 py-3">{taxpayer.password || ''}</td>
                 <td className="px-4 py-3 flex gap-2">
-                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Edit" onClick={() => handleEditTaxpayer(taxpayer)}>
-                    <Edit className="w-4 h-4 text-red-700" />
+                  <button className="p-2 rounded-lg border border-red-300 bg-gradient-to-br from-red-100 to-orange-100 hover:from-pink-200 hover:to-orange-200" title="Edit" onClick={() => handleEditTaxpayer(taxpayer)}>
+                    <Edit className="w-4 h-4 text-red-600" />
                   </button>
-                  <button className="p-2 hover:bg-red-100 rounded-lg border border-red-200" title="Delete" onClick={() => handleDeleteTaxpayer(taxpayer)}>
-                    <Trash2 className="w-4 h-4 text-red-700" />
+                  <button className="p-2 rounded-lg border border-red-300 bg-gradient-to-br from-red-100 to-orange-100 hover:from-pink-200 hover:to-orange-200" title="Delete" onClick={() => handleDeleteTaxpayer(taxpayer)}>
+                    <Trash2 className="w-4 h-4 text-red-600" />
                   </button>
                 </td>
               </tr>

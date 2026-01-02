@@ -14,7 +14,6 @@ type View = 'dashboard' | 'file-return' | 'payment-history' | 'support' | 'profi
 
 export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
   const [activeView, setActiveView] = useState<View>('dashboard');
-  const [supportNotifications, setSupportNotifications] = useState(1);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -58,7 +57,7 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
 
   const stats = {
     totalReturns, // now dynamically counted from payment history
-    openTickets: supportNotifications
+    openTickets: 1
   };
 
   const handleNotificationClick = () => {
@@ -148,8 +147,8 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
           <button onClick={() => setActiveView('support')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'support' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
             <HelpCircle className="w-5 h-5" />
             <span>Support</span>
-            {supportNotifications > 0 && (
-              <span className="ml-auto bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">{supportNotifications}</span>
+            {1 > 0 && (
+              <span className="ml-auto bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">1</span>
             )}
           </button>
           <button onClick={() => setActiveView('profile')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all ${activeView === 'profile' ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow' : 'text-blue-700 hover:bg-blue-100 border border-blue-200'}`}>
@@ -175,18 +174,18 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
             <div className="flex items-center gap-4">
               <div className="relative">
                 <button 
-                  onClick={() => supportNotifications > 0 && setShowNotificationPopup(! showNotificationPopup)}
+                  onClick={() => 1 > 0 && setShowNotificationPopup(! showNotificationPopup)}
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative"
                 >
                   <Bell className="w-6 h-6 text-gray-600" />
-                  {supportNotifications > 0 && (
+                  {1 > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {supportNotifications}
+                      {1}
                     </span>
                   )}
                 </button>
                 
-                {showNotificationPopup && supportNotifications > 0 && (
+                {showNotificationPopup && 1 > 0 && (
                   <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                     <div className="p-4 border-b border-gray-200">
                       <h3 className="font-semibold">Notifications</h3>
@@ -258,8 +257,6 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
             <SupportTickets 
               userType="taxpayer" 
               currentUserTIN={user.id}
-              highlightUnread={true}
-              onNotificationUpdate={setSupportNotifications}
             />
           )}
 
