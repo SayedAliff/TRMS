@@ -11,49 +11,29 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
   const [userType, setUserType] = useState<UserType>('Taxpayer');
   const [tinOrId, setTinOrId] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  // Mock users matching exact INSERT statements
-  // Taxpayers: Login with TIN
-  // Officers: Login with Officer_ID
-  const mockUsers: Record<string, any> = {
-    // Taxpayers (TIN)
-    '5000': { id: '5000', firstName: 'Abul', lastName: 'Kalam', type: 'Taxpayer' as UserType, zoneName: 'Dhaka North' },
-    '5001': { id: '5001', firstName: 'Bokul', lastName: 'Mia', type: 'Taxpayer' as UserType, zoneName: 'Dhaka' },
-    '5002': { id: '5002', firstName: 'Cina', lastName: 'Akter', type: 'Taxpayer' as UserType, zoneName: 'Chittagong' },
-    '5003': { id: '5003', firstName: 'David', lastName: 'Roy', type: 'Taxpayer' as UserType, zoneName: 'Sylhet' },
-    '5004': { id: '5004', firstName: 'Eva', lastName: 'Rahman', type: 'Taxpayer' as UserType, zoneName: 'Rajshahi' },
-    
-    // Junior Officers (officer_nakib with junior_officer_role)
-    '1000': { id: '1000', firstName: 'Rahim', lastName: 'Uddin', type: 'JuniorOfficer' as UserType, rank: 'Inspector', branch: 'Gulshan' },
-    '1002': { id: '1002', firstName: 'Siaam', lastName: 'Khan', type: 'JuniorOfficer' as UserType, rank: 'Officer', branch: 'Motijheel' },
-    '1003': { id: '1003', firstName: 'Nadia', lastName: 'Islam', type: 'JuniorOfficer' as UserType, rank: 'Assistant', branch: 'Zindabazar' },
-    '1004': { id: '1004', firstName: 'Fahim', lastName: 'Hossain', type: 'JuniorOfficer' as UserType, rank: 'Inspector', branch: 'New Market' },
-    
-    // Senior Manager (manager_alif with senior_manager_role)
-    '1001': { id: '1001', firstName: 'Karim', lastName: 'Ahmed', type: 'SeniorManager' as UserType, rank: 'Commissioner', branch: 'Agrabad' },
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const user = mockUsers[tinOrId];
-    
-    if (!user) {
-      alert('Invalid TIN/Officer ID');
+    setError('');
+
+    if (!tinOrId || !password) {
+      setError('Please fill all fields.');
       return;
     }
-    
-    // Check user type match
-    if (userType === 'Taxpayer' && user.type !== 'Taxpayer') {
-      alert('This ID belongs to an officer. Please switch to Tax Officer login.');
-      return;
+
+    try {
+      const response = await fetch('/api/login/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userType, tinOrId, password })
+      });
+      const user = await response.json();
+      if (!response.ok) throw new Error(user.detail || 'Login failed');
+      onLogin(user);
+    } catch (err: any) {
+      setError(err.message);
     }
-    
-    if (userType !== 'Taxpayer' && user.type === 'Taxpayer') {
-      alert('This TIN belongs to a taxpayer. Please switch to Taxpayer login.');
-      return;
-    }
-    
-    onLogin(user);
   };
 
   return (
@@ -211,6 +191,12 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
                   required
                 />
               </div>
+
+              {error && (
+                <div className="text-red-600 text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  {error}
+                </div>
+              )}
 
               <button
                 type="submit"

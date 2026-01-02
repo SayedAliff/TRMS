@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Home, HelpCircle, LogOut, UserCheck, Ticket, FileText, UserCog, UserPlus, Edit, Trash2, Phone, MapPin, ChevronLeft, ChevronRight, Bell, User as UserIcon, Lock, Save, X, DollarSign } from 'lucide-react';
 import { User } from '../App';
 import { SupportTickets } from './SupportTickets';
@@ -27,7 +27,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     firstName: '',
     lastName: '',
     dateOfBirth: '',
-    gender: 'Male',
+    gender: '',
     houseNo: '',
     street: '',
     city: '',
@@ -63,45 +63,16 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     confirmPassword: ''
   });
 
-  const [taxpayers, setTaxpayers] = useState([
-    // Add all DB fields for each taxpayer (for demo, only some fields shown)
-    { id: '5000', firstName: 'Abul', lastName: 'Kalam', dateOfBirth: '15-JAN-1985', gender: 'Male', houseNo: '55', street: 'Banani', city: 'Dhaka', zipCode: '1213', username: 'abul5000', password: 'pass', phoneNumber1: '01711111111', phoneNumber2: '', phoneNumber3: '', zoneCode: '100', zoneName: 'Dhaka North' },
-    { id: '5001', firstName: 'Bokul', lastName: 'Mia', gender: 'Male', city: 'Dhaka', phoneNumber1: '01922222222', zoneName: 'Dhaka South' },
-    { id: '5002', firstName: 'Cina', lastName: 'Akter', gender: 'Female', city: 'Chittagong', phoneNumber1: '01733333333', zoneName:   'Chittagong Zone' },
-    { id: '5003', firstName: 'David', lastName: 'Roy', gender: 'Male', city: 'Sylhet', phoneNumber1: '01844444444', zoneName: 'Sylhet Zone' },
-    { id: '5004', firstName: 'Eva', lastName: 'Rahman', gender:   'Female', city: 'Rajshahi', phoneNumber1: '01555555555', zoneName: 'Rajshahi Zone' },
-  ]);
+  const [taxpayers, setTaxpayers] = useState<any[]>([]);
+  const [taxpayerTaxData, setTaxpayerTaxData] = useState<any[]>([]);
+  const [] = useState<any[]>([]);
 
-  type TaxpayerTaxData = {
-    tin: string;
-    firstName: string;
-    lastName: string;
-    gender: string;
-    city: string;
-    phoneNumber1: string;
-    zoneName: string;
-    zoneCode: string;
-    returnId: string;
-    assessmentYear: string;
-    totalIncome: string;
-    taxableAmount: string;
-    filingDate: string;
-    taxCategory: string;
-    taxType: string;
-    officerId: string;
-    returnStatus: string;
-    paymentStatus: string | null;
-    paymentConfirmedBy: string | null;
-    paymentConfirmedByName: string | null;
-  };
-
-  const [taxpayerTaxData, setTaxpayerTaxData] = useState<TaxpayerTaxData[]>([
-    { tin: '5000', firstName: 'Abul', lastName: 'Kalam', gender: 'Male', city: 'Dhaka', phoneNumber1: '01711111111', zoneName: 'Dhaka North', zoneCode: '100', returnId: '200', assessmentYear: '2024-2025', totalIncome: '500000', taxableAmount: '50000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Salaried Individual', officerId: '1000', returnStatus: 'Paid', paymentStatus: null, paymentConfirmedBy: null, paymentConfirmedByName: null },
-    { tin: '5001', firstName: 'Bokul', lastName: 'Mia', gender: 'Male', city: 'Dhaka', phoneNumber1: '01922222222', zoneName: 'Dhaka North', zoneCode: '100', returnId: '201', assessmentYear: '2024-2025', totalIncome: '1200000', taxableAmount: '120000', filingDate: '13-DEC-2025', taxCategory: 'Corporate', taxType: 'Limited Company', officerId: '1000', returnStatus: 'Paid', paymentStatus: null, paymentConfirmedBy: null, paymentConfirmedByName: null },
-    { tin: '5002', firstName: 'Cina', lastName: 'Akter', gender: 'Female', city: 'Chittagong', phoneNumber1: '01733333333', zoneName: 'Chittagong', zoneCode: '101', returnId: '202', assessmentYear: '2024-2025', totalIncome: '350000', taxableAmount: '35000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Business Owner', officerId: '1001', returnStatus: 'Pending', paymentStatus: 'Pending', paymentConfirmedBy: null, paymentConfirmedByName: null },
-    { tin: '5003', firstName: 'David', lastName: 'Roy', gender: 'Male', city: 'Sylhet', phoneNumber1: '01844444444', zoneName: 'Sylhet', zoneCode: '102', returnId: '203', assessmentYear: '2024-2025', totalIncome: '800000', taxableAmount: '80000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Professional', officerId: '1002', returnStatus: 'Paid', paymentStatus: null, paymentConfirmedBy: null, paymentConfirmedByName: null },
-    { tin: '5004', firstName: 'Eva', lastName: 'Rahman', gender: 'Female', city: 'Rajshahi', phoneNumber1: '01555555555', zoneName: 'Rajshahi', zoneCode: '103', returnId: '204', assessmentYear: '2024-2025', totalIncome: '450000', taxableAmount: '45000', filingDate: '13-DEC-2025', taxCategory: 'Individual', taxType: 'Self Employed', officerId: '1000', returnStatus: 'Paid', paymentStatus: null, paymentConfirmedBy: null, paymentConfirmedByName: null }
-  ]);
+  useEffect(() => {
+    // TODO: Fetch taxpayers, tax data, and tickets from backend API
+    // setTaxpayers(...)
+    // setTaxpayerTaxData(...)
+    // setTickets(...)
+  }, [user]);
 
   const totalPages = Math.ceil(taxpayerTaxData.length / taxpayersPerPage);
   const startIndex = (currentPage - 1) * taxpayersPerPage;
@@ -123,7 +94,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   };
 
   // Support tickets state - simplified to match DB schema
-  const [tickets, setTickets] = useState<Array<{
+  const [ticketsState, setTicketsState] = useState<Array<{
     ticketId: string;
     issueDescription: string;
     submissionDate: string;
@@ -136,11 +107,11 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   ]);
 
   // Count open tickets for notification
-  const openTicketCount = tickets.filter(t => t.resolutionStatus === 'Open').length;
+  const openTicketCount = ticketsState.filter(t => t.resolutionStatus === 'Open').length;
 
   // Handler for changing ticket status
   const handleTicketStatusChange = (ticketId: string, newStatus: 'Open' | 'In Progress' | 'Resolved' | 'Closed') => {
-    setTickets(prev =>
+    setTicketsState(prev =>
       prev.map(t => t.ticketId === ticketId ? { ...t, resolutionStatus: newStatus } : t)
     );
   };
@@ -587,7 +558,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
           {activeView === 'support' && (
             <SupportTickets
               userType="officer"
-              tickets={tickets}
+              tickets={ticketsState}
               onStatusChange={handleTicketStatusChange}
             />
           )}

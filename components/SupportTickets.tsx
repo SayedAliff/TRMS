@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Ticket, Plus, X, CheckCircle, Clock, XCircle } from 'lucide-react';
 
 interface SupportTicket {
@@ -25,16 +25,20 @@ export function SupportTickets({
 }: SupportTicketsProps) {
   const [showCreateTicket, setShowCreateTicket] = useState(false);
   const [newIssue, setNewIssue] = useState('');
-  const [internalTickets, setInternalTickets] = useState<SupportTicket[]>([]);
-  
-  
+  const [tickets] = useState<SupportTicket[]>([]);
 
-  const tickets = externalTickets || internalTickets;
-  
+  useEffect(() => {
+    // TODO: Fetch tickets from backend API
+    // setTickets(...)
+  }, [userType, currentUserTIN]);
+
+  // Use externalTickets if provided, else local tickets state
+  const allTickets = externalTickets ?? tickets;
+
   // Filter tickets for taxpayer view
   const displayTickets = userType === 'taxpayer' 
-    ? tickets.filter(t => t.taxpayerTIN === currentUserTIN)
-    : tickets;
+    ? allTickets.filter(t => t.taxpayerTIN === currentUserTIN)
+    : allTickets;
 
   const getStatusColor = (status: SupportTicket['resolutionStatus']) => {
     switch (status) {
@@ -67,7 +71,8 @@ export function SupportTickets({
       taxpayerName: 'Current User' // In real app, get from user data
     };
 
-    setInternalTickets([...internalTickets, newTicket]);
+    // TODO: Call backend API to create ticket
+    // On success:
     setNewIssue('');
     setShowCreateTicket(false);
     alert(`Ticket #${newTicket.ticketId} created successfully!`);
@@ -76,11 +81,9 @@ export function SupportTickets({
   const handleStatusChange = (ticketId: string, newStatus: SupportTicket['resolutionStatus']) => {
     if (onStatusChange) {
       onStatusChange(ticketId, newStatus);
-    } else {
-      setInternalTickets(prev => 
-        prev.map(t => t.ticketId === ticketId ? { ...t, resolutionStatus: newStatus } : t)
-      );
-    }
+    } 
+    // TODO: Call backend API to update ticket status
+    // On success:
     alert(`Ticket #${ticketId} status updated to ${newStatus}`);
   };
 

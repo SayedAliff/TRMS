@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Home, Users, Bell, LogOut, UserPlus, Edit, Trash2,
   TrendingUp, TrendingDown, UserCog, FileText, XCircle, User, Lock
@@ -27,12 +27,7 @@ type View = 'dashboard' | 'officers' | 'taxpayers' | 'tax-list' | 'profile' | 'a
 export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboardProps) {
   const [activeView, setActiveView] = useState<View>('dashboard');
   // -- Officers State
-  const [juniorOfficers, setJuniorOfficers] = useState([
-    { id: '1000', firstName: 'Rahim', lastName: 'Uddin', rank: 'Inspector', branch: 'Gulshan' },
-    { id: '1002', firstName: 'Siaam', lastName: 'Khan', rank: 'Officer', branch: 'Motijheel' },
-    { id: '1003', firstName: 'Nadia', lastName: 'Islam', rank: 'Assistant', branch: 'Zindabazar' },
-    { id: '1004', firstName: 'Fahim', lastName: 'Hossain', rank: 'Inspector', branch: 'New Market' }
-  ]);
+  const [juniorOfficers, setJuniorOfficers] = useState<any[]>([]);
   const [newOfficer, setNewOfficer] = useState({ id: '', firstName: '', lastName: '', rank: 'Inspector', branch: '', houseNo: '', street: '', city: '', zipCode: '', password: '' });
   const [showAddOfficer, setShowAddOfficer] = useState(false);
 
@@ -41,17 +36,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
   const [selectedOfficer, setSelectedOfficer] = useState<any>(null);
 
   // -- Taxpayers State
-  const [taxpayers, setTaxpayers] = useState([
-    {
-      id: '5000', firstName: 'Abul', lastName: 'Kalam', dateOfBirth: '1985-01-15', gender: 'Male',
-      houseNo: '55', street: 'Banani', city: 'Dhaka', zipCode: '1213', username: 'abul5000', password: 'pass',
-      phoneNumber1: '01711111111', phoneNumber2: '', phoneNumber3: '', zoneCode: '100', zoneName: 'Dhaka North'
-    },
-    { id: '5001', firstName: 'Bokul', lastName: 'Mia', gender: 'Male', city: 'Dhaka', phoneNumber1: '01922222222', zoneName: 'Dhaka South' },
-    { id: '5002', firstName: 'Cina', lastName: 'Akter', gender: 'Female', city: 'Chittagong', phoneNumber1: '01733333333', zoneName: 'Chittagong Zone' },
-    { id: '5003', firstName: 'David', lastName: 'Roy', gender: 'Male', city: 'Sylhet', phoneNumber1: '01844444444', zoneName: 'Sylhet Zone' },
-    { id: '5004', firstName: 'Eva', lastName: 'Rahman', gender: 'Female', city: 'Rajshahi', phoneNumber1: '01555555555', zoneName: 'Rajshahi Zone' }
-  ]);
+  const [taxpayers, setTaxpayers] = useState<any[]>([]);
   const [newTaxpayer, setNewTaxpayer] = useState({
     firstName: '', lastName: '', gender: 'Male', city: '', phoneNumber1: '', zoneName: ''
   });
@@ -62,13 +47,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
   const [selectedTaxpayer, setSelectedTaxpayer] = useState<any>(null);
 
   // Tax List Data
-  const [comprehensiveTaxData] = useState([
-    { tin: '5000', taxpayerName: 'Abul Kalam', gender: 'Male', city: 'Dhaka', phone: '01711111111', zone: 'Dhaka North', returnId: '200', assessmentYear: '2024-2025', totalIncome: '500000', taxableAmount: '50000', paymentStatus: 'Paid', paymentConfirmedBy: '1000', paymentConfirmedByName: 'Rahim Uddin' },
-    { tin: '5001', taxpayerName: 'Bokul Mia', gender: 'Male', city: 'Dhaka', phone: '01922222222', zone: 'Dhaka South', returnId: '201', assessmentYear: '2024-2025', totalIncome: '1200000', taxableAmount: '120000', paymentStatus: 'Paid', paymentConfirmedBy: '1002', paymentConfirmedByName: 'Siaam Khan' },
-    { tin: '5002', taxpayerName: 'Cina Akter', gender: 'Female', city: 'Chittagong', phone: '01733333333', zone: 'Chittagong Zone', returnId: '202', assessmentYear: '2024-2025', totalIncome: '350000', taxableAmount: '35000', paymentStatus: 'Pending', paymentConfirmedBy: null, paymentConfirmedByName: '-' },
-    { tin: '5003', taxpayerName: 'David Roy', gender: 'Male', city: 'Sylhet', phone: '01844444444', zone: 'Sylhet Zone', returnId: '203', assessmentYear: '2024-2025', totalIncome: '800000', taxableAmount: '80000', paymentStatus: 'Paid', paymentConfirmedBy: '1003', paymentConfirmedByName: 'Nadia Islam' },
-    { tin: '5004', taxpayerName: 'Eva Rahman', gender: 'Female', city: 'Rajshahi', phone: '01555555555', zone: 'Rajshahi Zone', returnId: '204', assessmentYear: '2024-2025', totalIncome: '450000', taxableAmount: '45000', paymentStatus: 'Paid', paymentConfirmedBy: '1000', paymentConfirmedByName: 'Rahim Uddin' }
-  ]);
+  const [comprehensiveTaxData] = useState<any[]>([]);
 
   // PROFILE states (section)
   const [profile, setProfile] = useState({
@@ -184,7 +163,6 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
     };
   });
 
-  const stats = { totalOfficers: juniorOfficers.length, totalTaxpayers: taxpayers.length, pendingAudits: 3, totalRevenue: '41,000' };
 
   function handleEditProfileSave() {
     setProfile(profileEdit);
@@ -198,6 +176,14 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
     setProfileNewPassword('');
     alert('Password changed!');
   }
+
+  // Fetch data from backend (officers, taxpayers, tax data)
+  useEffect(() => {
+    // TODO: Fetch officers, taxpayers, and tax data from backend API
+    // setJuniorOfficers(...)
+    // setTaxpayers(...)
+    // setComprehensiveTaxData(...)
+  }, [user]);
 
   // --------------- RENDER ---------------
   return (
@@ -250,7 +236,12 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
           </div>
         </header>
         <div className="p-8">
-          {activeView === 'dashboard' && <DashboardCards stats={stats} />}
+          {activeView === 'dashboard' && <DashboardCards stats={{
+            totalOfficers: juniorOfficers.length,
+            totalTaxpayers: taxpayers.length,
+            pendingAudits: 0, // TODO: fetch from backend
+            totalRevenue: '0' // TODO: fetch from backend
+          }} />}
           {activeView === 'officers' && (
             <OfficerManagement
               juniorOfficers={juniorOfficers}

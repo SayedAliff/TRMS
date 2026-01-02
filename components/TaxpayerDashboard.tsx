@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Home, FileText, HelpCircle, LogOut, User as UserIcon, Bell, Edit, Lock, Save, X } from 'lucide-react';
 import { User } from '../App';
 import { FileReturnWizard } from './FileReturnWizard';
@@ -13,52 +13,47 @@ interface TaxpayerDashboardProps {
 type View = 'dashboard' | 'file-return' | 'payment-history' | 'support' | 'profile';
 
 export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
+  // Placeholder for backend-fetched data
   const [activeView, setActiveView] = useState<View>('dashboard');
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
-  
-  // Profile edit states
-  const [editedProfile, setEditedProfile] = useState({
-    firstName: user.id === '5000' ? 'Abul' : user.id === '5001' ? 'Bokul' : user.id === '5002' ?  'Cina' : user.id === '5003' ?  'David' : 'Eva',
-    lastName: user.id === '5000' ? 'Kalam' : user.id === '5001' ? 'Mia' : user.id === '5002' ? 'Akter' : user.id === '5003' ? 'Roy' : 'Rahman',
-    dateOfBirth: user.id === '5000' ? '15-JAN-1985' : user.id === '5001' ? '20-MAR-1978' : user.id === '5002' ? '10-JUL-1990' : user.id === '5003' ? '05-SEP-1982' : '25-DEC-1988',
-    gender: user.id === '5000' ? 'Male' : user.id === '5001' ?  'Male' : user.id === '5002' ? 'Female' : user.id === '5003' ? 'Male' :  'Female',
-    houseNo: user.id === '5000' ? '55' : user.id === '5001' ? '12A' : user.id === '5002' ? '78' : user.id === '5003' ? '23' : '45B',
-    street: user.id === '5000' ? 'Banani' : user.id === '5001' ? 'Dhanmondi' : user.id === '5002' ? 'Agrabad' : user.id === '5003' ? 'Zindabazar' : 'Shaheb Bazar',
-    city: user.id === '5000' ? 'Dhaka' : user.id === '5001' ? 'Dhaka' : user.id === '5002' ? 'Chittagong' : user.id === '5003' ? 'Sylhet' : 'Rajshahi',
-    zipCode: user.id === '5000' ? '1213' : user.id === '5001' ? '1209' : user.id === '5002' ? '4100' : user.id === '5003' ? '3100' : '6100',
-    phoneNumber1: user.id === '5000' ? '01711111111' : user.id === '5001' ? '01922222222' : user.id === '5002' ? '01733333333' : user.id === '5003' ? '01844444444' : '01555555555',
-    phoneNumber2: '',
-    zoneName: user.id === '5000' ? 'Dhaka North' : user.id === '5001' ? 'Dhaka South' : user.id === '5002' ? 'Chittagong Zone' : user.id === '5003' ? 'Sylhet Zone' : 'Rajshahi Zone',
-    zoneCode: user.id === '5000' ? '100' : user.id === '5001' ? '101' : user.id === '5002' ?  '102' : user.id === '5003' ? '103' : '104'
-  });
 
+  // Backend data placeholders
+  const defaultTaxpayerData = {
+    tin: '',
+    firstName: '',
+    lastName: '',
+    dateOfBirth: '',
+    gender: '',
+    houseNo: '',
+    street: '',
+    city: '',
+    zipCode: '',
+    phoneNumber1: '',
+    phoneNumber2: '',
+    phoneNumber3: '',
+    zoneName: '',
+    zoneCode: '',
+    username: '',
+    password: ''
+  };
+
+  const [editedProfile, setEditedProfile] = useState<any>(defaultTaxpayerData);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
+  const [taxpayerData] = useState<any>(defaultTaxpayerData);
+  const [stats] = useState<any>({ totalReturns: 0, openTickets: 0, totalPaid: 0 });
 
-  const taxpayerData = {
-    tin: user.id,
-    ... editedProfile
-  };
-
-  // Simulate payment history data (replace with real data if available)
-  const paidReturns = [
-    { amount: 50000 },
-    { amount: 120000 },
-    { amount: 35000 }
-  ];
-  // Calculate total returns filed from payment history
-  const totalReturns = paidReturns.length;
-  const totalPaid = paidReturns.reduce((sum, r) => sum + r.amount, 0);
-
-  const stats = {
-    totalReturns, // now dynamically counted from payment history
-    openTickets: 1
-  };
+  useEffect(() => {
+    // TODO: Fetch taxpayer profile, stats, and payment history from backend API
+    // setTaxpayerData(...)
+    // setEditedProfile(...)
+    // setStats(...)
+  }, [user]);
 
   const handleNotificationClick = () => {
     setActiveView('support');
@@ -66,48 +61,12 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
   };
 
   const handleSaveProfile = () => {
-    // Track changes for audit log
-    const changes = [];
-    const originalData = {
-      firstName: user.id === '5000' ?  'Abul' : user.id === '5001' ?  'Bokul' : user.id === '5002' ?  'Cina' : user.id === '5003' ?  'David' : 'Eva',
-      lastName: user.id === '5000' ? 'Kalam' : user.id === '5001' ? 'Mia' : user.id === '5002' ? 'Akter' : user.id === '5003' ? 'Roy' : 'Rahman',
-      phoneNumber1: user.id === '5000' ? '01711111111' : user.id === '5001' ? '01922222222' : user.id === '5002' ? '01733333333' : user.id === '5003' ? '01844444444' : '01555555555',
-      city: user.id === '5000' ? 'Dhaka' : user.id === '5001' ? 'Dhaka' : user.id === '5002' ? 'Chittagong' : user.id === '5003' ? 'Sylhet' : 'Rajshahi',
-    };
-
-    if (editedProfile.firstName !== originalData.firstName) {
-      changes.push(`First Name: ${originalData.firstName} → ${editedProfile.firstName}`);
-    }
-    if (editedProfile.lastName !== originalData. lastName) {
-      changes.push(`Last Name: ${originalData.lastName} → ${editedProfile. lastName}`);
-    }
-    if (editedProfile.phoneNumber1 !== originalData.phoneNumber1) {
-      changes.push(`Phone: ${originalData.phoneNumber1} → ${editedProfile.phoneNumber1}`);
-    }
-    if (editedProfile.city !== originalData.city) {
-      changes.push(`City: ${originalData.city} → ${editedProfile.city}`);
-    }
-
-    if (changes.length > 0) {
-      alert(`Profile updated successfully!\n\nChanges made:\n${changes.join('\n')}\n\nOfficers have been notified of these changes.`);
-    } else {
-      alert('No changes detected.');
-    }
-    
+    // TODO: Send updated profile to backend API
     setShowEditProfile(false);
   };
 
   const handleChangePassword = () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('New passwords do not match! ');
-      return;
-    }
-    if (passwordData.newPassword.length < 4) {
-      alert('Password must be at least 4 characters long! ');
-      return;
-    }
-    
-    alert(`Password changed successfully!\n\nNew Password: ${passwordData.newPassword}\n\nOfficers have been notified of this security update.`);
+    // TODO: Send password change request to backend API
     setShowChangePassword(false);
     setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
@@ -155,13 +114,15 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
         <header className="bg-white border-b border-gray-200 px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold">Welcome, {taxpayerData.firstName} {taxpayerData.lastName}</h2>
-              <p className="text-sm text-gray-600">TIN: {taxpayerData. tin}</p>
+              <h2 className="text-xl font-semibold">
+                Welcome, {taxpayerData?.firstName} {taxpayerData?.lastName}
+              </h2>
+              <p className="text-sm text-gray-600">TIN: {taxpayerData?.tin}</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="relative">
                 <button 
-                  onClick={() => 1 > 0 && setShowNotificationPopup(! showNotificationPopup)}
+                  onClick={() => 1 > 0 && setShowNotificationPopup(!showNotificationPopup)}
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative"
                 >
                   <Bell className="w-6 h-6 text-gray-600" />
@@ -190,7 +151,7 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
                 )}
               </div>
               <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-                {taxpayerData.firstName[0]}{taxpayerData.lastName[0]}
+                {(taxpayerData?.firstName?.[0] || '')}{(taxpayerData?.lastName?.[0] || '')}
               </div>
             </div>
           </div>
@@ -229,7 +190,7 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Total Paid</p>
-                      <p className="text-3xl font-bold text-blue-700">৳{totalPaid.toLocaleString()}</p>
+                      <p className="text-3xl font-bold text-blue-700">৳{stats.totalPaid?.toLocaleString()}</p>
                     </div>
                   </div>
                 </div>
@@ -247,7 +208,7 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
             />
           )}
 
-          {activeView === 'profile' && (
+          {activeView === 'profile' && taxpayerData && (
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-6">

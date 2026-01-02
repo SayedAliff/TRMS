@@ -23,7 +23,7 @@ export function FileReturnWizard({ onPaymentSuccess, userTaxCategory = 'Individu
   const [isCalculated, setIsCalculated] = useState(false);
 
   const calculateTax = () => {
-    const income = parseFloat(formData.totalIncome);
+    const income = parseFloat(formData.totalIncome || '0');
     if (!income) return;
 
     // Tax calculation based on user's registered tax category
@@ -312,7 +312,7 @@ export function FileReturnWizard({ onPaymentSuccess, userTaxCategory = 'Individu
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>Total Income:</span>
-                  <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>{parseFloat(formData.totalIncome).toLocaleString()} BDT</span>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>{formData.totalIncome ? parseFloat(formData.totalIncome).toLocaleString() : '0'} BDT</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>Tax Category:</span>

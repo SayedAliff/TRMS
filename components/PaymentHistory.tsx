@@ -1,15 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function PaymentHistory() {
-  const paymentHistory = [
-    { id: '90000', year: '2024-2025', amount: '5,000', taxType: 'Income Tax - Individual', method: 'Bkash', date: '13-DEC-2025', status: 'Completed' },
-    { id: '90001', year: '2023-2024', amount: '25,000', taxType: 'Corporate Tax', method: 'Bank', date: '10-JAN-2025', status: 'Completed' },
-    { id: '90002', year: '2022-2023', amount: '1,000', taxType: 'VAT', method: 'Cash', date: '15-FEB-2024', status: 'Pending' },
-    { id: '90003', year: '2022-2023', amount: '8,000', taxType: 'Income Tax - Individual', method: 'Card', date: '15-FEB-2024', status: 'Completed' },
-    { id: '90004', year: '2021-2022', amount: '2,000', taxType: 'Property Tax', method: 'Nagad', date: '15-FEB-2024', status: 'Failed' },
-  ];
+  const [paymentHistory] = useState<any[]>([]);
+  const [latestStatus] = useState('');
 
-  const [latestStatus] = useState('Pending');
+  useEffect(() => {
+    // TODO: Fetch payment history from backend API
+    // setPaymentHistory(...)
+    // setLatestStatus(...)
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {

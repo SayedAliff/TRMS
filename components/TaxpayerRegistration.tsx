@@ -33,13 +33,14 @@ export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistration
     { code: '5', name: 'Khulna Zone', city: 'Khulna' }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Simulate TIN auto-generation (tin_seq.NEXTVAL starting from 5000)
-    const nextTin = 5005; // Next available TIN
-    
-    alert(`Registration Successful!\nYour TIN: ${nextTin}\n\nPlease use this TIN to login.`);
+    // TODO: Send registration data to backend API
+    // Backend should return TIN after successful registration
+    // Example:
+    // const response = await fetch('/api/register', { method: 'POST', body: JSON.stringify(formData) });
+    // const data = await response.json();
+    // alert(`Registration Successful!\nYour TIN: ${data.tin}\n\nPlease use this TIN to login.`);
     onSuccess();
   };
 
@@ -125,6 +126,7 @@ export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistration
                 >
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
 
