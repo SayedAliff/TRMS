@@ -12,7 +12,26 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
   const [tinOrId, setTinOrId] = useState('');
   const [password, setPassword] = useState('');
 
- 
+  // Mock users matching exact INSERT statements
+  // Taxpayers: Login with TIN
+  // Officers: Login with Officer_ID
+  const mockUsers: Record<string, any> = {
+    // Taxpayers (TIN)
+    '5000': { id: '5000', firstName: 'Abul', lastName: 'Kalam', type: 'Taxpayer' as UserType, zoneName: 'Dhaka North' },
+    '5001': { id: '5001', firstName: 'Bokul', lastName: 'Mia', type: 'Taxpayer' as UserType, zoneName: 'Dhaka' },
+    '5002': { id: '5002', firstName: 'Cina', lastName: 'Akter', type: 'Taxpayer' as UserType, zoneName: 'Chittagong' },
+    '5003': { id: '5003', firstName: 'David', lastName: 'Roy', type: 'Taxpayer' as UserType, zoneName: 'Sylhet' },
+    '5004': { id: '5004', firstName: 'Eva', lastName: 'Rahman', type: 'Taxpayer' as UserType, zoneName: 'Rajshahi' },
+    
+    // Junior Officers (officer_nakib with junior_officer_role)
+    '1000': { id: '1000', firstName: 'Rahim', lastName: 'Uddin', type: 'JuniorOfficer' as UserType, rank: 'Inspector', branch: 'Gulshan' },
+    '1002': { id: '1002', firstName: 'Siaam', lastName: 'Khan', type: 'JuniorOfficer' as UserType, rank: 'Officer', branch: 'Motijheel' },
+    '1003': { id: '1003', firstName: 'Nadia', lastName: 'Islam', type: 'JuniorOfficer' as UserType, rank: 'Assistant', branch: 'Zindabazar' },
+    '1004': { id: '1004', firstName: 'Fahim', lastName: 'Hossain', type: 'JuniorOfficer' as UserType, rank: 'Inspector', branch: 'New Market' },
+    
+    // Senior Manager (manager_alif with senior_manager_role)
+    '1001': { id: '1001', firstName: 'Karim', lastName: 'Ahmed', type: 'SeniorManager' as UserType, rank: 'Commissioner', branch: 'Agrabad' },
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
