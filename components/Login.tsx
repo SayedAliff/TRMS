@@ -17,6 +17,13 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
     e.preventDefault();
     setError('');
 
+    // TODO: Integrate with Django API for login
+    // Example:
+    // const response = await fetch('/api/login/', { ... });
+    // const user = await response.json();
+    // if (!response.ok) { setError('Invalid credentials'); return; }
+    // onLogin(user);
+
     if (!tinOrId || !password) {
       setError('Please fill all fields.');
       return;

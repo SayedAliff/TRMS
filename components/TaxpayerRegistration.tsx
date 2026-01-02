@@ -35,12 +35,11 @@ export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistration
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Send registration data to backend API
-    // Backend should return TIN after successful registration
+    // TODO: Integrate with Django API for taxpayer registration
     // Example:
-    // const response = await fetch('/api/register', { method: 'POST', body: JSON.stringify(formData) });
+    // const response = await fetch('/api/register/', { ... });
     // const data = await response.json();
-    // alert(`Registration Successful!\nYour TIN: ${data.tin}\n\nPlease use this TIN to login.`);
+    // alert(`Registration Successful!\nYour TIN: ${data.tin}`);
     onSuccess();
   };
 

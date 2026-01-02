@@ -33,7 +33,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
 
   // Edit officer logic
   const [showEditOfficer, setShowEditOfficer] = useState(false);
-  const [selectedOfficer, setSelectedOfficer] = useState<any>(null);
+  const [, setSelectedOfficer] = useState<any>(null);
 
   // -- Taxpayers State
   const [taxpayers, setTaxpayers] = useState<any[]>([]);
@@ -44,7 +44,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
 
   // Edit taxpayer logic
   const [showEditTaxpayer, setShowEditTaxpayer] = useState(false);
-  const [selectedTaxpayer, setSelectedTaxpayer] = useState<any>(null);
+  const [, setSelectedTaxpayer] = useState<any>(null);
 
   // Tax List Data
   const [comprehensiveTaxData] = useState<any[]>([]);
@@ -108,7 +108,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
     setShowEditOfficer(true);
   };
   const handleUpdateOfficer = () => {
-    setJuniorOfficers(juniorOfficers.map(off => off.id === selectedOfficer.id ? { ...off, ...newOfficer } : off));
+    // TODO: Integrate with Django API to update officer
     setShowEditOfficer(false);
     setSelectedOfficer(null);
     setNewOfficer({ id: '', firstName: '', lastName: '', rank: 'Inspector', branch: '', houseNo: '', street: '', city: '', zipCode: '', password: '' });
@@ -127,6 +127,9 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
     }
   };
   const handleDeleteOfficer = (officer: any) => {
+    // TODO: Integrate with Django API to delete officer
+    // Example:
+    // fetch(`/api/manager/officers/${officer.id}/`, { method: 'DELETE' })
     if (window.confirm("Delete officer?")) setJuniorOfficers(juniorOfficers.filter(off => off.id !== officer.id));
   };
 
@@ -137,12 +140,15 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
     setShowEditTaxpayer(true);
   };
   const handleUpdateTaxpayer = () => {
-    setTaxpayers(taxpayers.map(tax => tax.id === selectedTaxpayer.id ? { ...tax, ...newTaxpayer } : tax));
+    // TODO: Integrate with Django API to update taxpayer
     setShowEditTaxpayer(false);
     setSelectedTaxpayer(null);
     setNewTaxpayer({ firstName: '', lastName: '', gender: 'Male', city: '', phoneNumber1: '', zoneName: '' });
   };
   const handleDeleteTaxpayer = (taxpayer: any) => {
+    // TODO: Integrate with Django API to delete taxpayer
+    // Example:
+    // fetch(`/api/manager/taxpayers/${taxpayer.id}/`, { method: 'DELETE' })
     if (window.confirm("Delete taxpayer?")) setTaxpayers(taxpayers.filter(tax => tax.id !== taxpayer.id));
   };
 
@@ -165,12 +171,13 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
 
 
   function handleEditProfileSave() {
+    // TODO: Integrate with Django API to update manager profile
     setProfile(profileEdit);
     setShowEditProfile(false);
     alert('Profile Updated');
   }
   function handleProfilePasswordChange() {
-    if (profileNewPassword.length < 3) return alert('Password must be at least 3 characters!');
+    // TODO: Integrate with Django API to change manager password
     setProfile({ ...profile, password: profileNewPassword });
     setShowProfilePassModal(false);
     setProfileNewPassword('');
@@ -179,10 +186,11 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
 
   // Fetch data from backend (officers, taxpayers, tax data)
   useEffect(() => {
-    // TODO: Fetch officers, taxpayers, and tax data from backend API
-    // setJuniorOfficers(...)
-    // setTaxpayers(...)
-    // setComprehensiveTaxData(...)
+    // TODO: Integrate with Django API to fetch officers, taxpayers, and tax data
+    // Example:
+    // fetch('/api/manager/officers/')
+    // fetch('/api/manager/taxpayers/')
+    // fetch('/api/manager/taxdata/')
   }, [user]);
 
   // --------------- RENDER ---------------

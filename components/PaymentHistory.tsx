@@ -5,9 +5,9 @@ export function PaymentHistory() {
   const [latestStatus] = useState('');
 
   useEffect(() => {
-    // TODO: Fetch payment history from backend API
-    // setPaymentHistory(...)
-    // setLatestStatus(...)
+    // TODO: Integrate with Django API to fetch payment history
+    // Example:
+    // fetch('/api/taxpayer/payments/')
   }, []);
 
   const getStatusColor = (status: string) => {

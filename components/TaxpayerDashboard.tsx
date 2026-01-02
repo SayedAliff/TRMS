@@ -49,10 +49,11 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
   const [stats] = useState<any>({ totalReturns: 0, openTickets: 0, totalPaid: 0 });
 
   useEffect(() => {
-    // TODO: Fetch taxpayer profile, stats, and payment history from backend API
-    // setTaxpayerData(...)
-    // setEditedProfile(...)
-    // setStats(...)
+    // TODO: Integrate with Django API to fetch taxpayer profile, stats, and payment history
+    // Example:
+    // fetch('/api/taxpayer/profile/')
+    // fetch('/api/taxpayer/stats/')
+    // fetch('/api/taxpayer/payments/')
   }, [user]);
 
   const handleNotificationClick = () => {
@@ -61,12 +62,12 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
   };
 
   const handleSaveProfile = () => {
-    // TODO: Send updated profile to backend API
+    // TODO: Integrate with Django API to update taxpayer profile
     setShowEditProfile(false);
   };
 
   const handleChangePassword = () => {
-    // TODO: Send password change request to backend API
+    // TODO: Integrate with Django API to change taxpayer password
     setShowChangePassword(false);
     setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };

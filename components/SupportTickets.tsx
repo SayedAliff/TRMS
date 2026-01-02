@@ -28,8 +28,9 @@ export function SupportTickets({
   const [tickets] = useState<SupportTicket[]>([]);
 
   useEffect(() => {
-    // TODO: Fetch tickets from backend API
-    // setTickets(...)
+    // TODO: Integrate with Django API to fetch support tickets
+    // Example:
+    // fetch('/api/support/tickets/')
   }, [userType, currentUserTIN]);
 
   // Use externalTickets if provided, else local tickets state
@@ -71,8 +72,9 @@ export function SupportTickets({
       taxpayerName: 'Current User' // In real app, get from user data
     };
 
-    // TODO: Call backend API to create ticket
-    // On success:
+    // TODO: Integrate with Django API to create support ticket
+    // Example:
+    // fetch('/api/support/tickets/', { ... })
     setNewIssue('');
     setShowCreateTicket(false);
     alert(`Ticket #${newTicket.ticketId} created successfully!`);
@@ -82,8 +84,9 @@ export function SupportTickets({
     if (onStatusChange) {
       onStatusChange(ticketId, newStatus);
     } 
-    // TODO: Call backend API to update ticket status
-    // On success:
+    // TODO: Integrate with Django API to update ticket status
+    // Example:
+    // fetch(`/api/support/tickets/${ticketId}/`, { ... })
     alert(`Ticket #${ticketId} status updated to ${newStatus}`);
   };
 

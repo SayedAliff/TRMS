@@ -57,10 +57,16 @@ export function FileReturnWizard({ onPaymentSuccess, userTaxCategory = 'Individu
   };
 
   const handleSubmitReturn = () => {
+    // TODO: Integrate with Django API to submit tax return
+    // Example:
+    // fetch('/api/taxpayer/returns/', { ... })
     setShowPayment(true);
   };
 
   const handlePayNow = () => {
+    // TODO: Integrate with Django API to process payment
+    // Example:
+    // fetch('/api/taxpayer/pay/', { ... })
     setPaymentSuccess(true);
     if (onPaymentSuccess) {
       onPaymentSuccess();
@@ -122,7 +128,7 @@ export function FileReturnWizard({ onPaymentSuccess, userTaxCategory = 'Individu
                 </span>
               </div>
               {index < steps.length - 1 && (
-                <div className="flex-1 h-1 mx-4" style={{ backgroundColor: currentStep > step.number ? '#2e7d32' : '#e0e0e0' }}></div>
+                <div className="flex-1 h-1 mx-4" style={{ backgroundColor: currentStep > step.number ? '#2e7d32' : '#e0e0e0' }} />
               )}
             </div>
           ))}

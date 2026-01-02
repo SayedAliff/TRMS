@@ -42,7 +42,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   });
 
   // Officer's own profile data (add all DB fields)
-  const [officerProfile, setOfficerProfile] = useState({
+  const [officerProfile] = useState({
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -63,15 +63,16 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     confirmPassword: ''
   });
 
-  const [taxpayers, setTaxpayers] = useState<any[]>([]);
+  const [taxpayers] = useState<any[]>([]);
   const [taxpayerTaxData, setTaxpayerTaxData] = useState<any[]>([]);
   const [] = useState<any[]>([]);
 
   useEffect(() => {
-    // TODO: Fetch taxpayers, tax data, and tickets from backend API
-    // setTaxpayers(...)
-    // setTaxpayerTaxData(...)
-    // setTickets(...)
+    // TODO: Integrate with Django API to fetch taxpayers, tax data, and tickets
+    // Example:
+    // fetch('/api/officer/taxpayers/')
+    // fetch('/api/officer/taxdata/')
+    // fetch('/api/support/tickets/')
   }, [user]);
 
   const totalPages = Math.ceil(taxpayerTaxData.length / taxpayersPerPage);
@@ -123,41 +124,12 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   };
 
   const handleSaveProfile = () => {
-    // Track changes
-    const changes = [];
-    if (editedProfile.firstName !== officerProfile.firstName) {
-      changes.push(`First Name: ${officerProfile.firstName} → ${editedProfile.firstName}`);
-    }
-    if (editedProfile.lastName !== officerProfile.lastName) {
-      changes.push(`Last Name: ${officerProfile.lastName} → ${editedProfile.lastName}`);
-    }
-    if (editedProfile.branch !== officerProfile.branch) {
-      changes.push(`Branch: ${officerProfile.branch} → ${editedProfile.branch}`);
-    }
-    if (editedProfile.phone !== officerProfile.phone) {
-      changes.push(`Phone: ${officerProfile.phone} → ${editedProfile.phone}`);
-    }
-
-    if (changes.length > 0) {
-      setOfficerProfile({ ...editedProfile });
-      alert(`Profile updated successfully!\n\nChanges:\n${changes.join('\n')}\n\n✅ Senior Manager has been notified of these changes.`);
-    } else {
-      alert('No changes detected.');
-    }
+    // TODO: Integrate with Django API to update officer profile
     setShowEditProfile(false);
   };
 
   const handleChangePassword = () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('New passwords do not match! ');
-      return;
-    }
-    if (passwordData.newPassword.length < 4) {
-      alert('Password must be at least 4 characters! ');
-      return;
-    }
-    
-    alert(`Password changed successfully!\n\nOfficer: ${officerProfile.firstName} ${officerProfile.lastName}\nID: ${officerProfile.id}\n\n✅ Senior Manager has been notified of this security update.`);
+    // TODO: Integrate with Django API to change officer password
     setShowChangePassword(false);
     setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
@@ -165,10 +137,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   // Add Taxpayer handler (auto TIN)
   const handleAddTaxpayer = (e: React.FormEvent) => {
     e.preventDefault();
-    const nextTaxpayerId = (5000 + taxpayers.length).toString();
-    const newTax = { id: nextTaxpayerId, ...newTaxpayer };
-    setTaxpayers([...taxpayers, newTax]);
-    alert(`Taxpayer Added!\nTIN: ${nextTaxpayerId}\nName: ${newTaxpayer.firstName} ${newTaxpayer.lastName}`);
+    // TODO: Integrate with Django API to add taxpayer
     setShowAddTaxpayer(false);
     setNewTaxpayer({
       firstName: '', lastName: '', dateOfBirth: '', gender: 'Male', houseNo: '', street: '', city: '', zipCode: '', username: '', password: '', phoneNumber1: '', phoneNumber2: '', phoneNumber3: '', zoneCode: '', zoneName: ''
@@ -197,11 +166,9 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     setShowEditTaxpayer(true);
   };
 
-  const handleUpdateTaxpayer = (e:   React.FormEvent) => {
+  const handleUpdateTaxpayer = (e: React.FormEvent) => {
     e.preventDefault();
-    const updatedTaxpayers = taxpayers.map(tax => tax.id === selectedTaxpayerEdit.id ? { ...tax, ...newTaxpayer } : tax);
-    setTaxpayers(updatedTaxpayers);
-    alert(`Taxpayer #${selectedTaxpayerEdit.id} Updated! `);
+    // TODO: Integrate with Django API to update taxpayer
     setShowEditTaxpayer(false);
     setSelectedTaxpayerEdit(null);
     setNewTaxpayer({
@@ -223,12 +190,11 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     });
   };
 
-  const handleDeleteTaxpayer = (taxpayer: any) => {
-    if (confirm(`Are you sure you want to delete Taxpayer TIN #${taxpayer.id}?`)) {
-      const updatedTaxpayers = taxpayers.filter(tax => tax.  id !== taxpayer.id);
-      setTaxpayers(updatedTaxpayers);
-      alert(`Taxpayer TIN #${taxpayer.id} deleted!`);
-    }
+  const handleDeleteTaxpayer = () => {
+    // TODO: Integrate with Django API to delete taxpayer
+    // Example:
+    // fetch(`/api/officer/taxpayers/${taxpayer.id}/`, { method: 'DELETE' })
+    // ...existing code...
   };
 
   return (
@@ -429,7 +395,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                         <td className="px-4 py-3">{t.zoneCode || ''}</td>
                         <td className="px-4 py-3 flex gap-2">
                           <button onClick={() => handleEditTaxpayer(t)} className="p-2 hover:bg-purple-100 rounded-lg border border-purple-200"><Edit className="w-4 h-4 text-purple-700" /></button>
-                          <button onClick={() => handleDeleteTaxpayer(t)} className="p-2 hover:bg-purple-100 rounded-lg border border-purple-200"><Trash2 className="w-4 h-4 text-purple-700" /></button>
+                          <button onClick={handleDeleteTaxpayer} className="p-2 hover:bg-purple-100 rounded-lg border border-purple-200"><Trash2 className="w-4 h-4 text-purple-700" /></button>
                         </td>
                       </tr>
                     ))}
