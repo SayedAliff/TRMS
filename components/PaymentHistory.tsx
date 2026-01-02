@@ -9,7 +9,7 @@ export function PaymentHistory() {
     { id: '90004', year: '2021-2022', amount: '2,000', taxType: 'Property Tax', method: 'Nagad', date: '15-FEB-2024', status: 'Failed' },
   ];
 
-  const [latestStatus, setLatestStatus] = useState('Pending');
+  const [latestStatus] = useState('Pending');
 
   const getStatusColor = (status: string) => {
     switch (status) {

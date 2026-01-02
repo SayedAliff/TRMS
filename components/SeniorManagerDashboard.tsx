@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
-  Home, Users, Shield, HelpCircle, LogOut, UserPlus, Edit, Trash2,
-  TrendingUp, TrendingDown, UserCog, FileText, CheckCircle, XCircle, MapPin, User, Lock, Bell
+  Home, Users, Bell, LogOut, UserPlus, Edit, Trash2,
+  TrendingUp, TrendingDown, UserCog, FileText, XCircle, User, Lock
 } from 'lucide-react';
 
 interface UserType {
@@ -98,26 +98,17 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
     // ...add more as needed...
   ]);
   const [showNoticeModal, setShowNoticeModal] = useState(false);
-  // Add highlightAuditId state (missing in your file)
-  const [highlightAuditId, setHighlightAuditId] = useState<string | null>(null);
+  // const [highlightAuditId, setHighlightAuditId] = useState<string | null>(null);
 
   // Handle notification click: go to audit logs and highlight entry
   function handleNotificationClick(notif: any) {
     setShowNoticeModal(false); // Close modal immediately
     setActiveView('audit-logs');
     // Reset highlightAuditId to null before setting new value to retrigger animation
-    setTimeout(() => {
-      setHighlightAuditId(notif.relatedId);
-    }, 0);
+    // setTimeout(() => {
+    //   setHighlightAuditId(notif.relatedId);
+    // }, 0);
     setNotifications(notifications.map(n => n.id === notif.id ? { ...n, unread: false } : n));
-  }
-
-  // Mark all notifications as read when opening the modal
-  function handleOpenNoticeModal() {
-    setShowNoticeModal(true);
-    if (notifications.some(n => n.unread)) {
-      setNotifications(notifications.map(n => ({ ...n, unread: false })));
-    }
   }
 
   // Officer actions
@@ -884,44 +875,6 @@ function TaxpayerAddModal({ onClose, newTaxpayer, setNewTaxpayer, setTaxpayers, 
           {isEdit ? "Save Changes" : "Add Taxpayer"}
         </button>
       </div>
-    </div>
-  );
-}
-
-// Simple AuditLogsComponent placeholder
-function AuditLogsComponent({ highlightAuditId, setHighlightAuditId }: { highlightAuditId?: string | null, setHighlightAuditId?: (id: string | null) => void }) {
-  // Example logs (should be replaced with real audit logs from props or state)
-  const logs = [
-    { id: '4001', description: 'Rahim Uddin changed password', timestamp: '2024-01-10 10:00' },
-    { id: '1001', description: 'Rahim Uddin replied to ticket #300 for Abul Kalam', timestamp: '2024-01-11 14:30' },
-    { id: '3001', description: 'Rahim Uddin updated his officer profile', timestamp: '2024-01-12 09:15' },
-    // ...add more as needed...
-  ];
-
-  return (
-    <div className="bg-white rounded-xl shadow border p-8">
-      <h3 className="text-xl font-bold mb-4 text-red-700">Audit Logs</h3>
-      {logs.length === 0 ? (
-        <p className="text-red-600">No audit logs available.</p>
-      ) : (
-        <div className="mt-6 space-y-2">
-          {logs.map(log => {
-            const isHighlighted = highlightAuditId === log.id;
-            return (
-              <div
-                key={log.id}
-                className={`p-4 rounded border transition-all duration-300 ${isHighlighted ? 'border-4 border-red-600 bg-red-50 animate-pulse' : 'border-gray-200 bg-white'}`}
-                onAnimationEnd={() => {
-                  if (isHighlighted && setHighlightAuditId) setHighlightAuditId(null);
-                }}
-              >
-                <div className="font-bold text-red-700">{log.description}</div>
-                <div className="text-xs text-gray-500">{log.timestamp}</div>
-              </div>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }

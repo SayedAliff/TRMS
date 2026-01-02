@@ -63,18 +63,6 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     confirmPassword: ''
   });
 
-  const stats = {
-    totalTaxpayers:  5,
-    openTickets: 2,
-    resolvedToday: 2
-  };
-
-  const recentActivity = [
-    { id: 1, text: 'New ticket #303 from TIN 5003', time: '1 hour ago' },
-    { id: 2, text: 'New ticket #301 from TIN 5001', time: '2 hours ago' },
-    { id: 3, text: 'Taxpayer profile updated:   TIN 5002', time:   '5 hours ago' },
-  ];
-
   const [taxpayers, setTaxpayers] = useState([
     // Add all DB fields for each taxpayer (for demo, only some fields shown)
     { id: '5000', firstName: 'Abul', lastName: 'Kalam', dateOfBirth: '15-JAN-1985', gender: 'Male', houseNo: '55', street: 'Banani', city: 'Dhaka', zipCode: '1213', username: 'abul5000', password: 'pass', phoneNumber1: '01711111111', phoneNumber2: '', phoneNumber3: '', zoneCode: '100', zoneName: 'Dhaka North' },
@@ -119,30 +107,6 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   const startIndex = (currentPage - 1) * taxpayersPerPage;
   const endIndex = startIndex + taxpayersPerPage;
   const currentTaxpayers = taxpayerTaxData.slice(startIndex, endIndex);
-
-  // Handler to submit a tax return for review (set status to Pending)
-  function handleSubmitForReview(tin: string) {
-    setTaxpayerTaxData(prev => prev.map(t =>
-      t.tin === tin ? { ...t, returnStatus: 'Pending' } : t
-    ));
-  }
-
-  // Handler for confirming payment
-  function handleConfirmPayment(tin: string) {
-    setTaxpayerTaxData(prev =>
-      prev.map(t =>
-        t.tin === tin
-          ? {
-              ...t,
-              paymentStatus: 'Paid',
-              paymentConfirmedBy: officerProfile.id,
-              paymentConfirmedByName: officerProfile.firstName + ' ' + officerProfile.lastName
-            }
-          : t
-      )
-    );
-    alert('Payment confirmed! Taxpayer will see status as Paid.');
-  }
 
   const handlePrevious = () => {
     if (currentPage > 1) {

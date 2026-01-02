@@ -1,13 +1,10 @@
 {
   "name": "trms",
-  "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Tax Revenue Management System",
-  "author": "Sayed Alif",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
@@ -55,6 +52,7 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.0.0",

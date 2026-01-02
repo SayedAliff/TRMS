@@ -112,19 +112,6 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
     setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
 
-  // Payment handler: simulate direct payment and notify officer
-  const handleDirectPayment = () => {
-    alert('Payment successful!\n\nYour payment information has been sent to the tax officer for confirmation.');
-    // Here you could trigger a notification or update state as needed
-  };
-
-  // Simulate support tickets data (replace with real data if available)
-  const supportTicketsData = [
-    { id: 1, subject: "Refund Query", status: "Open", lastReply: "2024-06-10", officer: "Mr. Rahim" },
-    { id: 2, subject: "TIN Correction", status: "Closed", lastReply: "2024-06-08", officer: "Ms. Sultana" },
-    { id: 3, subject: "Payment Issue", status: "Open", lastReply: "2024-06-05", officer: "Mr. Karim" },
-  ];
-
   return (
     <div className="flex h-screen bg-gray-50">
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
