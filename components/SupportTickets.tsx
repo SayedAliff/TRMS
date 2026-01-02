@@ -13,7 +13,6 @@ interface SupportTicket {
 interface SupportTicketsProps {
   userType: 'taxpayer' | 'officer';
   currentUserTIN?: string;
-  onNotificationUpdate?: (count: number) => void;
   tickets?: SupportTicket[];
   onStatusChange?: (ticketId: string, newStatus: SupportTicket['resolutionStatus']) => void;
 }
@@ -21,19 +20,14 @@ interface SupportTicketsProps {
 export function SupportTickets({ 
   userType, 
   currentUserTIN,
-  onNotificationUpdate,
   tickets: externalTickets,
   onStatusChange
 }: SupportTicketsProps) {
   const [showCreateTicket, setShowCreateTicket] = useState(false);
   const [newIssue, setNewIssue] = useState('');
+  const [internalTickets, setInternalTickets] = useState<SupportTicket[]>([]);
   
-  // Demo tickets matching DB schema
-  const [internalTickets, setInternalTickets] = useState<SupportTicket[]>([
-    { ticketId: '301', issueDescription: 'Payment not reflected in my account after bank transfer', submissionDate: '2024-06-01', resolutionStatus: 'Open', taxpayerTIN: '5001', taxpayerName: 'Bokul Mia' },
-    { ticketId: '302', issueDescription: 'Need help with filing tax return process', submissionDate: '2024-06-02', resolutionStatus: 'In Progress', taxpayerTIN: '5002', taxpayerName: 'Cina Akter' },
-    { ticketId: '303', issueDescription: 'TIN certificate download not working', submissionDate: '2024-06-03', resolutionStatus: 'Resolved', taxpayerTIN: '5003', taxpayerName: 'David Roy' },
-  ]);
+  
 
   const tickets = externalTickets || internalTickets;
   
