@@ -63,9 +63,18 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
     confirmPassword: ''
   });
 
-  const [taxpayers] = useState<any[]>([]);
-  const [taxpayerTaxData, setTaxpayerTaxData] = useState<any[]>([]);
-  const [] = useState<any[]>([]);
+  // DEMO DATA START
+  // TODO: REMOVE DEMO DATA when connecting to Django API. Use API: /api/officer/taxpayers/, /api/officer/taxdata/
+  const [taxpayers] = useState<any[]>([
+    { id: '5000', firstName: 'Abul', lastName: 'Kalam', dateOfBirth: '1980-01-01', gender: 'Male', houseNo: '55', street: 'Banani', city: 'Dhaka', zipCode: '1213', username: 'abul80', password: '123456', phoneNumber1: '01711111111', phoneNumber2: '01811111111', phoneNumber3: '', zoneCode: '1' },
+    { id: '5001', firstName: 'Bokul', lastName: 'Mia', dateOfBirth: '1990-05-15', gender: 'Male', houseNo: '12', street: 'Puran', city: 'Dhaka', zipCode: '1100', username: 'bokul90', password: '654321', phoneNumber1: '01922222222', phoneNumber2: '', phoneNumber3: '', zoneCode: '2' }
+  ]);
+  const [taxpayerTaxData, setTaxpayerTaxData] = useState<any[]>([
+    { tin: '5000', firstName: 'Abul', lastName: 'Kalam', gender: 'Male', city: 'Dhaka', returnId: '20000', assessmentYear: '2024-2025', totalIncome: 500000, taxableAmount: 400000, filingDate: '2024-06-01', taxCategory: 'Individual', taxType: 'Individual', returnStatus: 'Paid', phoneNumber1: '01711111111', zoneName: 'Dhaka North' },
+    { tin: '5001', firstName: 'Bokul', lastName: 'Mia', gender: 'Male', city: 'Dhaka', returnId: '20001', assessmentYear: '2024-2025', totalIncome: 1200000, taxableAmount: 1000000, filingDate: '2024-06-01', taxCategory: 'Corporate', taxType: 'Corporate', returnStatus: 'Pending', phoneNumber1: '01922222222', zoneName: 'Chittagong Central' }
+  ]);
+  // DEMO DATA END
+
 
   useEffect(() => {
     // TODO: Integrate with Django API to fetch taxpayers, tax data, and tickets

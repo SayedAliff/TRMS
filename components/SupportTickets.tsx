@@ -33,8 +33,30 @@ export function SupportTickets({
     // fetch('/api/support/tickets/')
   }, [userType, currentUserTIN]);
 
+  // DEMO DATA START
+  // TODO: REMOVE DEMO DATA when connecting to Django API. Use API: /api/support/tickets/
+  const demoTickets: SupportTicket[] = [
+    {
+      ticketId: '301',
+      issueDescription: 'Login Issue',
+      submissionDate: '2024-06-01',
+      resolutionStatus: 'Resolved',
+      taxpayerTIN: '5000',
+      taxpayerName: 'Abul Kalam'
+    },
+    {
+      ticketId: '302',
+      issueDescription: 'Calculation Error',
+      submissionDate: '2024-06-02',
+      resolutionStatus: 'Open',
+      taxpayerTIN: '5001',
+      taxpayerName: 'Bokul Mia'
+    }
+  ];
+  // DEMO DATA END
+
   // Use externalTickets if provided, else local tickets state
-  const allTickets = externalTickets ?? tickets;
+  const allTickets = externalTickets ?? demoTickets;
 
   // Filter tickets for taxpayer view
   const displayTickets = userType === 'taxpayer' 

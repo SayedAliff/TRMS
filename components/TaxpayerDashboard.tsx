@@ -19,24 +19,25 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
-  // Backend data placeholders
+  // DEMO DATA START
+  // TODO: REMOVE DEMO DATA when connecting to Django API. Use API: /api/taxpayer/profile/, /api/taxpayer/stats/, /api/taxpayer/payments/
   const defaultTaxpayerData = {
-    tin: '',
-    firstName: '',
-    lastName: '',
-    dateOfBirth: '',
-    gender: '',
-    houseNo: '',
-    street: '',
-    city: '',
-    zipCode: '',
-    phoneNumber1: '',
-    phoneNumber2: '',
+    tin: '5000',
+    firstName: 'Abul',
+    lastName: 'Kalam',
+    dateOfBirth: '1980-01-01',
+    gender: 'Male',
+    houseNo: '55',
+    street: 'Banani',
+    city: 'Dhaka',
+    zipCode: '1213',
+    phoneNumber1: '01711111111',
+    phoneNumber2: '01811111111',
     phoneNumber3: '',
-    zoneName: '',
-    zoneCode: '',
-    username: '',
-    password: ''
+    zoneName: 'Dhaka North',
+    zoneCode: '1',
+    username: 'abul80',
+    password: '123456'
   };
 
   const [editedProfile, setEditedProfile] = useState<any>(defaultTaxpayerData);
@@ -46,7 +47,14 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
     confirmPassword: ''
   });
   const [taxpayerData] = useState<any>(defaultTaxpayerData);
-  const [stats] = useState<any>({ totalReturns: 0, openTickets: 0, totalPaid: 0 });
+
+  // Demo stats
+  const [stats] = useState<any>({
+    totalReturns: 1,
+    openTickets: 1,
+    totalPaid: 5000
+  });
+  // DEMO DATA END
 
   useEffect(() => {
     // TODO: Integrate with Django API to fetch taxpayer profile, stats, and payment history

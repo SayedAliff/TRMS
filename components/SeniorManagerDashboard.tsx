@@ -27,7 +27,10 @@ type View = 'dashboard' | 'officers' | 'taxpayers' | 'tax-list' | 'profile' | 'a
 export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboardProps) {
   const [activeView, setActiveView] = useState<View>('dashboard');
   // -- Officers State
-  const [juniorOfficers, setJuniorOfficers] = useState<any[]>([]);
+  const [juniorOfficers, setJuniorOfficers] = useState<any[]>([
+    { id: '1000', firstName: 'Rahim', lastName: 'Uddin', rank: 'Inspector', branch: 'Gulshan', houseNo: '10', street: 'Road 5', city: 'Dhaka', zipCode: '1212', password: 'pass1' },
+    { id: '1002', firstName: 'Siaam', lastName: 'Khan', rank: 'Officer', branch: 'Motijheel', houseNo: '5', street: 'Bank Road', city: 'Dhaka', zipCode: '1000', password: 'pass3' }
+  ]);
   const [newOfficer, setNewOfficer] = useState({ id: '', firstName: '', lastName: '', rank: 'Inspector', branch: '', houseNo: '', street: '', city: '', zipCode: '', password: '' });
   const [showAddOfficer, setShowAddOfficer] = useState(false);
 
@@ -36,7 +39,10 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
   const [, setSelectedOfficer] = useState<any>(null);
 
   // -- Taxpayers State
-  const [taxpayers, setTaxpayers] = useState<any[]>([]);
+  const [taxpayers, setTaxpayers] = useState<any[]>([
+    { id: '5000', firstName: 'Abul', lastName: 'Kalam', dateOfBirth: '1980-01-01', gender: 'Male', houseNo: '55', street: 'Banani', city: 'Dhaka', zipCode: '1213', username: 'abul80', phoneNumber1: '01711111111', phoneNumber2: '01811111111', phoneNumber3: '', zoneCode: '1', password: '123456' },
+    { id: '5001', firstName: 'Bokul', lastName: 'Mia', dateOfBirth: '1990-05-15', gender: 'Male', houseNo: '12', street: 'Puran', city: 'Dhaka', zipCode: '1100', username: 'bokul90', phoneNumber1: '01922222222', phoneNumber2: '', phoneNumber3: '', zoneCode: '2', password: '654321' }
+  ]);
   const [newTaxpayer, setNewTaxpayer] = useState({
     firstName: '', lastName: '', gender: 'Male', city: '', phoneNumber1: '', zoneName: ''
   });
@@ -47,7 +53,10 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
   const [, setSelectedTaxpayer] = useState<any>(null);
 
   // Tax List Data
-  const [comprehensiveTaxData] = useState<any[]>([]);
+  const [comprehensiveTaxData] = useState<any[]>([
+    { tin: '5000', taxpayerName: 'Abul Kalam', gender: 'Male', returnId: '20000', assessmentYear: '2024-2025', category: 'Individual', taxableAmount: 400000, paymentStatus: 'Paid', paymentConfirmedBy: '1000', paymentConfirmedByName: 'Rahim Uddin' },
+    { tin: '5001', taxpayerName: 'Bokul Mia', gender: 'Male', returnId: '20001', assessmentYear: '2024-2025', category: 'Corporate', taxableAmount: 1000000, paymentStatus: 'Paid', paymentConfirmedBy: '1002', paymentConfirmedByName: 'Siaam Khan' }
+  ]);
 
   // PROFILE states (section)
   const [profile, setProfile] = useState({
