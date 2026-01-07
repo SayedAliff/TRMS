@@ -28,8 +28,8 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
   const [activeView, setActiveView] = useState<View>('dashboard');
   // -- Officers State
   const [juniorOfficers, setJuniorOfficers] = useState<any[]>([
-    { id: '1000', firstName: 'Rahim', lastName: 'Uddin', rank: 'Inspector', branch: 'Gulshan', houseNo: '10', street: 'Road 5', city: 'Dhaka', zipCode: '1212', password: 'pass1' },
-    { id: '1002', firstName: 'Siaam', lastName: 'Khan', rank: 'Officer', branch: 'Motijheel', houseNo: '5', street: 'Bank Road', city: 'Dhaka', zipCode: '1000', password: 'pass3' }
+    { id: '1000', username: 'rahim', firstName: 'Rahim', lastName: 'Uddin', rank: 'Inspector', branch: 'Gulshan', houseNo: '10', street: 'Road 5', city: 'Dhaka', zipCode: '1212', password: 'pass1' },
+    { id: '1002', username: 'siaam', firstName: 'Siaam', lastName: 'Khan', rank: 'Officer', branch: 'Motijheel', houseNo: '5', street: 'Bank Road', city: 'Dhaka', zipCode: '1000', password: 'pass3' }
   ]);
   const [newOfficer, setNewOfficer] = useState({ id: '', firstName: '', lastName: '', rank: 'Inspector', branch: '', houseNo: '', street: '', city: '', zipCode: '', password: '' });
   const [showAddOfficer, setShowAddOfficer] = useState(false);
@@ -40,8 +40,8 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
 
   // -- Taxpayers State
   const [taxpayers, setTaxpayers] = useState<any[]>([
-    { id: '5000', firstName: 'Abul', lastName: 'Kalam', dateOfBirth: '1980-01-01', gender: 'Male', houseNo: '55', street: 'Banani', city: 'Dhaka', zipCode: '1213', username: 'abul80', phoneNumber1: '01711111111', phoneNumber2: '01811111111', phoneNumber3: '', zoneCode: '1', password: '123456' },
-    { id: '5001', firstName: 'Bokul', lastName: 'Mia', dateOfBirth: '1990-05-15', gender: 'Male', houseNo: '12', street: 'Puran', city: 'Dhaka', zipCode: '1100', username: 'bokul90', phoneNumber1: '01922222222', phoneNumber2: '', phoneNumber3: '', zoneCode: '2', password: '654321' }
+    { id: '5000', username: 'abul80', firstName: 'Abul', lastName: 'Kalam', dateOfBirth: '1980-01-01', gender: 'Male', houseNo: '55', street: 'Banani', city: 'Dhaka', zipCode: '1213', phoneNumber1: '01711111111', phoneNumber2: '01811111111', phoneNumber3: '', zoneCode: '1', password: '123456' },
+    { id: '5001', username: 'bokul90', firstName: 'Bokul', lastName: 'Mia', dateOfBirth: '1990-05-15', gender: 'Male', houseNo: '12', street: 'Puran', city: 'Dhaka', zipCode: '1100', phoneNumber1: '01922222222', phoneNumber2: '', phoneNumber3: '', zoneCode: '2', password: '654321' }
   ]);
   const [newTaxpayer, setNewTaxpayer] = useState({
     firstName: '', lastName: '', gender: 'Male', city: '', phoneNumber1: '', zoneName: ''

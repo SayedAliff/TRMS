@@ -42,18 +42,23 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   });
 
   // Officer's own profile data (add all DB fields)
+  // DEMO DATA START
+  // TODO: REMOVE DEMO DATA when connecting to Django API. Use API: /api/officer/profile/
   const [officerProfile] = useState({
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    rank: user.rank,
-    branch: user.branch,
-    houseNo: user.houseNo,
-    street: user.street,
-    city: user.city,
-    zipCode: user.zipCode,
-    phone: user.id === '1000' ? '01711223344' : user.id === '1001' ? '01822334455' : '01933445566'
+    id: '1000',
+    username: 'rahim',
+    firstName: 'Rahim',
+    lastName: 'Uddin',
+    rank: 'Inspector',
+    branch: 'Gulshan',
+    houseNo: '10',
+    street: 'Road 5',
+    city: 'Dhaka',
+    zipCode: '1212',
+    phone: '01711223344',
+    password: 'pass1'
   });
+  // DEMO DATA END
 
   const [editedProfile, setEditedProfile] = useState({ ...officerProfile });
 
@@ -64,14 +69,10 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   });
 
   // DEMO DATA START
-  // TODO: REMOVE DEMO DATA when connecting to Django API. Use API: /api/officer/taxpayers/, /api/officer/taxdata/
-  const [taxpayers] = useState<any[]>([
-    { id: '5000', firstName: 'Abul', lastName: 'Kalam', dateOfBirth: '1980-01-01', gender: 'Male', houseNo: '55', street: 'Banani', city: 'Dhaka', zipCode: '1213', username: 'abul80', password: '123456', phoneNumber1: '01711111111', phoneNumber2: '01811111111', phoneNumber3: '', zoneCode: '1' },
-    { id: '5001', firstName: 'Bokul', lastName: 'Mia', dateOfBirth: '1990-05-15', gender: 'Male', houseNo: '12', street: 'Puran', city: 'Dhaka', zipCode: '1100', username: 'bokul90', password: '654321', phoneNumber1: '01922222222', phoneNumber2: '', phoneNumber3: '', zoneCode: '2' }
-  ]);
+  // TODO: REMOVE DEMO DATA when connecting to Django API. Use API: /api/officer/taxdata/
   const [taxpayerTaxData, setTaxpayerTaxData] = useState<any[]>([
-    { tin: '5000', firstName: 'Abul', lastName: 'Kalam', gender: 'Male', city: 'Dhaka', returnId: '20000', assessmentYear: '2024-2025', totalIncome: 500000, taxableAmount: 400000, filingDate: '2024-06-01', taxCategory: 'Individual', taxType: 'Individual', returnStatus: 'Paid', phoneNumber1: '01711111111', zoneName: 'Dhaka North' },
-    { tin: '5001', firstName: 'Bokul', lastName: 'Mia', gender: 'Male', city: 'Dhaka', returnId: '20001', assessmentYear: '2024-2025', totalIncome: 1200000, taxableAmount: 1000000, filingDate: '2024-06-01', taxCategory: 'Corporate', taxType: 'Corporate', returnStatus: 'Pending', phoneNumber1: '01922222222', zoneName: 'Chittagong Central' }
+    { tin: '5000', firstName: 'Abul', lastName: 'Kalam', gender: 'Male', city: 'Dhaka', returnId: '20000', assessmentYear: '2024-2025', totalIncome: 500000, taxableAmount: 400000, filingDate: '2024-06-01', taxCategory: 'Individual', taxType: 'Individual', returnStatus: 'Paid', phoneNumber1: '01711111111', zoneName: 'Dhaka North', username: 'abul80' },
+    { tin: '5001', firstName: 'Bokul', lastName: 'Mia', gender: 'Male', city: 'Dhaka', returnId: '20001', assessmentYear: '2024-2025', totalIncome: 1200000, taxableAmount: 1000000, filingDate: '2024-06-01', taxCategory: 'Corporate', taxType: 'Corporate', returnStatus: 'Pending', phoneNumber1: '01922222222', zoneName: 'Chittagong Central', username: 'bokul90' }
   ]);
   // DEMO DATA END
 
@@ -299,7 +300,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-white rounded-lg shadow border p-6 flex flex-col items-center">
                     <UserCheck className="w-8 h-8 text-purple-600 mb-2" />
-                    <div className="text-3xl font-bold text-purple-700">{taxpayers.length}</div>
+                    <div className="text-3xl font-bold text-purple-700">{taxpayerTaxData.length}</div>
                     <div className="text-gray-600 mt-1">Total Taxpayers</div>
                   </div>
                   <div className="bg-white rounded-lg shadow border p-6 flex flex-col items-center">
@@ -386,9 +387,9 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
                     </tr>
                   </thead>
                   <tbody>
-                    {taxpayers.map(t => (
-                      <tr key={t.id} className="border-b border-purple-100 hover:bg-purple-50">
-                        <td className="px-4 py-3 font-semibold text-purple-800">{t.id}</td>
+                    {taxpayerTaxData.map((t, idx) => (
+                      <tr key={t.tin || idx} className="border-b border-purple-100 hover:bg-purple-50">
+                        <td className="px-4 py-3 font-semibold text-purple-800">{t.tin}</td>
                         <td className="px-4 py-3">{t.firstName}</td>
                         <td className="px-4 py-3">{t.lastName}</td>
                         <td className="px-4 py-3">{t.dateOfBirth || ''}</td>

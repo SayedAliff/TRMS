@@ -8,14 +8,60 @@ interface LoginProps {
 }
 
 export function Login({ onLogin, onShowRegistration }: LoginProps) {
+  // Only two options: Taxpayer and JuniorOfficer (for both officer and manager)
   const [userType, setUserType] = useState<UserType>('Taxpayer');
-  const [tinOrId, setTinOrId] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // DEMO DATA START
+    // Only two options: Taxpayer and Officer (junior or senior)
+    const demoUsers = [
+      // Taxpayers
+      { username: 'abul80', password: '123456', type: 'Taxpayer' },
+      { username: 'bokul90', password: '654321', type: 'Taxpayer' },
+      { username: 'cina85', password: 'pass', type: 'Taxpayer' },
+      { username: 'david75', password: 'word', type: 'Taxpayer' },
+      { username: 'eva95', password: 'secure', type: 'Taxpayer' },
+      // Officers
+      { username: 'rahim', password: 'pass1', type: 'JuniorOfficer' },
+      { username: 'karim', password: 'pass2', type: 'JuniorOfficer' },
+      { username: 'siaam', password: 'pass3', type: 'JuniorOfficer' },
+      { username: 'nadia', password: 'pass4', type: 'JuniorOfficer' },
+      { username: 'fahim', password: 'pass5', type: 'JuniorOfficer' },
+      // Senior Manager (login as officer)
+      { username: 'manager_alif', password: 'boss456', type: 'SeniorManager' }
+    ];
+    const found = demoUsers.find(
+      u =>
+        u.username === username &&
+        u.password === password &&
+        (
+          (userType === 'Taxpayer' && u.type === 'Taxpayer') ||
+          (userType === 'JuniorOfficer' && (u.type === 'JuniorOfficer' || u.type === 'SeniorManager'))
+        )
+    );
+    if (found) {
+      onLogin({
+        id: found.username,
+        firstName: found.username.charAt(0).toUpperCase() + found.username.slice(1),
+        lastName: '',
+        type: found.type as UserType,
+        rank: found.type === 'JuniorOfficer' ? 'Inspector' : '',
+        branch: found.type === 'JuniorOfficer' ? 'Gulshan' : '',
+        houseNo: '',
+        street: '',
+        city: '',
+        zipCode: '',
+        password: found.password
+      });
+      return;
+    }
+    // DEMO DATA END
 
     // TODO: Integrate with Django API for login
     // Example:
@@ -24,7 +70,7 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
     // if (!response.ok) { setError('Invalid credentials'); return; }
     // onLogin(user);
 
-    if (!tinOrId || !password) {
+    if (!username || !password) {
       setError('Please fill all fields.');
       return;
     }
@@ -33,7 +79,7 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
       const response = await fetch('/api/login/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userType, tinOrId, password })
+        body: JSON.stringify({ userType, username, password })
       });
       const user = await response.json();
       if (!response.ok) throw new Error(user.detail || 'Login failed');
@@ -147,12 +193,12 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
               <button
                 onClick={() => setUserType('JuniorOfficer')}
                 className={`flex-1 py-3 px-4 rounded-lg transition-all duration-200 ${
-                  userType === 'JuniorOfficer' || userType === 'SeniorManager'
+                  userType === 'JuniorOfficer'
                     ? 'text-white shadow-lg transform scale-105'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
                 style={{
-                  background: userType === 'JuniorOfficer' || userType === 'SeniorManager' ? 'linear-gradient(135deg, #7B68EE 0%, #6a5acd 100%)' : 'transparent',
+                  background: userType === 'JuniorOfficer' ? 'linear-gradient(135deg, #7B68EE 0%, #6a5acd 100%)' : 'transparent',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 600
                 }}
@@ -165,17 +211,17 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm mb-2 text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
-                  {userType === 'Taxpayer' ? 'TIN' : 'Officer ID'}
+                  Username
                 </label>
                 <input
                   type="text"
-                  placeholder={userType === 'Taxpayer' ? '5000' : '1000'}
-                  value={tinOrId}
-                  onChange={(e) => setTinOrId(e.target.value)}
+                  placeholder="Enter username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-current transition-all"
                   style={{ 
                     fontFamily: 'Inter, sans-serif',
-                    borderColor: tinOrId ? (userType === 'Taxpayer' ? '#2F80ED' : '#7B68EE') : undefined
+                    borderColor: username ? (userType === 'Taxpayer' ? '#2F80ED' : '#7B68EE') : undefined
                   }}
                   required
                 />
