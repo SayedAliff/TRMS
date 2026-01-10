@@ -211,11 +211,11 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm mb-2 text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
-                  Username
+                  {userType === 'Taxpayer' ? 'TIN' : 'Officer ID'}
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter username"
+                  placeholder={userType === 'Taxpayer' ? 'Enter TIN' : 'Enter Officer ID'}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-current transition-all"
