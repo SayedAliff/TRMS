@@ -1,24 +1,16 @@
-import { useState, useEffect } from 'react';
+
+// DEMO DATA START
+const paymentHistory = [
+  { id: '90000', year: '2024-2025', amount: 5000, taxType: 'Individual', method: 'Bkash', date: '2024-06-01', status: 'Completed' },
+  { id: '90001', year: '2024-2025', amount: 25000, taxType: 'Corporate', method: 'Bank', date: '2024-06-01', status: 'Completed' },
+  { id: '90002', year: '2024-2025', amount: 1000, taxType: 'SME Business', method: 'Cash', date: '2024-06-01', status: 'Pending' },
+  { id: '90003', year: '2024-2025', amount: 8000, taxType: 'Individual', method: 'Card', date: '2024-05-27', status: 'Completed' },
+  { id: '90004', year: '2024-2025', amount: 2000, taxType: 'Senior Citizen', method: 'Nagad', date: '2024-06-01', status: 'Failed' }
+];
+const latestStatus = 'Completed';
+// DEMO DATA END
 
 export function PaymentHistory() {
-  // DEMO DATA START
-  // TODO: REMOVE DEMO DATA when connecting to Django API. Use API: /api/taxpayer/payments/
-  const [paymentHistory] = useState<any[]>([
-    { id: '90000', year: '2024-2025', amount: 5000, taxType: 'Individual', method: 'Bkash', date: '2024-06-01', status: 'Completed' },
-    { id: '90001', year: '2024-2025', amount: 25000, taxType: 'Corporate', method: 'Bank', date: '2024-06-01', status: 'Completed' },
-    { id: '90002', year: '2024-2025', amount: 1000, taxType: 'SME Business', method: 'Cash', date: '2024-06-01', status: 'Pending' },
-    { id: '90003', year: '2024-2025', amount: 8000, taxType: 'Individual', method: 'Card', date: '2024-05-27', status: 'Completed' },
-    { id: '90004', year: '2024-2025', amount: 2000, taxType: 'Senior Citizen', method: 'Nagad', date: '2024-06-01', status: 'Failed' }
-  ]);
-  const [latestStatus] = useState('Completed');
-  // DEMO DATA END
-
-  useEffect(() => {
-    // TODO: Integrate with Django API to fetch payment history
-    // Example:
-    // fetch('/api/taxpayer/payments/')
-  }, []);
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Completed':

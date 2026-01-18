@@ -6,6 +6,12 @@ interface FileReturnWizardProps {
   userTaxCategory?: string;
 }
 
+const steps = [
+  { number: 1, title: 'Basic Info' },
+  { number: 2, title: 'Income Details' },
+  { number: 3, title: 'Review & Submit' }
+];
+
 export function FileReturnWizard({ onPaymentSuccess, userTaxCategory = 'Individual' }: FileReturnWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [showPayment, setShowPayment] = useState(false);
@@ -90,12 +96,6 @@ export function FileReturnWizard({ onPaymentSuccess, userTaxCategory = 'Individu
       declaration: false
     });
   };
-
-  const steps = [
-    { number: 1, title: 'Basic Info' },
-    { number: 2, title: 'Income Details' },
-    { number: 3, title: 'Review & Submit' }
-  ];
 
   return (
     <div className="max-w-4xl mx-auto">

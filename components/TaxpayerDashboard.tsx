@@ -12,6 +12,33 @@ interface TaxpayerDashboardProps {
 
 type View = 'dashboard' | 'file-return' | 'payment-history' | 'support' | 'profile';
 
+// DEMO DATA START
+const defaultTaxpayerData = {
+  tin: '5000',
+  firstName: 'Abul',
+  lastName: 'Kalam',
+  dateOfBirth: '1980-01-01',
+  gender: 'Male',
+  houseNo: '55',
+  street: 'Banani',
+  city: 'Dhaka',
+  zipCode: '1213',
+  phoneNumber1: '01711111111',
+  phoneNumber2: '01811111111',
+  phoneNumber3: '',
+  zoneName: 'Dhaka North',
+  zoneCode: '1',
+  username: 'abul80',
+  password: '123456'
+};
+
+const stats = {
+  totalReturns: 1,
+  openTickets: 1,
+  totalPaid: 5000
+};
+// DEMO DATA END
+
 export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
   // Placeholder for backend-fetched data
   const [activeView, setActiveView] = useState<View>('dashboard');
@@ -19,43 +46,13 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
-  // DEMO DATA START
-  // TODO: REMOVE DEMO DATA when connecting to Django API. Use API: /api/taxpayer/profile/, /api/taxpayer/stats/, /api/taxpayer/payments/
-  const defaultTaxpayerData = {
-    tin: '5000',
-    firstName: 'Abul',
-    lastName: 'Kalam',
-    dateOfBirth: '1980-01-01',
-    gender: 'Male',
-    houseNo: '55',
-    street: 'Banani',
-    city: 'Dhaka',
-    zipCode: '1213',
-    phoneNumber1: '01711111111',
-    phoneNumber2: '01811111111',
-    phoneNumber3: '',
-    zoneName: 'Dhaka North',
-    zoneCode: '1',
-    username: 'abul80',
-    password: '123456'
-  };
-  // DEMO DATA END
-
+  // Remove useState for taxpayerData and stats, use constants above
   const [editedProfile, setEditedProfile] = useState<any>(defaultTaxpayerData);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
-  const [taxpayerData] = useState<any>(defaultTaxpayerData);
-
-  // Demo stats
-  const [stats] = useState<any>({
-    totalReturns: 1,
-    openTickets: 1,
-    totalPaid: 5000
-  });
-  // DEMO DATA END
 
   useEffect(() => {
     // TODO: Integrate with Django API to fetch taxpayer profile, stats, and payment history
@@ -125,9 +122,9 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold">
-                Welcome, {taxpayerData?.firstName} {taxpayerData?.lastName}
+                Welcome, {defaultTaxpayerData?.firstName} {defaultTaxpayerData?.lastName}
               </h2>
-              <p className="text-sm text-gray-600">TIN: {taxpayerData?.tin}</p>
+              <p className="text-sm text-gray-600">TIN: {defaultTaxpayerData?.tin}</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="relative">
@@ -161,7 +158,7 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
                 )}
               </div>
               <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-                {(taxpayerData?.firstName?.[0] || '')}{(taxpayerData?.lastName?.[0] || '')}
+                {(defaultTaxpayerData?.firstName?.[0] || '')}{(defaultTaxpayerData?.lastName?.[0] || '')}
               </div>
             </div>
           </div>
@@ -218,7 +215,7 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
             />
           )}
 
-          {activeView === 'profile' && taxpayerData && (
+          {activeView === 'profile' && defaultTaxpayerData && (
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-6">
@@ -234,35 +231,35 @@ export function TaxpayerDashboard({ user, onLogout }:  TaxpayerDashboardProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="text-sm text-gray-600 mb-1 block">TIN</label>
-                    <p className="text-lg font-semibold text-blue-600">{taxpayerData.tin}</p>
+                    <p className="text-lg font-semibold text-blue-600">{defaultTaxpayerData.tin}</p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-600 mb-1 block">Full Name</label>
-                    <p className="text-lg font-semibold">{taxpayerData.firstName} {taxpayerData.lastName}</p>
+                    <p className="text-lg font-semibold">{defaultTaxpayerData.firstName} {defaultTaxpayerData.lastName}</p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-600 mb-1 block">Date of Birth</label>
-                    <p className="text-lg font-medium">{taxpayerData.dateOfBirth}</p>
+                    <p className="text-lg font-medium">{defaultTaxpayerData.dateOfBirth}</p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-600 mb-1 block">Gender</label>
-                    <p className="text-lg font-medium">{taxpayerData.gender}</p>
+                    <p className="text-lg font-medium">{defaultTaxpayerData.gender}</p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-600 mb-1 block">Address</label>
-                    <p className="text-lg font-medium">{taxpayerData.houseNo}, {taxpayerData.street}</p>
+                    <p className="text-lg font-medium">{defaultTaxpayerData.houseNo}, {defaultTaxpayerData.street}</p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-600 mb-1 block">City</label>
-                    <p className="text-lg font-medium">{taxpayerData.city} - {taxpayerData.zipCode}</p>
+                    <p className="text-lg font-medium">{defaultTaxpayerData.city} - {defaultTaxpayerData.zipCode}</p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-600 mb-1 block">Phone Number</label>
-                    <p className="text-lg font-medium">{taxpayerData.phoneNumber1}</p>
+                    <p className="text-lg font-medium">{defaultTaxpayerData.phoneNumber1}</p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-600 mb-1 block">Tax Zone</label>
-                    <p className="text-lg font-medium">{taxpayerData.zoneName} ({taxpayerData.zoneCode})</p>
+                    <p className="text-lg font-medium">{defaultTaxpayerData.zoneName} ({defaultTaxpayerData.zoneCode})</p>
                   </div>
                 </div>
               </div>
