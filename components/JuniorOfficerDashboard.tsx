@@ -40,7 +40,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   });
 
   // Add a state for taxpayer form data
-  const [, setTaxpayerForm] = useState<any>({
+  const [] = useState<any>({
     firstName: '',
     lastName: '',
     dateOfBirth: '',
@@ -447,10 +447,4 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   );
 }
 
-function setShowAddTaxpayer(_arg0: boolean) {
-  throw new Error('Function not implemented.');
-}
-function setSelectedTaxpayerEdit(_taxpayer: any) {
-  throw new Error('Function not implemented.');
-}
 
