@@ -1,96 +1,53 @@
 import { useState } from 'react';
-import { User, UserType } from '../App';
 import { Shield } from 'lucide-react';
 
 interface LoginProps {
-  onLogin: (user: User) => void;
+  onLogin: (user: any) => void;
   onShowRegistration: () => void;
 }
 
 export function Login({ onLogin, onShowRegistration }: LoginProps) {
-  // Only two options: Taxpayer and JuniorOfficer (for both officer and manager)
-  const [userType, setUserType] = useState<UserType>('Taxpayer');
-  const [username, setUsername] = useState('');
+  const [user_type, setUserType] = useState<'taxpayer' | 'officer'>('taxpayer');
+  const [tin, setTin] = useState('');
+  const [officer_id, setOfficerId] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    // DEMO DATA START
-    // Only two options: Taxpayer and Officer (junior or senior)
-    const demoUsers = [
-      // Taxpayers
-      { username: 'abul80', password: '123456', type: 'Taxpayer' },
-      { username: 'bokul90', password: '654321', type: 'Taxpayer' },
-      { username: 'cina85', password: 'pass', type: 'Taxpayer' },
-      { username: 'david75', password: 'word', type: 'Taxpayer' },
-      { username: 'eva95', password: 'secure', type: 'Taxpayer' },
-      // Officers
-      { username: 'rahim', password: 'pass1', type: 'JuniorOfficer' },
-      { username: 'karim', password: 'pass2', type: 'JuniorOfficer' },
-      { username: 'siaam', password: 'pass3', type: 'JuniorOfficer' },
-      { username: 'nadia', password: 'pass4', type: 'JuniorOfficer' },
-      { username: 'fahim', password: 'pass5', type: 'JuniorOfficer' },
-      // Senior Manager (login as officer)
-      { username: 'manager_alif', password: 'boss456', type: 'SeniorManager' }
-    ];
-    const found = demoUsers.find(
-      u =>
-        u.username === username &&
-        u.password === password &&
-        (
-          (userType === 'Taxpayer' && u.type === 'Taxpayer') ||
-          (userType === 'JuniorOfficer' && (u.type === 'JuniorOfficer' || u.type === 'SeniorManager'))
-        )
-    );
-    if (found) {
-      onLogin({
-        id: found.username,
-        firstName: found.username.charAt(0).toUpperCase() + found.username.slice(1),
-        lastName: '',
-        type: found.type as UserType,
-        rank: found.type === 'JuniorOfficer' ? 'Inspector' : '',
-        branch: found.type === 'JuniorOfficer' ? 'Gulshan' : '',
-        houseNo: '',
-        street: '',
-        city: '',
-        zipCode: '',
-        password: found.password
-      });
-      return;
+    let payload: any = { password };
+    if (user_type === 'taxpayer') {
+      if (!tin) { setError('Please enter TIN.'); return; }
+      payload.tin = tin;
+    } else {
+      if (!officer_id) { setError('Please enter Officer ID.'); return; }
+      payload.officer_id = officer_id;
     }
-    // DEMO DATA END
-
-    // TODO: Integrate with Django API for login
-    // Example:
-    // const response = await fetch('/api/login/', { ... });
-    // const user = await response.json();
-    // if (!response.ok) { setError('Invalid credentials'); return; }
-    // onLogin(user);
-
-    if (!username || !password) {
-      setError('Please fill all fields.');
-      return;
-    }
-
     try {
-      const response = await fetch('/api/login/', {
+      const res = await fetch('/api/users/auth/login/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userType, username, password })
+        body: JSON.stringify(payload)
       });
-      const user = await response.json();
-      if (!response.ok) throw new Error(user.detail || 'Login failed');
-      onLogin(user);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Login failed');
+      if (data.token) {
+        localStorage.setItem('trms_token', data.token);
+      }
+      if (data.user) {
+        localStorage.setItem('trms_user', JSON.stringify(data.user));
+        onLogin(data.user);
+      } else {
+        setError('Invalid response from server.');
+      }
     } catch (err: any) {
       setError(err.message);
     }
   };
 
   return (
-    <div className="min-h-screen flex" style={{ 
+    <div className="min-h-screen flex" style={{
       background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
     }}>
       {/* Left Side - Abstract Background */}
@@ -176,14 +133,14 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
               boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.06)'
             }}>
               <button
-                onClick={() => setUserType('Taxpayer')}
+                onClick={() => setUserType('taxpayer')}
                 className={`flex-1 py-3 px-4 rounded-lg transition-all duration-200 ${
-                  userType === 'Taxpayer'
+                  user_type === 'taxpayer'
                     ? 'text-white shadow-lg transform scale-105'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
                 style={{
-                  background: userType === 'Taxpayer' ? 'linear-gradient(135deg, #2F80ED 0%, #1E5BBF 100%)' : 'transparent',
+                  background: user_type === 'taxpayer' ? 'linear-gradient(135deg, #2F80ED 0%, #1E5BBF 100%)' : 'transparent',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 600
                 }}
@@ -191,14 +148,14 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
                 Taxpayer
               </button>
               <button
-                onClick={() => setUserType('JuniorOfficer')}
+                onClick={() => setUserType('officer')}
                 className={`flex-1 py-3 px-4 rounded-lg transition-all duration-200 ${
-                  userType === 'JuniorOfficer'
+                  user_type === 'officer'
                     ? 'text-white shadow-lg transform scale-105'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
                 style={{
-                  background: userType === 'JuniorOfficer' ? 'linear-gradient(135deg, #7B68EE 0%, #6a5acd 100%)' : 'transparent',
+                  background: user_type === 'officer' ? 'linear-gradient(135deg, #7B68EE 0%, #6a5acd 100%)' : 'transparent',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 600
                 }}
@@ -209,24 +166,43 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm mb-2 text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
-                  {userType === 'Taxpayer' ? 'TIN' : 'Officer ID'}
-                </label>
-                <input
-                  type="text"
-                  placeholder={userType === 'Taxpayer' ? 'Enter TIN' : 'Enter Officer ID'}
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-current transition-all"
-                  style={{ 
-                    fontFamily: 'Inter, sans-serif',
-                    borderColor: username ? (userType === 'Taxpayer' ? '#2F80ED' : '#7B68EE') : undefined
-                  }}
-                  required
-                />
-              </div>
-
+              {user_type === 'taxpayer' ? (
+                <div>
+                  <label className="block text-sm mb-2 text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+                    TIN
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter TIN"
+                    value={tin}
+                    onChange={(e) => setTin(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-current transition-all"
+                    style={{
+                      fontFamily: 'Inter, sans-serif',
+                      borderColor: tin ? '#2F80ED' : undefined
+                    }}
+                    required
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm mb-2 text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+                    Officer ID
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter Officer ID"
+                    value={officer_id}
+                    onChange={(e) => setOfficerId(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-current transition-all"
+                    style={{
+                      fontFamily: 'Inter, sans-serif',
+                      borderColor: officer_id ? '#7B68EE' : undefined
+                    }}
+                    required
+                  />
+                </div>
+              )}
               <div>
                 <label className="block text-sm mb-2 text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
                   Password
@@ -237,9 +213,9 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-current transition-all"
-                  style={{ 
+                  style={{
                     fontFamily: 'Inter, sans-serif',
-                    borderColor: password ? (userType === 'Taxpayer' ? '#2F80ED' : '#7B68EE') : undefined
+                    borderColor: password ? (user_type === 'taxpayer' ? '#2F80ED' : '#7B68EE') : undefined
                   }}
                   required
                 />
@@ -255,7 +231,7 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
                 type="submit"
                 className="w-full py-4 rounded-xl text-white transition-all hover:opacity-90 shadow-lg"
                 style={{
-                  backgroundColor: userType === 'Taxpayer' ? '#2F80ED' : '#7B68EE',
+                  backgroundColor: user_type === 'taxpayer' ? '#2F80ED' : '#7B68EE',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 700,
                   fontSize: '1.125rem'
@@ -266,7 +242,7 @@ export function Login({ onLogin, onShowRegistration }: LoginProps) {
             </form>
 
             {/* Registration Link - Only for Taxpayers */}
-            {userType === 'Taxpayer' && (
+            {user_type === 'taxpayer' && (
               <div className="mt-6 text-center">
                 <button
                   onClick={onShowRegistration}

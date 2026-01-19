@@ -7,40 +7,55 @@ interface TaxpayerRegistrationProps {
 }
 
 export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistrationProps) {
+  // Use only snake_case fields as per TaxPayerProfileSerializer
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    dateOfBirth: '',
+    first_name: '',
+    last_name: '',
+    date_of_birth: '',
     gender: 'Male',
-    houseNo: '',
+    house_no: '',
     street: '',
     city: '',
-    zipCode: '',
+    zip_code: '',
     username: '',
     password: '',
-    phoneNumber1: '',
-    phoneNumber2: '',
-    phoneNumber3: '',
-    zoneCode: '1'
+    phone_number_1: '',
+    phone_number_2: '',
+    phone_number_3: '',
+    zone_code: '1'
   });
+  const [error, setError] = useState('');
+  const [successTin, setSuccessTin] = useState<string | null>(null);
 
-  // Tax zones from INSERT statements
+  // Tax zones for dropdown (code and name in snake_case)
   const taxZones = [
-    { code: '1', name: 'Dhaka North', city: 'Dhaka' },
-    { code: '2', name: 'Chittagong Central', city: 'Chittagong' },
-    { code: '3', name: 'Sylhet Zone', city: 'Sylhet' },
-    { code: '4', name: 'Rajshahi Zone', city: 'Rajshahi' },
-    { code: '5', name: 'Khulna Zone', city: 'Khulna' }
+    { zone_code: '1', zone_name: 'Dhaka North', city: 'Dhaka' },
+    { zone_code: '2', zone_name: 'Chittagong Central', city: 'Chittagong' },
+    { zone_code: '3', zone_name: 'Sylhet Zone', city: 'Sylhet' },
+    { zone_code: '4', zone_name: 'Rajshahi Zone', city: 'Rajshahi' },
+    { zone_code: '5', zone_name: 'Khulna Zone', city: 'Khulna' }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Integrate with Django API for taxpayer registration
-    // Example:
-    // const response = await fetch('/api/register/', { ... });
-    // const data = await response.json();
-    // alert(`Registration Successful!\nYour TIN: ${data.tin}`);
-    onSuccess();
+    setError('');
+    setSuccessTin(null);
+    try {
+      const res = await fetch('/api/users/taxpayers/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.detail || 'Registration failed');
+        return;
+      }
+      setSuccessTin(data.tin);
+      onSuccess();
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -83,45 +98,36 @@ export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistration
             <div className="grid grid-cols-3 gap-6">
               {/* Personal Information */}
               <div>
-                <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  First Name *
-                </label>
+                <label className="block text-sm mb-2 font-semibold">First Name *</label>
                 <input
                   type="text"
-                  name="firstName"
-                  value={formData.firstName}
+                  name="first_name"
+                  value={formData.first_name}
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
                 />
               </div>
 
               <div>
-                <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  Last Name *
-                </label>
+                <label className="block text-sm mb-2 font-semibold">Last Name *</label>
                 <input
                   type="text"
-                  name="lastName"
-                  value={formData.lastName}
+                  name="last_name"
+                  value={formData.last_name}
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
                 />
               </div>
 
               <div>
-                <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  Gender *
-                </label>
+                <label className="block text-sm mb-2 font-semibold">Gender *</label>
                 <select
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
                 >
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
@@ -130,24 +136,19 @@ export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistration
               </div>
 
               <div>
-                <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  Date of Birth *
-                </label>
+                <label className="block text-sm mb-2 font-semibold">Date of Birth *</label>
                 <input
                   type="date"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
+                  name="date_of_birth"
+                  value={formData.date_of_birth}
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
                 />
               </div>
 
               <div>
-                <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  Username *
-                </label>
+                <label className="block text-sm mb-2 font-semibold">Username *</label>
                 <input
                   type="text"
                   name="username"
@@ -155,14 +156,11 @@ export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistration
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
                 />
               </div>
 
               <div>
-                <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  Password *
-                </label>
+                <label className="block text-sm mb-2 font-semibold">Password *</label>
                 <input
                   type="password"
                   name="password"
@@ -170,30 +168,24 @@ export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistration
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
                 />
               </div>
 
               {/* Address Information */}
               <div>
-                <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  House No *
-                </label>
+                <label className="block text-sm mb-2 font-semibold">House No *</label>
                 <input
                   type="text"
-                  name="houseNo"
-                  value={formData.houseNo}
+                  name="house_no"
+                  value={formData.house_no}
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
                 />
               </div>
 
               <div>
-                <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  Street *
-                </label>
+                <label className="block text-sm mb-2 font-semibold">Street *</label>
                 <input
                   type="text"
                   name="street"
@@ -201,14 +193,11 @@ export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistration
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
                 />
               </div>
 
               <div>
-                <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  City *
-                </label>
+                <label className="block text-sm mb-2 font-semibold">City *</label>
                 <input
                   type="text"
                   name="city"
@@ -216,39 +205,32 @@ export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistration
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
                 />
               </div>
 
               <div>
-                <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  Zip Code *
-                </label>
+                <label className="block text-sm mb-2 font-semibold">Zip Code *</label>
                 <input
                   type="text"
-                  name="zipCode"
-                  value={formData.zipCode}
+                  name="zip_code"
+                  value={formData.zip_code}
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                  Tax Zone *
-                </label>
+                <label className="block text-sm mb-2 font-semibold">Tax Zone *</label>
                 <select
-                  name="zoneCode"
-                  value={formData.zoneCode}
+                  name="zone_code"
+                  value={formData.zone_code}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
                 >
                   {taxZones.map(zone => (
-                    <option key={zone.code} value={zone.code}>
-                      {zone.name} - {zone.city}
+                    <option key={zone.zone_code} value={zone.zone_code}>
+                      {zone.zone_name} - {zone.city}
                     </option>
                   ))}
                 </select>
@@ -258,48 +240,39 @@ export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistration
               <div className="col-span-3">
                 <div className="grid grid-cols-3 gap-6">
                   <div>
-                    <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                      Phone Number 1 *
-                    </label>
+                    <label className="block text-sm mb-2 font-semibold">Phone Number 1 *</label>
                     <input
                       type="tel"
-                      name="phoneNumber1"
-                      value={formData.phoneNumber1}
+                      name="phone_number_1"
+                      value={formData.phone_number_1}
                       onChange={handleChange}
                       required
                       placeholder="01XXXXXXXXX"
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                      style={{ fontFamily: 'Inter, sans-serif' }}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                      Phone Number 2 (Optional)
-                    </label>
+                    <label className="block text-sm mb-2 font-semibold">Phone Number 2 (Optional)</label>
                     <input
                       type="tel"
-                      name="phoneNumber2"
-                      value={formData.phoneNumber2}
+                      name="phone_number_2"
+                      value={formData.phone_number_2}
                       onChange={handleChange}
                       placeholder="01XXXXXXXXX"
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                      style={{ fontFamily: 'Inter, sans-serif' }}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                      Phone Number 3 (Optional)
-                    </label>
+                    <label className="block text-sm mb-2 font-semibold">Phone Number 3 (Optional)</label>
                     <input
                       type="tel"
-                      name="phoneNumber3"
-                      value={formData.phoneNumber3}
+                      name="phone_number_3"
+                      value={formData.phone_number_3}
                       onChange={handleChange}
                       placeholder="01XXXXXXXXX"
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-400"
-                      style={{ fontFamily: 'Inter, sans-serif' }}
                     />
                   </div>
                 </div>
@@ -322,6 +295,14 @@ export function TaxpayerRegistration({ onBack, onSuccess }: TaxpayerRegistration
                 </button>
               </div>
             </div>
+            {error && (
+              <div className="mt-4 text-red-600 text-sm">{error}</div>
+            )}
+            {successTin && (
+              <div className="mt-4 text-green-600 text-sm">
+                Registration successful! Your TIN: <b>{successTin}</b>
+              </div>
+            )}
           </form>
         </div>
       </div>
