@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Home, HelpCircle, LogOut, UserCheck, Ticket, FileText, UserCog, UserPlus, Edit, Trash2, Phone, MapPin, ChevronLeft, ChevronRight, Bell, User as UserIcon, Lock, Save, X, DollarSign } from 'lucide-react';
+import { Home, HelpCircle, LogOut, UserCheck, Ticket, FileText, UserCog, Edit, ChevronLeft, ChevronRight, Bell, User as UserIcon, Lock, Save, X } from 'lucide-react';
 import { SupportTickets } from './SupportTickets';
 import { userAPI, taxReturnAPI, supportAPI } from '../lib/api';
 
@@ -40,7 +40,7 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   });
 
   // Add a state for taxpayer form data
-  const [taxpayerForm, setTaxpayerForm] = useState<any>({
+  const [, setTaxpayerForm] = useState<any>({
     firstName: '',
     lastName: '',
     dateOfBirth: '',
@@ -127,67 +127,9 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   };
 
   // Add Taxpayer handler (auto TIN)
-  const handleAddTaxpayer = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Integrate with Django API to add taxpayer
-    setShowAddTaxpayer(false);
-    setTaxpayerForm({
-      firstName: '', lastName: '', dateOfBirth: '', gender: 'Male', houseNo: '', street: '', city: '', zipCode: '', username: '', password: '', phoneNumber1: '', phoneNumber2: '', phoneNumber3: '', zoneCode: '', zoneName: ''
-    });
-  };
 
-  const handleEditTaxpayer = (taxpayer: any) => {
-    setSelectedTaxpayerEdit(taxpayer);
-    setTaxpayerForm({
-      firstName: taxpayer.firstName || '',
-      lastName: taxpayer.lastName || '',
-      dateOfBirth: taxpayer.dateOfBirth || '',
-      gender: taxpayer.gender || 'Male',
-      houseNo: taxpayer.houseNo || '',
-      street: taxpayer.street || '',
-      city: taxpayer.city || '',
-      zipCode: taxpayer.zipCode || '',
-      username: taxpayer.username || '',
-      password: taxpayer.password || '',
-      phoneNumber1: taxpayer.phoneNumber1 || '',
-      phoneNumber2: taxpayer.phoneNumber2 || '',
-      phoneNumber3: taxpayer.phoneNumber3 || '',
-      zoneCode: taxpayer.zoneCode || '',
-      zoneName: taxpayer.zoneName || ''
-    });
-    setShowAddTaxpayer(true);
-  };
 
-  const handleUpdateTaxpayer = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Integrate with Django API to update taxpayer
-    setShowAddTaxpayer(false);
-    setSelectedTaxpayerEdit(null);
-    setTaxpayerForm({
-      firstName: '',
-      lastName: '',
-      dateOfBirth: '',
-      gender: 'Male',
-      houseNo: '',
-      street: '',
-      city: '',
-      zipCode: '',
-      username: '',
-      password: '',
-      phoneNumber1: '',
-      phoneNumber2: '',
-      phoneNumber3: '',
-      zoneCode: '',
-      zoneName: ''
-    });
-  };
 
-  const handleDeleteTaxpayer = () => {
-    // TODO: Integrate with Django API to delete taxpayer
-    // Example:
-    // fetch(`/api/officer/taxpayers/${taxpayer.id}/`, { method: 'DELETE' })
-    // ...existing code...
-  };
 
   if (!officerProfile) {
     return (
@@ -505,10 +447,10 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
   );
 }
 
-function setShowAddTaxpayer(arg0: boolean) {
+function setShowAddTaxpayer(_arg0: boolean) {
   throw new Error('Function not implemented.');
 }
-function setSelectedTaxpayerEdit(taxpayer: any) {
+function setSelectedTaxpayerEdit(_taxpayer: any) {
   throw new Error('Function not implemented.');
 }
 
