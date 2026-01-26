@@ -18,6 +18,7 @@ async def login(
             user["user_type"] = "taxpayer"
             return {"user": user, "token": "fake-jwt"}
         raise HTTPException(401, detail="Invalid TIN or password")
+    
 
     # officer/manager login
     if officer_id is not None:
