@@ -10,7 +10,7 @@ async def login(
     officer_id: int = Body(default=None),
     password: str = Body(...)
 ):
-    # Taxpayer (TIN) login
+    # ---- Taxpayer (TIN) login ----
     if tin is not None:
         user = await db.taxpayer.find_one({"tin": tin, "password": password})
         if user:
@@ -19,21 +19,23 @@ async def login(
             return {"user": user, "token": "fake-jwt-taxpayer"}
         raise HTTPException(401, detail="Invalid TIN or password")
 
-    # Officer login
+    # ---- Officer (OfficerID) login ----
     if officer_id is not None:
         user = await db.tax_officer.find_one({"officer_id": officer_id, "password": password})
         if user:
             user["_id"] = str(user["_id"])
-            # Senior vs Junior dashboard selection
-            senior_ranks = ["Commissioner", "Manager", "Boss"]
-            if user["rank"] in senior_ranks:
+            # --- Rank-based dashboard ----
+            # In frontend/file you have: Assistant, Officer, Inspector, Commissioner, Manager
+            # Manager ranks:
+            manager_ranks = ["Commissioner", "Manager"]
+            if user["rank"] in manager_ranks:
                 user["user_type"] = "manager"
             else:
                 user["user_type"] = "officer"
             return {"user": user, "token": "fake-jwt-officer"}
         raise HTTPException(401, detail="Invalid Officer ID or password")
     
-    raise HTTPException(400, detail="Provide TIN (taxpayer) or officer_id (officer) and password.")
+    raise HTTPException(400, detail="You must provide either TIN (for taxpayers) or officer_id (for officers) and password.")
 
 @router.post("/register/")
 async def register(user: Taxpayer):
