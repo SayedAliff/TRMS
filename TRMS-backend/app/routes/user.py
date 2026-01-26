@@ -1,20 +1,44 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 from app.db import db
-from app.models import Taxpayer
+from app.models import Taxpayer, Officer
+
 router = APIRouter()
 
 @router.post("/login/")
-async def login(data: dict):
-    user = await db.taxpayer.find_one({"tin": int(data["tin"]), "password": data["password"]})
-    if user:
-        user["_id"] = str(user["_id"])
-        return {"user": user, "token": "fake-jwt"}
-    raise HTTPException(status_code=401, detail="Invalid credentials")
+async def login(
+    tin: int = Body(default=None),
+    officer_id: int = Body(default=None),
+    password: str = Body(...)
+):
+    # Taxpayer (TIN) login
+    if tin is not None:
+        user = await db.taxpayer.find_one({"tin": tin, "password": password})
+        if user:
+            user["_id"] = str(user["_id"])
+            user["user_type"] = "taxpayer"
+            return {"user": user, "token": "fake-jwt-taxpayer"}
+        raise HTTPException(401, detail="Invalid TIN or password")
+
+    # Officer login
+    if officer_id is not None:
+        user = await db.tax_officer.find_one({"officer_id": officer_id, "password": password})
+        if user:
+            user["_id"] = str(user["_id"])
+            # Senior vs Junior dashboard selection
+            senior_ranks = ["Commissioner", "Manager", "Boss"]
+            if user["rank"] in senior_ranks:
+                user["user_type"] = "manager"
+            else:
+                user["user_type"] = "officer"
+            return {"user": user, "token": "fake-jwt-officer"}
+        raise HTTPException(401, detail="Invalid Officer ID or password")
+    
+    raise HTTPException(400, detail="Provide TIN (taxpayer) or officer_id (officer) and password.")
 
 @router.post("/register/")
 async def register(user: Taxpayer):
     exists = await db.taxpayer.find_one({"tin": user.tin})
     if exists:
-        raise HTTPException(status_code=409, detail="TIN already exists")
+        raise HTTPException(409, detail="TIN already exists")
     await db.taxpayer.insert_one(user.dict())
-    return {"message": "Taxpayer registered"}
+    return {"message": "Taxpayer registered", "tin": user.tin}

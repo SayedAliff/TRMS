@@ -1,118 +1,136 @@
-# TRMS - Tax Record Management System (Frontend)
+# TRMS-backend (FastAPI + MongoDB)
 
-This is the React (TypeScript) frontend for the Tax Record Management System, designed for seamless integration with the Django backend ([wasikahmed/tax-record-management-system-backend](https://github.com/wasikahmed/tax-record-management-system-backend)).
+🚩 Tax Record Management System backend — RESTful API, FastAPI + MongoDB  
+Supports multiple roles (taxpayer, junior officer, senior manager), modern authentication, 100% compatible with TRMS frontend.
 
 ---
 
-## 🚦 Quick Start
+## ✨ Features
 
-### 1. Clone & Install Dependencies
+- Taxpayer, Officer, Manager (Commissioner/Boss) login — rank-based dashboard resolve
+- Taxpayer registration, taxpayer CRUD
+- Officer CRUD, promote/demote officer rank (affects dashboard type)
+- Tax return create/list/update/delete
+- Payment create/list/update/delete
+- Support ticket create/list/update/delete (for taxpayer and officer)
+- All endpoints: JSON, snake_case, compatible with modern SPAs
+- Fully asynchronous Python, production-ready style
+
+---
+
+## 🚦 Quick Start (Local Dev)
+
+### 1. Requirements
+
+- Python 3.8+  
+- MongoDB (local or Atlas cloud; tested with v6/7)
+- Node.js only for frontend, not needed for backend
+
+### 2. Install Dependencies
 
 ```bash
-git clone https://github.com/SayedAliff/TRMS.git
-cd TRMS
-npm install
+cd TRMS-backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-_Note: Requires Node.js (v18+) and npm/yarn_
-
----
-
-### 2. Backend Setup (Run in a separate terminal)
-
-Please make sure the backend (Django) is running locally on [http://localhost:8000](http://localhost:8000):
-
-- Clone & install Python dependencies  
-- Set up Oracle/SQLite DB as per backend readme  
-- Migrate DB and create admin user:  
-  ```bash
-  python manage.py makemigrations
-  python manage.py migrate
-  python manage.py createsuperuser
-  python manage.py runserver
-  ```
-
-Backend repo: [wasikahmed/tax-record-management-system-backend](https://github.com/wasikahmed/tax-record-management-system-backend)
-
----
-
-### 3. Start the Frontend Dev Server
+### 3. (First time) MongoDB Dummy Data
 
 ```bash
-npm run dev
+mongosh
+use trms
+# Insert zones/users/officers/taxpayers/returns/payments/tickets, e.g.:
+# db.taxpayer.insertOne({ tin: 5000, first_name: "Abul", ... })
+```
+— পরামর্শ: backend/models.py, বা উপরের গাইডের structure অনুযায়ী field রাখো।
+
+### 4. Run Server
+
+```bash
+cd TRMS-backend
+uvicorn app.main:app --reload
+# Open: http://localhost:8000/docs (Swagger)
 ```
 
-The app will open at [http://localhost:5173](http://localhost:5173/)  
-All API requests are seamlessly proxied to the backend at `/api/*` via Vite's config.
+### 5. Test API (with Postman/Fronend)
+
+- Login:  
+  - Taxpayer: `POST /api/users/login/ { "tin": 5001, "password": "xxxx" }`
+  - Officer/Manager: `POST /api/users/login/ { "officer_id": 1001, "password": "xxxx" }`
+- Officer rank: (Commissioner/Manager/Boss → SeniorManagerDashboard, else JuniorOfficerDashboard)
 
 ---
 
-## 🔑 Authentication
+## 🛠️ Main API Endpoints
 
-- Login via `/api/users/auth/login/`
-  - Taxpayer: `{ "tin": <TIN>, "password": "..." }`
-  - Officer: `{ "officer_id": <ID>, "password": "..." }`
-- After login, JWT access token is stored and attached to all API requests as an `Authorization: Bearer ...` header.
-- Logout clears all sessions/tokens.
-
----
-
-## 🛠️ API & Models Integration
-
-- All frontend API endpoints, field & payload naming (`snake_case`), and data models are 100% matched to the backend serializers and routes:
-    - `/api/users/taxpayers/`
-    - `/api/users/officers/`
-    - `/api/taxes/returns/`
-    - `/api/taxes/payments/`
-    - `/api/support/tickets/`
-- **Only backend-provided data is shown; no mock data in the UI.**
-- All errors handled per DRF standard: `{ "detail": "..." }`
-- All date fields exchanged and displayed as `YYYY-MM-DD`.
+| Entity           | List         | Get           | Create         | Update        | Delete        | Extras                               |
+|------------------|--------------|---------------|----------------|---------------|---------------|--------------------------------------|
+| Taxpayer         | GET `/api/taxpayers/`    | GET `/api/taxpayers/{tin}`  | POST `/api/taxpayers/`  | PUT `/api/taxpayers/{tin}`   | DELETE `/api/taxpayers/{tin}`   |                                      |
+| Officer          | GET `/api/officers/`     | GET `/api/officers/{id}`    | POST `/api/officers/`   | PUT `/api/officers/{id}`      | DELETE `/api/officers/{id}`      | `/promote`, `/demote`                |
+| Tax return       | GET `/api/returns/`      | GET `/api/returns/{id}`     | POST `/api/returns/`    | PUT `/api/returns/{id}`        | DELETE `/api/returns/{id}`        |                                      |
+| Payment          | GET `/api/payments/`     | GET `/api/payments/{id}`    | POST `/api/payments/`   | PUT `/api/payments/{id}`       | DELETE `/api/payments/{id}`       |                                      |
+| Support Ticket   | GET `/api/tickets/`      | GET `/api/tickets/{id}`     | POST `/api/tickets/`    | PUT `/api/tickets/{id}`        | DELETE `/api/tickets/{id}`        |                                      |
+| User Login       |                  |               | POST `/api/users/login/`  |               |               | Provides user_type (taxpayer/officer/manager) for dashboard |
 
 ---
 
-## 📦 Key Files & Structure
+## 🧩 Code Structure
 
 ```
-├── components/          # UI components (dashboard, login, registration)
-├── lib/api.ts           # All backend API functions, models and fetch helpers
-├── lib/utils.ts         # Utility functions (date, format)
-├── styles/              # TailwindCSS + global styles
-├── App.tsx              # Main app, user context
-├── vite.config.ts       # API / proxy config
+TRMS-backend/
+├── app/
+│   ├── db.py
+│   ├── main.py
+│   ├── models.py
+│   └── routes/
+│        ├── user.py
+│        ├── taxpayer.py
+│        ├── officer.py
+│        ├── returns.py
+│        ├── payments.py
+│        └── tickets.py
+├── requirements.txt
+├── README.md
 └── ...
 ```
 
 ---
 
-## 📑 Developer Checklist for Backend API Integration
+## 🧑‍💻 Conventions
 
-- [x] All data interfaces and API payloads in `snake_case`, strictly matching backend serializers and models.
-- [x] API endpoint paths match backend routing (`/api/users/..`, `/api/taxes/..`, `/api/support/..`)
-- [x] JWT token used and sent in all requests after login.
-- [x] No camelCase, mock data or unused/legacy field left anywhere.
-- [x] All frontend data is fetched live from backend.
-- [x] Error handling mimics DRF (`{ detail: ... }`).
-- [x] Code is ready for direct handover—Wasik just needs to run backend and everything will work!
+- All fields in snake_case
+- All endpoints follow REST-style naming
+- All responses: JSON only
+- Passwords stored plaintext (for demo; use hash in production)
+- Promote/demote endpoints for officer management
 
 ---
 
-## 🙋 For Troubleshooting / Developers
+## 🔐 Role-based Dashboard Switch
 
-- For any field/endpoint mismatch, check backend **serializers.py**, **models.py**, and route URLs.
-- For new backend fields, adjust frontend model/interface.
-- For proxy/API issues, validate `vite.config.ts` for `/api` → `http://localhost:8000`
-- For authentication/permission/API errors, check backend permissions or JWT token flow.
+- Officer login returns `user_type: "manager"` (if rank in [Commissioner, Manager, Boss]), otherwise `user_type: "officer"`
+- Login/deserialization is **frontend-compatible**: `/api/users/login/` response always gives the correct dashboard
+- Taxpayer login returns `user_type: "taxpayer"`
+
+---
+
+## 🚧 Improvements (for Production)
+
+- Secure passwords (hash)
+- JWT authentication for all endpoints (currently token is dummy)
+- Add validation, pagination, filter to endpoints
+- Add proper error responses
 
 ---
 
 ## 👥 Credits
 
-- Frontend: [SayedAliff](https://github.com/SayedAliff)
-- Backend: [wasikahmed](https://github.com/wasikahmed)
+- Backend/Architecture: [SayedAliff](https://github.com/SayedAliff)
+- Frontend (React): [SayedAliff](https://github.com/SayedAliff)
 
 ---
 
 ## License
 
-This project is for academic/educational use.
+Educational and learning use only.
