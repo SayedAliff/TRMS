@@ -10,7 +10,7 @@ async def login(
     officer_id: int = Body(default=None),
     password: str = Body(...)
 ):
-    # taxpayer login
+    # Taxpayer login
     if tin is not None:
         user = await db.taxpayer.find_one({"tin": tin, "password": password})
         if user:
@@ -18,14 +18,14 @@ async def login(
             user["user_type"] = "taxpayer"
             return {"user": user, "token": "fake-jwt"}
         raise HTTPException(401, detail="Invalid TIN or password")
-    
 
-    # officer/manager login
+    # Officer/Manager login (NEW)
     if officer_id is not None:
         user = await db.tax_officer.find_one({"officer_id": officer_id, "password": password})
         if user:
             user["_id"] = str(user["_id"])
             manager_ranks = ["Manager", "Commissioner"]
+            # Select dashboard based on rank:
             if user["rank"] in manager_ranks:
                 user["user_type"] = "manager"
             else:
