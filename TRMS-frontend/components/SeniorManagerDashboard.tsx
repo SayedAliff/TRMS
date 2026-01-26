@@ -280,7 +280,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
                 <p className="text-xs text-gray-500 mt-1">Officer ID: {profile.id}</p>
               </div>
               <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: '#c62828' }}>
-                {profile.firstName[0]}{profile.lastName[0]}
+                {(profile.firstName?.[0] || '')}{(profile.lastName?.[0] || '')}
               </div>
             </div>
           </div>
@@ -328,7 +328,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
                     <div className="flex items-center gap-3 mb-2">
                       <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
                         style={{ backgroundColor: "#6c63ff" }}>
-                        {officer.firstName[0]}{officer.lastName[0]}
+                        {(officer.firstName?.[0] || '')}{(officer.lastName?.[0] || '')}
                       </div>
                       <div>
                         <div className="font-semibold text-gray-900">{officer.firstName} {officer.lastName}</div>
