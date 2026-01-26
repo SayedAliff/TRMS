@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Home, HelpCircle, LogOut, UserCheck, Ticket, FileText, UserCog, Edit, ChevronLeft, ChevronRight, Bell, User as UserIcon, Lock, Save, X } from 'lucide-react';
 import { SupportTickets } from './SupportTickets';
-import { userAPI, taxReturnAPI, supportAPI } from '../lib/api';
+import { userAPI } from '../lib/api';
 
 interface JuniorOfficerDashboardProps {
   user: {
@@ -64,13 +64,25 @@ export function JuniorOfficerDashboard({ user, onLogout }: JuniorOfficerDashboar
 
   useEffect(() => {
     // Officer profile
-    userAPI.get_by_officer_id(user.officer_id).then(setOfficerProfile);
-    // Taxpayers assigned to this officer
-    userAPI.get_taxpayers().then(setTaxpayers);
-    // Returns assigned to this officer
-    taxReturnAPI.list('').then(setReturns);
-    // Support tickets assigned to this officer
-    supportAPI.list().then(setTickets);
+    fetch(`/api/officers/${user.officer_id}`)
+      .then(res => res.json())
+      .then(setOfficerProfile)
+      .catch(() => setOfficerProfile(null));
+    // Taxpayers assigned to this officer (fetch all for now)
+    fetch('/api/taxpayers/')
+      .then(res => res.json())
+      .then(setTaxpayers)
+      .catch(() => setTaxpayers([]));
+    // Returns assigned to this officer (fetch all for now)
+    fetch('/api/returns/')
+      .then(res => res.json())
+      .then(setReturns)
+      .catch(() => setReturns([]));
+    // Support tickets assigned to this officer (fetch all for now)
+    fetch('/api/tickets/')
+      .then(res => res.json())
+      .then(setTickets)
+      .catch(() => setTickets([]));
   }, [user.officer_id]);
 
   useEffect(() => {

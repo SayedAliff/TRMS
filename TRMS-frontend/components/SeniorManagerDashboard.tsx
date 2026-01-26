@@ -27,10 +27,7 @@ type View = 'dashboard' | 'officers' | 'taxpayers' | 'tax-list' | 'profile' | 'a
 export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboardProps) {
   const [activeView, setActiveView] = useState<View>('dashboard');
   // -- Officers State
-  const [juniorOfficers, setJuniorOfficers] = useState<any[]>([
-    { id: '1000', username: 'rahim', firstName: 'Rahim', lastName: 'Uddin', rank: 'Inspector', branch: 'Gulshan', houseNo: '10', street: 'Road 5', city: 'Dhaka', zipCode: '1212', password: 'pass1' },
-    { id: '1002', username: 'siaam', firstName: 'Siaam', lastName: 'Khan', rank: 'Officer', branch: 'Motijheel', houseNo: '5', street: 'Bank Road', city: 'Dhaka', zipCode: '1000', password: 'pass3' }
-  ]);
+  const [juniorOfficers, setJuniorOfficers] = useState<any[]>([]);
   const [newOfficer, setNewOfficer] = useState({ id: '', firstName: '', lastName: '', rank: 'Inspector', branch: '', houseNo: '', street: '', city: '', zipCode: '', password: '' });
   const [showAddOfficer, setShowAddOfficer] = useState(false);
 
@@ -39,10 +36,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
   const [, setSelectedOfficer] = useState<any>(null);
 
   // -- Taxpayers State
-  const [taxpayers, setTaxpayers] = useState<any[]>([
-    { id: '5000', username: 'abul80', firstName: 'Abul', lastName: 'Kalam', dateOfBirth: '1980-01-01', gender: 'Male', houseNo: '55', street: 'Banani', city: 'Dhaka', zipCode: '1213', phoneNumber1: '01711111111', phoneNumber2: '01811111111', phoneNumber3: '', zoneCode: '1', password: '123456' },
-    { id: '5001', username: 'bokul90', firstName: 'Bokul', lastName: 'Mia', dateOfBirth: '1990-05-15', gender: 'Male', houseNo: '12', street: 'Puran', city: 'Dhaka', zipCode: '1100', phoneNumber1: '01922222222', phoneNumber2: '', phoneNumber3: '', zoneCode: '2', password: '654321' }
-  ]);
+  const [taxpayers, setTaxpayers] = useState<any[]>([]);
   const [newTaxpayer, setNewTaxpayer] = useState({
     firstName: '', lastName: '', gender: 'Male', city: '', phoneNumber1: '', zoneName: ''
   });
@@ -53,10 +47,7 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
   const [, setSelectedTaxpayer] = useState<any>(null);
 
   // Tax List Data
-  const [comprehensiveTaxData] = useState<any[]>([
-    { tin: '5000', taxpayerName: 'Abul Kalam', gender: 'Male', returnId: '20000', assessmentYear: '2024-2025', category: 'Individual', taxableAmount: 400000, paymentStatus: 'Paid', paymentConfirmedBy: '1000', paymentConfirmedByName: 'Rahim Uddin' },
-    { tin: '5001', taxpayerName: 'Bokul Mia', gender: 'Male', returnId: '20001', assessmentYear: '2024-2025', category: 'Corporate', taxableAmount: 1000000, paymentStatus: 'Paid', paymentConfirmedBy: '1002', paymentConfirmedByName: 'Siaam Khan' }
-  ]);
+  const [comprehensiveTaxData, setComprehensiveTaxData] = useState<any[]>([]);
 
   // PROFILE states (section)
   const [profile, setProfile] = useState({
@@ -77,16 +68,8 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
   const [profileNewPassword, setProfileNewPassword] = useState('');
 
   // --- Notification Logic ---
-  // Simulate notifications from audit logs (password changes, ticket replies, etc.)
-  const [notifications, setNotifications] = useState([
-    // Example notifications (in real app, generate from audit logs)
-    { id: '4001', type: 'password_change', text: 'Rahim Uddin changed password', relatedType: 'officer_password_change', relatedId: '4001', unread: true },
-    { id: '1001', type: 'ticket_reply', text: 'Rahim Uddin replied to ticket #300 for Abul Kalam', relatedType: 'ticket_reply', relatedId: '1001', unread: true },
-    { id: '3001', type: 'profile_change', text: 'Rahim Uddin updated his officer profile', relatedType: 'officer_profile_change', relatedId: '3001', unread: true },
-    // ...add more as needed...
-  ]);
+  const [notifications, setNotifications] = useState<any[]>([]); // Remove demo notifications
   const [showNoticeModal, setShowNoticeModal] = useState(false);
-  // const [highlightAuditId, setHighlightAuditId] = useState<string | null>(null);
 
   // Handle notification click: go to audit logs and highlight entry
   function handleNotificationClick(notif: any) {
@@ -163,13 +146,9 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
 
   // Helper: Officer summary stats for Tax List
   const officerStats = juniorOfficers.map(officer => {
-    // Taxpayers assigned to this officer
     const taxpayersAssigned = comprehensiveTaxData.filter(t => t.paymentConfirmedBy === officer.id).length;
-    // Payments confirmed by this officer
     const paymentsConfirmed = comprehensiveTaxData.filter(t => t.paymentStatus === 'Paid' && t.paymentConfirmedBy === officer.id).length;
-    // Tickets resolved (simulate or set to 0 if not available)
-    // For demo, random or fixed value
-    const ticketsResolved = officer.id === '1000' ? 2 : officer.id === '1002' ? 3 : officer.id === '1003' ? 1 : 1;
+    const ticketsResolved = 0; // Not available from API
     return {
       ...officer,
       taxpayersAssigned,
@@ -195,11 +174,65 @@ export function SeniorManagerDashboard({ user, onLogout }: SeniorManagerDashboar
 
   // Fetch data from backend (officers, taxpayers, tax data)
   useEffect(() => {
-    // TODO: Integrate with Django API to fetch officers, taxpayers, and tax data
-    // Example:
-    // fetch('/api/manager/officers/')
-    // fetch('/api/manager/taxpayers/')
-    // fetch('/api/manager/taxdata/')
+    // Officers
+    fetch('/api/officers/')
+      .then(res => res.json())
+      .then(data => setJuniorOfficers(data.map((o: any) => ({
+        id: o.officer_id?.toString() || '',
+        firstName: o.first_name,
+        lastName: o.last_name,
+        rank: o.rank,
+        branch: o.branch,
+        houseNo: o.house_no,
+        street: o.street,
+        city: o.city,
+        zipCode: o.zip_code,
+        password: o.password
+      }))))
+      .catch(() => setJuniorOfficers([]));
+    // Taxpayers
+    fetch('/api/taxpayers/')
+      .then(res => res.json())
+      .then(data => setTaxpayers(data.map((t: any) => ({
+        id: t.tin?.toString() || '',
+        firstName: t.first_name,
+        lastName: t.last_name,
+        dateOfBirth: t.date_of_birth,
+        gender: t.gender,
+        houseNo: t.house_no,
+        street: t.street,
+        city: t.city,
+        zipCode: t.zip_code,
+        username: t.username,
+        phoneNumber1: t.phone_number_1,
+        phoneNumber2: t.phone_number_2,
+        phoneNumber3: t.phone_number_3,
+        zoneCode: t.zone_code?.toString() || '',
+        password: t.password
+      }))))
+      .catch(() => setTaxpayers([]));
+    // Tax List Data (returns + payments)
+    Promise.all([
+      fetch('/api/returns/').then(res => res.json()),
+      fetch('/api/payments/').then(res => res.json())
+    ]).then(([returns, payments]) => {
+      const taxData = returns.map((r: any) => {
+        const payment = payments.find((p: any) => p.return_id === r.return_id);
+        return {
+          tin: r.tin?.toString() || '',
+          taxpayerName: `${taxpayers.find(t => t.id === (r.tin?.toString() || ''))?.firstName || ''} ${taxpayers.find(t => t.id === (r.tin?.toString() || ''))?.lastName || ''}`,
+          gender: taxpayers.find(t => t.id === (r.tin?.toString() || ''))?.gender || '',
+          returnId: r.return_id?.toString() || '',
+          assessmentYear: r.assessment_year,
+          category: r.category_id || '-',
+          taxableAmount: r.taxable_amount,
+          paymentStatus: payment ? payment.status : 'Pending',
+          paymentConfirmedBy: payment ? payment.officer_id?.toString() : '',
+          paymentConfirmedByName: juniorOfficers.find(o => o.id === (payment?.officer_id?.toString() || ''))?.firstName || ''
+        };
+      });
+      setComprehensiveTaxData(taxData);
+    }).catch(() => setComprehensiveTaxData([]));
   }, [user]);
 
   // --------------- RENDER ---------------

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { paymentAPI } from '../lib/api';
 
 interface Payment {
   id: number;
@@ -20,8 +19,8 @@ export function PaymentHistory({ payments: propPayments }: { payments?: Payment[
       setPayments(propPayments);
       return;
     }
-    paymentAPI
-      .list('')
+    fetch('/api/payments/')
+      .then(res => res.json())
       .then(setPayments)
       .catch((err) => setError(err.message || 'Failed to fetch payments'));
   }, [propPayments]);

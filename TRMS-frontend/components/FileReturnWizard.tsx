@@ -28,6 +28,10 @@ export function FileReturnWizard({ onPaymentSuccess, userTaxCategory = 'Individu
   });
   const [isCalculated, setIsCalculated] = useState(false);
 
+  // Add state for backend IDs
+  const [returnId, setReturnId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const calculateTax = () => {
     const income = parseFloat(formData.totalIncome || '0');
     if (!income) return;
@@ -62,20 +66,66 @@ export function FileReturnWizard({ onPaymentSuccess, userTaxCategory = 'Individu
     setIsCalculated(true);
   };
 
-  const handleSubmitReturn = () => {
-    // TODO: Integrate with Django API to submit tax return
-    // Example:
-    // fetch('/api/taxpayer/returns/', { ... })
-    setShowPayment(true);
+  // --- API Integration for Tax Return Submission ---
+  const handleSubmitReturn = async () => {
+    setError(null);
+    try {
+      // Generate a random return_id (in real app, backend should generate)
+      const newReturnId = Math.floor(100000 + Math.random() * 900000);
+      const payload = {
+        return_id: newReturnId,
+        assessment_year: formData.assessmentYear,
+        total_income: parseFloat(formData.totalIncome || '0'),
+        taxable_amount: formData.taxableAmount,
+        filing_date: new Date().toISOString(),
+        tin: parseInt(formData.tin, 10),
+        category_id: 1, // You may want to map userTaxCategory to a category_id
+        officer_id: null // Will be assigned by backend/officer
+      };
+      const res = await fetch('/api/returns/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail || 'Failed to submit return');
+      }
+      setReturnId(newReturnId);
+      setShowPayment(true);
+    } catch (err: any) {
+      setError(err.message || 'Failed to submit return');
+    }
   };
 
-  const handlePayNow = () => {
-    // TODO: Integrate with Django API to process payment
-    // Example:
-    // fetch('/api/taxpayer/pay/', { ... })
-    setPaymentSuccess(true);
-    if (onPaymentSuccess) {
-      onPaymentSuccess();
+  // --- API Integration for Payment ---
+  const handlePayNow = async () => {
+    setError(null);
+    try {
+      if (!returnId) throw new Error('Return not submitted');
+      // Generate a random payment_id (in real app, backend should generate)
+      const paymentId = Math.floor(100000 + Math.random() * 900000);
+      const payload = {
+        payment_id: paymentId,
+        amount: formData.calculatedTax,
+        method: paymentMethod,
+        status: 'completed',
+        transaction_time: new Date().toISOString(),
+        return_id: returnId
+      };
+      const res = await fetch('/api/payments/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail || 'Failed to process payment');
+      }
+      setPaymentSuccess(true);
+      if (onPaymentSuccess) onPaymentSuccess();
+    } catch (err: any) {
+      setError(err.message || 'Failed to process payment');
     }
   };
 
@@ -95,6 +145,8 @@ export function FileReturnWizard({ onPaymentSuccess, userTaxCategory = 'Individu
       taxCategory: userTaxCategory,
       declaration: false
     });
+    setReturnId(null);
+    setError(null);
   };
 
   return (
@@ -137,6 +189,13 @@ export function FileReturnWizard({ onPaymentSuccess, userTaxCategory = 'Individu
 
       {/* Form Content */}
       <div className="bg-white rounded-lg shadow border border-gray-200 p-8">
+        {/* Error message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+
         {/* Step 1: Basic Info */}
         {currentStep === 1 && (
           <div>

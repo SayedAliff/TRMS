@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Ticket, Plus, X, CheckCircle, Clock, XCircle } from 'lucide-react';
-import { supportAPI, SupportTicket as APISupportTicket } from '../lib/api';
 
 // Use the backend SupportTicket type for all state and props
-type SupportTicket = APISupportTicket & {
+type SupportTicket = {
   ticket_id: number;
   taxpayer: string;
   assigned_officer?: string;
@@ -38,15 +37,14 @@ export function SupportTickets({
   useEffect(() => {
     setLoading(true);
     setError('');
-    let fetchPromise: Promise<APISupportTicket[]>;
-    if (userType === 'taxpayer' && currentUserTIN) {
-      fetchPromise = supportAPI.list(currentUserTIN);
-    } else {
-      fetchPromise = supportAPI.list();
-    }
-    fetchPromise
+    fetch('/api/tickets/')
+      .then(res => res.json())
       .then(data => {
-        setTickets(data as SupportTicket[]);
+        let filtered = data;
+        if (userType === 'taxpayer' && currentUserTIN) {
+          filtered = data.filter((t: any) => t.tin?.toString() === currentUserTIN);
+        }
+        setTickets(filtered);
         setLoading(false);
       })
       .catch(err => {
@@ -61,12 +59,21 @@ export function SupportTickets({
     setError('');
     try {
       const payload = {
-        taxpayer: currentUserTIN,
-        subject: newSubject,
-        description: newDescription
+        ticket_id: Math.floor(Math.random() * 1000000),
+        issue_desc: newSubject,
+        sub_date: new Date().toISOString(),
+        res_status: 'open',
+        tin: currentUserTIN,
+        officer_id: null
       };
-      const ticket = await supportAPI.create(payload as any);
-      setTickets([ticket as SupportTicket, ...tickets]);
+      const res = await fetch('/api/tickets/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Failed to create ticket');
+      const ticket = await res.json();
+      setTickets([ticket, ...tickets]);
       setShowCreateTicket(false);
       setNewSubject('');
       setNewDescription('');
@@ -79,8 +86,16 @@ export function SupportTickets({
   const handleStatusChange = async (ticket_id: number, newStatus: SupportTicket['status']) => {
     setError('');
     try {
-      const updated = await supportAPI.update(ticket_id, { status: newStatus } as any);
-      setTickets(tickets.map(t => t.ticket_id === ticket_id ? (updated as SupportTicket) : t));
+      const ticket = tickets.find(t => t.ticket_id === ticket_id);
+      if (!ticket) return;
+      const updated = { ...ticket, res_status: newStatus };
+      const res = await fetch(`/api/tickets/${ticket_id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+      });
+      if (!res.ok) throw new Error('Failed to update ticket');
+      setTickets(tickets.map(t => t.ticket_id === ticket_id ? updated : t));
       if (onStatusChange) onStatusChange(ticket_id, newStatus);
     } catch (err: any) {
       setError(err.message || 'Failed to update ticket');

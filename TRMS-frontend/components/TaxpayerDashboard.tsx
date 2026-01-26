@@ -3,7 +3,7 @@ import { Home, FileText, HelpCircle, LogOut, User as UserIcon, Bell, Edit, Lock,
 import { FileReturnWizard } from './FileReturnWizard';
 import { PaymentHistory } from './PaymentHistory';
 import { SupportTickets } from './SupportTickets';
-import { userAPI, taxReturnAPI, paymentAPI, supportAPI } from '../lib/api';
+import { userAPI } from '../lib/api';
 
 interface TaxpayerDashboardProps {
   user: {
@@ -34,24 +34,36 @@ export function TaxpayerDashboard({ user, onLogout }: TaxpayerDashboardProps) {
   useEffect(() => {
     if (!user?.tin) return;
     // Fetch taxpayer profile
-    userAPI.get_by_tin(user.tin).then(setProfile);
+    fetch(`/api/taxpayers/${user.tin}`)
+      .then(res => res.json())
+      .then(setProfile)
+      .catch(() => setProfile(null));
     // Fetch returns
-    taxReturnAPI.list(user.tin).then(data => {
-      setStats(s => ({ ...s, total_returns: data.length }));
-    });
+    fetch('/api/returns/')
+      .then(res => res.json())
+      .then(data => {
+        const userReturns = data.filter((r: any) => r.tin?.toString() === user.tin);
+        setStats(s => ({ ...s, total_returns: userReturns.length }));
+      });
     // Fetch payments
-    paymentAPI.list(user.tin).then(data => {
-      setPayments(data);
-      setStats(s => ({
-        ...s,
-        total_paid: data.filter((p: any) => p.status === 'completed').reduce((sum: number, p: any) => sum + (p.amount || 0), 0)
-      }));
-    });
+    fetch('/api/payments/')
+      .then(res => res.json())
+      .then(data => {
+        const userPayments = data.filter((p: any) => p.tin?.toString() === user.tin);
+        setPayments(userPayments);
+        setStats(s => ({
+          ...s,
+          total_paid: userPayments.filter((p: any) => p.status === 'completed').reduce((sum: number, p: any) => sum + (p.amount || 0), 0)
+        }));
+      });
     // Fetch support tickets
-    supportAPI.list(user.tin).then(data => {
-      setTickets(data);
-      setStats(s => ({ ...s, open_tickets: data.filter((t: any) => t.resolution_status === 'Open').length }));
-    });
+    fetch('/api/tickets/')
+      .then(res => res.json())
+      .then(data => {
+        const userTickets = data.filter((t: any) => t.tin?.toString() === user.tin);
+        setTickets(userTickets);
+        setStats(s => ({ ...s, open_tickets: userTickets.filter((t: any) => t.res_status === 'Open').length }));
+      });
   }, [user?.tin]);
 
   useEffect(() => {
