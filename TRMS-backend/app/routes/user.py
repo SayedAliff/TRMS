@@ -4,7 +4,6 @@ from app.models import Taxpayer
 
 router = APIRouter()
 
-
 @router.post("/login/")
 async def login(
     tin: int = Body(default=None),
